@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cu4v0muw8375s"
-path="res://.godot/imported/ALL props seasons.png-b37250997ce2f5fa43b2f5701c82e10a.ctex"
+uid="uid://br1bxiyj7lsrn"
+path="res://.godot/imported/grama e terra.png-53e07f589d2fd1addb1ee5aa0ee8204d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/terrain/ALL props seasons.png"
-dest_files=["res://.godot/imported/ALL props seasons.png-b37250997ce2f5fa43b2f5701c82e10a.ctex"]
+source_file="res://assets/terrain/grama e terra.png"
+dest_files=["res://.godot/imported/grama e terra.png-53e07f589d2fd1addb1ee5aa0ee8204d.ctex"]
 
 [params]
 
