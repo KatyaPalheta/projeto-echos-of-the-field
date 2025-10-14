@@ -13,3 +13,6 @@ shape = SubResource("CircleShape2D_qlkrq")
 [node name="textura" type="Sprite2D" parent="."]
 
 [node name="animacao" type="AnimationPlayer" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(4, 4)

@@ -18,47 +18,49 @@ func _physics_process(_delta: float) -> void:
 		"move_esquerda", "move_direita", "move_cima", "move_baixo"
 	)
 	
-	# === 1. MOVIMENTAÇÃO ===
+	if _direcao.length_squared() > 0.01:
+		if abs(_direcao.x) > 0.01 and abs(_direcao.y) > 0.01:
+			
+			if abs(_direcao.x) > abs(_direcao.y):
+				_direcao.y = 0
+			else:
+				_direcao.x = 0
+			
+			_direcao = _direcao.normalized()
+	
 	velocity = _direcao * _velocidade_movimento
 	move_and_slide()
 	
 	_is_moving = velocity.length_squared() > 0.01
-	
-	# === 2. DETERMINAÇÃO DA DIREÇÃO DE VISUALIZAÇÃO (EIXOS) E FLIP ===
+
 	if _is_moving:
-		# Verifica qual eixo tem o movimento mais forte
+
 		var _abs_vel_x = abs(velocity.x)
 		var _abs_vel_y = abs(velocity.y)
 		
 		if _abs_vel_x > _abs_vel_y and _abs_vel_x > 0.01:
-			# Movimento horizontal é predominante
-			_face_direction = 2 # Perfil
+			_face_direction = 2 
 			
 			if velocity.x < 0:
-				_sprite.flip_h = true  # Vira para a esquerda
+				_sprite.flip_h = true 
 			else:
-				_sprite.flip_h = false # Não vira (olha para a direita)
+				_sprite.flip_h = false 
 		
 		elif _abs_vel_y > _abs_vel_x and _abs_vel_y > 0.01:
-			# Movimento vertical é predominante
-			_sprite.flip_h = false # Garante que o sprite não esteja invertido ao mover verticalmente
+			_sprite.flip_h = false 
 			
 			if velocity.y > 0:
-				_face_direction = 0 # Frente (Baixo)
+				_face_direction = 0 
 			else:
-				_face_direction = 1 # Costas (Cima)
-		
-		# === [ADICIONADO] Lógica para quando o movimento é puramente diagonal ===
-		# Se os movimentos em X e Y são igualmente fortes (diagonal), priorizamos o Y para manter a frente/costas
+				_face_direction = 1 #
 		elif _abs_vel_x > 0.01 and _abs_vel_y > 0.01 and _abs_vel_x == _abs_vel_y:
-			_sprite.flip_h = false # Garante que não esteja invertido
+			_sprite.flip_h = false 
 			if velocity.y > 0:
-				_face_direction = 0 # Frente
+				_face_direction = 0 #frente
 			else:
-				_face_direction = 1 # Costas
-		# Fim do [ADICIONADO]
-			
-	# === 3. CONTROLE DAS ANIMAÇÕES ===
+				_face_direction = 1 #costas
+					
+	
 	var _target_anim_name: String = ""
 	
 	if _is_moving:

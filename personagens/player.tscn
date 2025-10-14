@@ -310,6 +310,7 @@ tracks/0/keys = {
 [sub_resource type="Animation" id="Animation_vhlia"]
 resource_name = "magia_cura_f"
 length = 0.9
+loop_mode = 1
 step = 0.15
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -378,6 +379,7 @@ tracks/0/keys = {
 [sub_resource type="Animation" id="Animation_ctsto"]
 resource_name = "magia_fogo_p"
 length = 0.9
+loop_mode = 1
 step = 0.15
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -758,6 +760,7 @@ _data = {
 
 [node name="Player" instance=ExtResource("1_g6smn")]
 script = ExtResource("2_e213c")
+_velocidade_movimento = 200.0
 
 [node name="colisao" parent="." index="0"]
 show_behind_parent = true
@@ -775,3 +778,4 @@ frame = 25
 libraries = {
 &"": SubResource("AnimationLibrary_erscc")
 }
+autoplay = "magia_fogo_p"
