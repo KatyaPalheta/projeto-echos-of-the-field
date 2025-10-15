@@ -1,0 +1,10 @@
+[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://5uswk2lvki4a"]
+
+[ext_resource type="Texture2D" uid="uid://br1bxiyj7lsrn" path="res://assets/terrain/grama e terra.png" id="1_n1ib6"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_krcnm"]
+texture = ExtResource("1_n1ib6")
+22:5/0 = 0
+
+[resource]
+sources/0 = SubResource("TileSetAtlasSource_krcnm")
