@@ -8,5 +8,5 @@
 [node name="GerenciadorDeTerreno" parent="." instance=ExtResource("1_b5r0v")]
 
 [node name="Player" parent="." node_paths=PackedStringArray("_animation") instance=ExtResource("2_7cgj1")]
-position = Vector2(254, 219)
+position = Vector2(1476, 1904)
 _animation = NodePath("animacao")
