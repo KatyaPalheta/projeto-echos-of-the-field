@@ -1,0 +1,34 @@
+[gd_scene load_steps=3 format=3 uid="uid://cfwfrtql8sweg"]
+
+[ext_resource type="Script" uid="uid://ckartikmn0soo" path="res://cenas/componente_decorcao.gd" id="1_xp3o5"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ncerp"]
+size = Vector2(16, 16)
+
+[node name="ComponenteDecorcao" type="Node2D"]
+y_sort_enabled = true
+script = ExtResource("1_xp3o5")
+lista_texturas_flores = Array[String](["res://assets/terrain/flores/piece_0_12.png", "res://assets/terrain/flores/piece_0_13.png", "res://assets/terrain/flores/piece_0_15.png", "res://assets/terrain/flores/piece_0_16.png", "res://assets/terrain/flores/piece_0_17.png", "res://assets/terrain/flores/piece_0_18.png", "res://assets/terrain/flores/piece_1_12.png", "res://assets/terrain/flores/piece_1_13.png", "res://assets/terrain/flores/piece_1_15.png", "res://assets/terrain/flores/piece_1_17.png", "res://assets/terrain/flores/piece_1_18.png", "res://assets/terrain/flores/piece_2_9.png", "res://assets/terrain/flores/piece_2_10.png", "res://assets/terrain/flores/piece_2_11.png", "res://assets/terrain/flores/piece_2_12.png", "res://assets/terrain/flores/piece_2_13.png", "res://assets/terrain/flores/piece_2_14.png", "res://assets/terrain/flores/piece_2_15.png", "res://assets/terrain/flores/piece_2_16.png", ""])
+lista_texturas_grama = Array[String](["res://assets/terrain/grama/piece_0_1.png", "res://assets/terrain/grama/piece_0_2.png", "res://assets/terrain/grama/piece_0_3.png", "res://assets/terrain/grama/piece_1_1.png"])
+lista_texturas_arvores = Array[String](["res://assets/terrain/arvores/arvore01.png", "res://assets/terrain/arvores/arvore02.png", "res://assets/terrain/arvores/arvore03.png", "res://assets/terrain/arvores/arvore04.png", "res://assets/terrain/arvores/arvore06.png", "res://assets/terrain/arvores/arvore07.png", "res://assets/terrain/arvores/arvore08.png", "res://assets/terrain/arvores/arvore09.png", "res://assets/terrain/arvores/arvore05.png"])
+area_de_espalhamento = Rect2(0, 0, 16, 16)
+max_tentativas_pos = 30
+min_flores = 3
+max_flores = 6
+distancia_min_flores = 12.0
+min_grama = 8
+max_grama = 15
+distancia_min_grama = 8.0
+min_arvores = 4
+max_arvores = 8
+distancia_min_arvores = 20.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(8, 8)
+shape = SubResource("RectangleShape2D_ncerp")
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
+rect = Rect2(0, 0, 16, 16)
+
+[connection signal="screen_entered" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_entered"]
+[connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_exited"]

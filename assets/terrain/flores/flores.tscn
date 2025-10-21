@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://ombbpl2mndpv"]
+
+[ext_resource type="PackedScene" uid="uid://cfwfrtql8sweg" path="res://cenas/componente_decorcao.tscn" id="1_h6qr3"]
+
+[node name="Flores" instance=ExtResource("1_h6qr3")]
+_lista_texturas = Array[String](["res://assets/terrain/flores/piece_0_12.png", "res://assets/terrain/flores/piece_0_13.png", "res://assets/terrain/flores/piece_0_15.png", "res://assets/terrain/flores/piece_0_16.png", "res://assets/terrain/flores/piece_0_16.png", "res://assets/terrain/flores/piece_0_17.png", "res://assets/terrain/flores/piece_0_18.png", "res://assets/terrain/flores/piece_1_12.png", "res://assets/terrain/flores/piece_1_13.png", "res://assets/terrain/flores/piece_1_15.png", "res://assets/terrain/flores/piece_1_17.png", "res://assets/terrain/flores/piece_1_18.png", "res://assets/terrain/flores/piece_2_9.png", "res://assets/terrain/flores/piece_2_10.png", "res://assets/terrain/flores/piece_2_11.png", "res://assets/terrain/flores/piece_2_12.png", "res://assets/terrain/flores/piece_2_13.png", "res://assets/terrain/flores/piece_2_14.png", "res://assets/terrain/flores/piece_2_15.png", "res://assets/terrain/flores/piece_2_16.png"])
