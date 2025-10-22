@@ -761,16 +761,18 @@ _data = {
 [node name="Player" instance=ExtResource("1_g6smn")]
 scale = Vector2(0.993707, 1)
 script = ExtResource("2_e213c")
-_velocidade_movimento = 200.0
+_velocidade_movimento = 150.0
 
 [node name="colisao" parent="." index="0"]
 show_behind_parent = true
+position = Vector2(-1.90735e-06, 0)
 rotation = 1.5708
 shape = SubResource("CapsuleShape2D_e213c")
 
 [node name="textura" parent="." index="1"]
-position = Vector2(0, -10)
 texture = ExtResource("2_hkm7i")
+centered = false
+offset = Vector2(-16, -24)
 hframes = 10
 vframes = 24
 frame = 25
