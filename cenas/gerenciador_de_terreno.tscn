@@ -397,6 +397,9 @@ sources/0 = SubResource("TileSetAtlasSource_q8ci6")
 
 [node name="GerenciadorDeTerreno" type="Node2D"]
 script = ExtResource("1_77v07")
+cor_agua = Color(0.388235, 0.607843, 1, 1)
+cor_grama = Color(0.6, 0.898039, 0.313726, 1)
+cor_areia = Color(0.933333, 0.764706, 0.603922, 1)
 
 [node name="water_atlas" type="TileMapLayer" parent="."]
 tile_set = ExtResource("2_77v07")

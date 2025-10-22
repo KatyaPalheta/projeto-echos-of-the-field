@@ -1,17 +1,16 @@
 # Informações sobre o projeto
 
+Historico de Atualizações e alterações:
 
-Épico 1: Fundação do Jogador e do Mundo
-
-Este épico cobre a criação do personagem jogável básico, seu movimento e a interação com o ambiente fundamental do jogo.
-
-| ID | User Story | Critérios de Aceite -| | US-01 | Como jogador, eu quero poder mover meu personagem nas 8 direções usando um controle ou teclado. | 1. O personagem responde ao input do analógico esquerdo do controle e/ou das teclas WASD/Setas.
-2. O personagem se move suavemente nas 8 direções (cima, baixo, esquerda, direita e diagonais).  
-3. A animação de "andar" (Walk) é ativada durante o movimento.  
-4. O personagem para de se mover quando o input cessa, retornando à animação "parado" (Idle). -| | US-02 | Como jogador, eu quero que a câmera siga meu personagem, mantendo-o no centro da tela. | 1. A câmera permanece focada no personagem enquanto ele se move pelo mapa.  
-2. O movimento da câmera é suave e não causa solavancos.  
-3. A perspectiva isométrica é mantida consistentemente. -| | US-03 | Como desenvolvedor, eu quero criar um mapa de jogo estático usando o tileset do asset pack. | 1. O mapa é construído usando o tileset de 16x16 do "Farm RPG Asset Pack".  
-2. O mapa contém os elementos básicos do bioma de campo (grama, árvores, pedras, etc.).  
-3. O personagem pode colidir com os objetos do cenário (árvores, pedras, etc.) e não pode atravessá-los.  
-4. O mapa tem limites definidos que o personagem não pode ultrapassar. -|
-
+1 - criada a cena de personagem_base (adicionada: colisão, textura, animação e camera2D)
+2 - adicionado script de movimento basico e seleção de animação com base na direção
+3 - criada a cena gerenciador de terreno (adicionadas as layers agua, grama e areia)
+4 - terrenos configurados
+5 - adicionado script de geração de terreno apeatorio com base em mascara pré definida sorteada de ua lista de possibilidades
+6 - criada cena componente de decoração com sorteio aleatorio de texturas de decoração sendo elas grama, flores e arvores
+7 - adicionado script de controle de decoração onde o algoritmo escolhe 5 texturas, e soteia a posição para ser carregada em um tile de 32x32
+8 - geração aleatoria de componente de decoração adicionado ao script de geração de terreno
+9 - criada cena game level e adicinados os componentes gerador de terreno e player (cenas herdadas)
+10 - configurados os ySorts para que a posição relativa dos elementos no mapa façam sentido
+11 - correção de desenho de borda para naturalidade dos encaixes de tiles
+12 - 
