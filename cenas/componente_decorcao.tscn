@@ -28,7 +28,7 @@ position = Vector2(8, 8)
 shape = SubResource("RectangleShape2D_ncerp")
 
 [node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
-rect = Rect2(0, 0, 16, 16)
+rect = Rect2(-16, -48, 48, 64)
 
 [connection signal="screen_entered" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_entered"]
 [connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_exited"]
