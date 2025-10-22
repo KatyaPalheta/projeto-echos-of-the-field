@@ -8,6 +8,7 @@
 y_sort_enabled = true
 
 [node name="GerenciadorDeTerreno" parent="." node_paths=PackedStringArray("player_node") instance=ExtResource("1_b5r0v")]
+y_sort_enabled = true
 cena_decoracao = ExtResource("3_7cgj1")
 player_node = NodePath("../Player")
 cor_agua = Color(0.388235, 0.607843, 1, 1)

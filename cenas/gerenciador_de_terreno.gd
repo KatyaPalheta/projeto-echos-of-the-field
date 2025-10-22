@@ -41,7 +41,6 @@ var spawn_point_encontrado: bool = false
 var spawn_position: Vector2 = Vector2.ZERO
 
 
-# --- O CORAÇÃO DO GERADOR ---
 func _ready() -> void:
 
 	print("Fase 1: Iniciando Geração (Com Spawn Seguro!)...")
