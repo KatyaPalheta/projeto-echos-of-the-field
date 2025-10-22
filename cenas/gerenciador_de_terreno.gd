@@ -111,26 +111,33 @@ func _ready() -> void:
 
 	print("Planejamento Concluído. Desenhando o mapa...")
 
-	# --- PASSO 2: DESENHAR TUDO DE UMA VEZ ---
-	for coords in coords_agua:
-		water_layer.set_cell(coords, id_fonte_tileset, tile_agua)
+	# --- PASSO 2: DESENHAR TUDO DE UMA VEZ (INVERTIDO!) ---
+	
+	# 1. Pinta a GRAMA (com "CARIMBO" normal, usando o tile central)
+	# (Precisamos achar a coordenada do tile 100% verde de novo!)
+	var tile_grama_centro_real = Vector2i(21, 6) # <-- CONFIRME ESSA COORDENADA!
+	for coords in coords_grama:
+		land_layer.set_cell(coords, id_fonte_tileset, tile_grama_centro_real)
 
-	land_layer.set_cells_terrain_connect(coords_grama, TERRAIN_SET_PADRAO, TERRAIN_PADRAO)
+	# 2. Pinta a ÁGUA (com o "PINCEL MÁGICO" dela!)
+	water_layer.set_cells_terrain_connect(coords_agua, TERRAIN_SET_PADRAO, TERRAIN_PADRAO)
+
+	# 3. Pinta a AREIA (com o "PINCEL MÁGICO" dela!)
 	sand_layer.set_cells_terrain_connect(coords_areia, TERRAIN_SET_PADRAO, TERRAIN_PADRAO)
 
-	# --- PASSO 3: LIMPAR OVERLAPS ---
+
+	# --- PASSO 3: LIMPAR OVERLAPS (AJUSTADO!) ---
+	# (Agora a gente apaga a água onde tem grama/areia)
 	print("Limpando overlaps...")
 	for coords in coords_agua:
-		land_layer.erase_cell(coords)
-		sand_layer.erase_cell(coords)
+		# Não precisamos mais apagar land/sand aqui, eles desenham por cima
+		pass 
 	for coords in coords_areia:
-		land_layer.erase_cell(coords)
-		water_layer.erase_cell(coords)
+		land_layer.erase_cell(coords) # Areia apaga Grama
+		water_layer.erase_cell(coords) # Areia apaga Água
 	for coords in coords_grama:
-		sand_layer.erase_cell(coords)
-		water_layer.erase_cell(coords)
-
-	print("Geração Concluída! Bem-vinda à sua ILHA DESENHADA!")
+		sand_layer.erase_cell(coords) # Grama apaga Areia
+		water_layer.erase_cell(coords) # Grama apaga Água
 
 	# --- FASE FINAL: POSICIONAR O PLAYER (NO PONTO SEGURO!) ---
 	if player_node != null:
