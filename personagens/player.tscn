@@ -759,6 +759,7 @@ _data = {
 }
 
 [node name="Player" instance=ExtResource("1_g6smn")]
+scale = Vector2(0.993707, 1)
 script = ExtResource("2_e213c")
 _velocidade_movimento = 200.0
 

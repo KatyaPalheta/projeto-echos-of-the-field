@@ -10,9 +10,15 @@ y_sort_enabled = true
 [node name="GerenciadorDeTerreno" parent="." node_paths=PackedStringArray("player_node") instance=ExtResource("1_b5r0v")]
 cena_decoracao = ExtResource("3_7cgj1")
 player_node = NodePath("../Player")
+lista_mascaras = Array[String](["res://assets/terrain/templateterren2.png", "res://assets/terrain/templateterren3.png", "res://assets/terrain/templateterren4.png", "res://assets/terrain/templateterreno1.png"])
+mascara_para_usar_index = null
 cor_agua = Color(0.388235, 0.607843, 1, 1)
 cor_grama = Color(0.6, 0.898039, 0.313726, 1)
 cor_areia = Color(0.933333, 0.764706, 0.603922, 1)
+id_fonte_tileset = null
+tile_agua = null
+tamanho_mundo = null
+chance_decoracao = null
 
 [node name="Player" parent="." node_paths=PackedStringArray("_animation") instance=ExtResource("2_7cgj1")]
 y_sort_enabled = true

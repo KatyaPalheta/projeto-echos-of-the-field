@@ -691,6 +691,5 @@ tile_map_data = PackedByteArray(0, 0, 44, 255, 49, 0, 0, 0, 12, 0, 7, 0, 0, 0)
 tile_set = SubResource("TileSet_krcnm")
 
 [node name="sand_atlas" type="TileMapLayer" parent="."]
-z_index = 1
 tile_map_data = PackedByteArray(0, 0, 242, 254, 231, 255, 0, 0, 0, 0, 7, 0, 0, 0)
 tile_set = SubResource("TileSet_q8ci6")
