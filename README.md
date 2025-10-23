@@ -13,4 +13,4 @@ Historico de Atualizações e alterações:
 9 - criada cena game level e adicinados os componentes gerador de terreno e player (cenas herdadas)
 10 - configurados os ySorts para que a posição relativa dos elementos no mapa façam sentido
 11 - correção de desenho de borda para naturalidade dos encaixes de tiles
-12 - 
+12 - configuração do rect do elemento de load e descarregamento fora da tela
