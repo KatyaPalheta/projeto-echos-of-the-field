@@ -14,3 +14,5 @@ Historico de Atualizações e alterações:
 10 - configurados os ySorts para que a posição relativa dos elementos no mapa façam sentido
 11 - correção de desenho de borda para naturalidade dos encaixes de tiles
 12 - configuração do rect do elemento de load e descarregamento fora da tela
+13 - adicionadas animações de peteleco na grama
+14 - adicionados sons de efeito ao passar pela grama
