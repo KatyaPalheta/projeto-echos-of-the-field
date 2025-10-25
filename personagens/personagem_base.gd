@@ -118,26 +118,4 @@ func _physics_process(_delta: float) -> void:
 	
 	if _animation.current_animation != _target_anim_name:
 		_animation.play(_target_anim_name)
-		# ... (fim da função _physics_process) ...
-
-
-# ESTA FUNÇÃO SERÁ CHAMADA PELA ANIMATION PLAYER
-func _tocar_som_passo() -> void:
-	
-	# Se não estiver se movendo, não toca som
-	if not _is_moving:
-		return
-
-	# Decide qual som tocar baseado no terreno
-	if terreno_atual == "grama":
-		# Se a lista não estiver vazia E o áudio não estiver tocando
-		if not sons_passos_grama.is_empty() and not audio_passos_grama.is_playing():
-			audio_passos_grama.stream = sons_passos_grama.pick_random()
-			audio_passos_grama.play()
-			
-	elif terreno_atual == "areia":
-		if not sons_passos_areia.is_empty() and not audio_passos_areia.is_playing():
-			audio_passos_areia.stream = sons_passos_areia.pick_random()
-			audio_passos_areia.play()
-
-# <<< FIM DO SCRIPT >>>
+		
