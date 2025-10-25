@@ -11,6 +11,7 @@ y_sort_enabled = true
 y_sort_enabled = true
 cena_decoracao = ExtResource("3_7cgj1")
 player_node = NodePath("../Player")
+chance_decoracao = 0.1
 
 [node name="Player" parent="." node_paths=PackedStringArray("_animation") instance=ExtResource("2_7cgj1")]
 y_sort_enabled = true
