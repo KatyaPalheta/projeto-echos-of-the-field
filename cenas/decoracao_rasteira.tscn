@@ -1,7 +1,15 @@
-[gd_scene format=3 uid="uid://duda7k6abdii8"]
+[gd_scene load_steps=3 format=3 uid="uid://duda7k6abdii8"]
+
+[ext_resource type="Script" uid="uid://cf2r68ruupcvx" path="res://cenas/decoracao_rasteira.gd" id="1_1cfbu"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6ntn5"]
+size = Vector2(8, 4)
 
 [node name="DecoracaoRasteira" type="Area2D"]
+script = ExtResource("1_1cfbu")
 
 [node name="Sprite" type="Sprite2D" parent="."]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="Trigger" type="CollisionShape2D" parent="."]
+position = Vector2(0, 6)
+shape = SubResource("RectangleShape2D_6ntn5")

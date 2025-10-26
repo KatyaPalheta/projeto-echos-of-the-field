@@ -38,7 +38,8 @@ class_name ComponenteDecoracao
 @export var distancia_min_arvores: float = 16.0 # Pelo menos metade da largura
 # MUITO IMPORTANTE: O offset da árvore para o Y-Sort (base no centro)
 @export var offset_arvore: Vector2 = Vector2(16, 48) # Metade de 32, altura total de 48
-
+@export_category("Cenas Prontas")
+@export var cena_decoracao_rasteira: PackedScene
 
 # Variáveis de controle
 var posicoes_usadas: Array[Dictionary] = []
@@ -119,35 +120,55 @@ func _on_visible_on_screen_notifier_2d_screen_exited() -> void:
 # Função genérica que cria e posiciona os sprites
 # Substitua a sua função _gerar_coisas inteira por esta:
 func _gerar_coisas(lista_texturas: Array, quantidade: int, dist_min: float, sprite_offset: Vector2, nome: String) -> void:
+	
+	# Pega uma textura aleatória da lista
+	if lista_texturas.is_empty():
+		return
+	
 	for i in range(quantidade):
 		# Tenta achar uma posição válida
 		var nova_posicao: Variant = _encontrar_posicao_valida(dist_min)
 		
-		# Se não achou (retornou null), desiste de gerar ESTE sprite
+		# Se não achou (retornou null), desiste de gerar ESTE item
 		if nova_posicao == null:
 			continue
 			
-		# Se achou, cria o Sprite
-		var novo_sprite = Sprite2D.new()
-		novo_sprite.texture = load(lista_texturas.pick_random())
-		
-		# === A CORREÇÃO MÁGICA DO Y-SORT ===
-		# 1. Diz que a 'position' é no canto (0,0) do sprite, não no centro
-		novo_sprite.centered = false 
-		# 2. Define a 'position' (os "pés") para a posição sorteada
-		novo_sprite.position = nova_posicao
-		# 3. Usa o offset NEGATIVO para "puxar" a textura para cima e para a esquerda
-		novo_sprite.offset = -sprite_offset 
-		# ===================================
-		
-		novo_sprite.name = "%s_%s" % [nome, i] # Dá um nome (bom pra debugar)
-		
-		# Adiciona o sprite como filho do Container
-		vegetacao_container.add_child(novo_sprite)
+		# --- LÓGICA DE INSTÂNCIA ---
+		# Se for Grama ou Flor, usa a CENA NOVA
+		if (nome == "Grama" or nome == "Flor"):
+			
+			if cena_decoracao_rasteira == null:
+				push_warning("Cena de decoracao rasteira não configurada!")
+				return
+				
+			# 1. Instancia (cria) a cena da decoração
+			var nova_decoracao = cena_decoracao_rasteira.instantiate()
+			
+			# 2. Carrega a textura que vamos usar
+			var textura_carregada = load(lista_texturas.pick_random())
+			
+			# 3. Chama a função "setup" da cena para passar a textura e o offset
+			nova_decoracao.setup(textura_carregada, sprite_offset)
+			
+			# 4. Define a posição (os "pés") para a posição sorteada
+			nova_decoracao.position = nova_posicao
+			
+			nova_decoracao.name = "%s_%s" % [nome, i] # Dá um nome (bom pra debugar)
+			vegetacao_container.add_child(nova_decoracao)
 
-
-# A nossa lógica de achar um lugar, agora em uma função separada
-# Substitua a sua função _encontrar_posicao_valida inteira por esta:
+		# Se for Árvore (ou outro tipo), usa o MÉTODO ANTIGO
+		else:
+			var novo_sprite = Sprite2D.new()
+			novo_sprite.texture = load(lista_texturas.pick_random())
+		
+			# === A CORREÇÃO MÁGICA DO Y-SORT (Método antigo) ===
+			novo_sprite.centered = false 
+			novo_sprite.position = nova_posicao
+			novo_sprite.offset = -sprite_offset 
+			# ===================================
+		
+			novo_sprite.name = "%s_%s" % [nome, i] # Dá um nome (bom pra debugar)
+			vegetacao_container.add_child(novo_sprite)
 func _encontrar_posicao_valida(distancia_minima_nova: float) -> Variant:
 	var nova_posicao: Vector2
 	var posicao_encontrada: bool = false
