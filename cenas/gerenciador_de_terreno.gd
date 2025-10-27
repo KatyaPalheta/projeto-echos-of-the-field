@@ -143,9 +143,13 @@ func _ready() -> void:
 		if spawn_point_encontrado:
 			# Usa a posição que salvamos e adiciona offset para centralizar
 			player_node.global_position = spawn_position + Vector2(8, 8)
+			if player_node.has_method("set_tilemap_refs"):
+				player_node.set_tilemap_refs(land_layer, sand_layer)
+			# --- FIM DA ADIÇÃO ---
 			print("Player posicionado no PRIMEIRO PONTO SEGURO em: ", player_node.global_position)
 		else:
-			push_warning("Nenhum ponto de spawn seguro foi encontrado! Verifique suas máscaras.")
+			push_warning("Nenhum ponto de spawn seguro foi encontrado!
+Verifique suas máscaras.")
 			player_node.global_position = Vector2.ZERO # Coloca no (0,0) como fallback
 	else:
 		push_warning("Nó do Player não foi configurado no GerenciadorDeTerreno!")
