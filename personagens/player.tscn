@@ -1,8 +1,10 @@
-[gd_scene load_steps=46 format=3 uid="uid://cnhkqju6duija"]
+[gd_scene load_steps=48 format=3 uid="uid://cnhkqju6duija"]
 
 [ext_resource type="PackedScene" uid="uid://wfv6d3q4n54l" path="res://personagens/personagem_base.tscn" id="1_g6smn"]
 [ext_resource type="Script" uid="uid://dremfquadjvsr" path="res://personagens/player.gd" id="2_e213c"]
 [ext_resource type="Texture2D" uid="uid://ckp5mqrmtyap4" path="res://assets/personagens/player/Player.png" id="2_hkm7i"]
+[ext_resource type="AudioStream" uid="uid://dtnbhhfn0x1gh" path="res://assets/terrain/audios/passos.MP3" id="3_wfqsr"]
+[ext_resource type="AudioStream" uid="uid://d3hoouw3hpf7q" path="res://assets/terrain/audios/sand.MP3" id="4_of8di"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_e213c"]
 radius = 2.0
@@ -787,8 +789,11 @@ autoplay = "magia_fogo_p"
 zoom = Vector2(5, 5)
 
 [node name="AudioPassosGrama" type="AudioStreamPlayer2D" parent="." index="4"]
+stream = ExtResource("3_wfqsr")
+pitch_scale = 1.32
 
 [node name="AudioPassosAreia" type="AudioStreamPlayer2D" parent="." index="5"]
+stream = ExtResource("4_of8di")
 
 [node name="DetectorDeSolo" type="RayCast2D" parent="." index="6"]
 position = Vector2(0, -5)
