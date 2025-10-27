@@ -12,6 +12,26 @@ var _is_moving: bool = false
 
 @onready var _sprite = $textura 
 
+# --- NOSSOS NÓS DE ÁUDIO ---
+@onready var audio_passos_grama: AudioStreamPlayer2D = $AudioPassosGrama
+@onready var audio_passos_areia: AudioStreamPlayer2D = $AudioPassosAreia
+@onready var detector_solo: RayCast2D = $DetectorDeSolo
+
+# --- NOSSAS LISTAS DE SONS DE PASSOS ---
+@export var sons_passos_grama: Array[AudioStream] = [
+	preload("res://assets/terrain/audios/passos1.MP3"),
+	preload("res://assets/terrain/audios/passos2.MP3"),
+	preload("res://assets/terrain/audios/passos3.MP3")
+]
+@export var sons_passos_areia: Array[AudioStream] = [
+	preload("res://assets/terrain/audios/sand1.MP3"),
+	preload("res://assets/terrain/audios/sand2.MP3"),
+	preload("res://assets/terrain/audios/sand3.MP3")
+]
+
+# --- CONTROLE DE TERRENO ---
+var terreno_atual: String = "grama" # Começa na grama por padrão
+
 func _physics_process(_delta: float) -> void:
 	
 	var _direcao: Vector2 = Input.get_vector(
@@ -30,6 +50,26 @@ func _physics_process(_delta: float) -> void:
 	
 	velocity = _direcao * _velocidade_movimento
 	move_and_slide()
+	# ... (código do move_and_slide)
+	velocity = _direcao * _velocidade_movimento
+	move_and_slide()
+	
+	# --- DETECÇÃO DO SOLO ---
+	# Força o RayCast a checar o que tem embaixo dele NESTE frame
+	detector_solo.force_raycast_update() 
+	
+	if detector_solo.is_colliding():
+		var collider = detector_solo.get_collider()
+		
+		# Checa em qual CAMADA DE FÍSICA o colisor está
+		if collider.get_collision_layer_value(2): # Camada 2 = Grama
+			terreno_atual = "grama"
+		elif collider.get_collision_layer_value(3): # Camada 3 = Areia
+			terreno_atual = "areia"
+	# --- FIM DA DETECÇÃO ---
+	
+	_is_moving = velocity.length_squared() > 0.01
+	# ... (resto do código de animação)
 	
 	_is_moving = velocity.length_squared() > 0.01
 
@@ -78,3 +118,26 @@ func _physics_process(_delta: float) -> void:
 	
 	if _animation.current_animation != _target_anim_name:
 		_animation.play(_target_anim_name)
+		# ... (fim da função _physics_process) ...
+
+
+# ESTA FUNÇÃO SERÁ CHAMADA PELA ANIMATION PLAYER
+func _tocar_som_passo() -> void:
+	
+	# Se não estiver se movendo, não toca som
+	if not _is_moving:
+		return
+
+	# Decide qual som tocar baseado no terreno
+	if terreno_atual == "grama":
+		# Se a lista não estiver vazia E o áudio não estiver tocando
+		if not sons_passos_grama.is_empty() and not audio_passos_grama.is_playing():
+			audio_passos_grama.stream = sons_passos_grama.pick_random()
+			audio_passos_grama.play()
+			
+	elif terreno_atual == "areia":
+		if not sons_passos_areia.is_empty() and not audio_passos_areia.is_playing():
+			audio_passos_areia.stream = sons_passos_areia.pick_random()
+			audio_passos_areia.play()
+
+# <<< FIM DO SCRIPT >>>

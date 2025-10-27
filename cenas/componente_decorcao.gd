@@ -117,8 +117,7 @@ func _on_visible_on_screen_notifier_2d_screen_exited() -> void:
 
 # --- FUNÇÕES "HELPER" ---
 
-# Função genérica que cria e posiciona os sprites
-# Substitua a sua função _gerar_coisas inteira por esta:
+# Substitua a sua função _gerar_coisas inteira por esta VERSÃO CORRIGIDA:
 func _gerar_coisas(lista_texturas: Array, quantidade: int, dist_min: float, sprite_offset: Vector2, nome: String) -> void:
 	
 	# Pega uma textura aleatória da lista
@@ -144,17 +143,19 @@ func _gerar_coisas(lista_texturas: Array, quantidade: int, dist_min: float, spri
 			# 1. Instancia (cria) a cena da decoração
 			var nova_decoracao = cena_decoracao_rasteira.instantiate()
 			
-			# 2. Carrega a textura que vamos usar
+			# 2. Define a posição (os "pés") para a posição sorteada
+			nova_decoracao.position = nova_posicao
+			nova_decoracao.name = "%s_%s" % [nome, i] # Dá um nome (bom pra debugar)
+			
+			# 3. *** CORREÇÃO AQUI: Adiciona à cena ANTES de configurar ***
+			vegetacao_container.add_child(nova_decoracao)
+			
+			# 4. Carrega a textura que vamos usar
 			var textura_carregada = load(lista_texturas.pick_random())
 			
-			# 3. Chama a função "setup" da cena para passar a textura e o offset
+			# 5. *** CORREÇÃO AQUI: Chama o setup DEPOIS de adicionar ***
+			# Agora o @onready var sprite já vai ter funcionado!
 			nova_decoracao.setup(textura_carregada, sprite_offset)
-			
-			# 4. Define a posição (os "pés") para a posição sorteada
-			nova_decoracao.position = nova_posicao
-			
-			nova_decoracao.name = "%s_%s" % [nome, i] # Dá um nome (bom pra debugar)
-			vegetacao_container.add_child(nova_decoracao)
 
 		# Se for Árvore (ou outro tipo), usa o MÉTODO ANTIGO
 		else:
@@ -165,7 +166,7 @@ func _gerar_coisas(lista_texturas: Array, quantidade: int, dist_min: float, spri
 			novo_sprite.centered = false 
 			novo_sprite.position = nova_posicao
 			novo_sprite.offset = -sprite_offset 
-			# ===================================
+			
 		
 			novo_sprite.name = "%s_%s" % [nome, i] # Dá um nome (bom pra debugar)
 			vegetacao_container.add_child(novo_sprite)

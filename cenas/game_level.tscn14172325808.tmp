@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://cxxjg153b16x5"]
+
+[ext_resource type="PackedScene" uid="uid://bottcc3i4efoa" path="res://cenas/gerenciador_de_terreno.tscn" id="1_b5r0v"]
+[ext_resource type="PackedScene" uid="uid://cnhkqju6duija" path="res://personagens/player.tscn" id="2_7cgj1"]
+[ext_resource type="PackedScene" uid="uid://cfwfrtql8sweg" path="res://cenas/componente_decorcao.tscn" id="3_7cgj1"]
+
+[node name="GameLevel" type="Node2D"]
+y_sort_enabled = true
+
+[node name="GerenciadorDeTerreno" parent="." node_paths=PackedStringArray("player_node") instance=ExtResource("1_b5r0v")]
+y_sort_enabled = true
+cena_decoracao = ExtResource("3_7cgj1")
+player_node = NodePath("../Player")
+chance_decoracao = 0.1
+
+[node name="Player" parent="." node_paths=PackedStringArray("_animation") instance=ExtResource("2_7cgj1")]
+y_sort_enabled = true
+_animation = NodePath("animacao")
