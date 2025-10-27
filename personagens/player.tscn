@@ -569,23 +569,6 @@ tracks/0/keys = {
 "update": 1,
 "values": [Vector2i(0, 4), Vector2i(1, 4), Vector2i(2, 4), Vector2i(3, 4), Vector2i(4, 4), Vector2i(5, 4), Vector2i(6, 4), Vector2i(7, 4)]
 }
-tracks/1/type = "method"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath(".")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.4),
-"transitions": PackedFloat32Array(1, 1),
-"values": [{
-"args": [],
-"method": &"_tocar_som_passo"
-}, {
-"args": [],
-"method": &"_tocar_som_passo"
-}]
-}
 
 [sub_resource type="Animation" id="Animation_erscc"]
 resource_name = "run_f"
@@ -604,23 +587,6 @@ tracks/0/keys = {
 "update": 1,
 "values": [Vector2i(0, 3), Vector2i(1, 3), Vector2i(2, 3), Vector2i(3, 3), Vector2i(4, 3), Vector2i(5, 3), Vector2i(6, 3), Vector2i(7, 3)]
 }
-tracks/1/type = "method"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath(".")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.4),
-"transitions": PackedFloat32Array(1, 1),
-"values": [{
-"args": [],
-"method": &"_tocar_som_passo"
-}, {
-"args": [],
-"method": &"_tocar_som_passo"
-}]
-}
 
 [sub_resource type="Animation" id="Animation_8xnse"]
 resource_name = "run_p"
@@ -638,23 +604,6 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
 "update": 1,
 "values": [Vector2i(0, 5), Vector2i(1, 5), Vector2i(2, 5), Vector2i(3, 5), Vector2i(4, 5), Vector2i(5, 5), Vector2i(6, 5), Vector2i(7, 5)]
-}
-tracks/1/type = "method"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath(".")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0.1, 0.5),
-"transitions": PackedFloat32Array(1, 1),
-"values": [{
-"args": [],
-"method": &"_tocar_som_passo"
-}, {
-"args": [],
-"method": &"_tocar_som_passo"
-}]
 }
 
 [sub_resource type="Animation" id="Animation_m76fo"]
@@ -809,10 +758,10 @@ _data = {
 &"walk_p": SubResource("Animation_e213c")
 }
 
-[node name="Player" instance=ExtResource("1_g6smn")]
+[node name="Player" node_paths=PackedStringArray("_animation") instance=ExtResource("1_g6smn")]
 scale = Vector2(0.993707, 1)
 script = ExtResource("2_e213c")
-_velocidade_movimento = 150.0
+_animation = NodePath("animacao")
 
 [node name="colisao" parent="." index="0"]
 show_behind_parent = true
