@@ -790,6 +790,7 @@ zoom = Vector2(5, 5)
 
 [node name="AudioPassosGrama" type="AudioStreamPlayer2D" parent="." index="4"]
 stream = ExtResource("3_wfqsr")
+volume_db = -9.751
 pitch_scale = 1.32
 
 [node name="AudioPassosAreia" type="AudioStreamPlayer2D" parent="." index="5"]
