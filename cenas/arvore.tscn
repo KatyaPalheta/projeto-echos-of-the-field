@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://82800h0evf7w"]
+
+[ext_resource type="Script" uid="uid://ba1gb7v8q76xf" path="res://cenas/arvore.gd" id="1_0a2hk"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jggx3"]
+size = Vector2(12, 6)
+
+[node name="Arvore" type="StaticBody2D"]
+y_sort_enabled = true
+script = ExtResource("1_0a2hk")
+
+[node name="Textura" type="Sprite2D" parent="."]
+centered = false
+offset = Vector2(-16, -48)
+
+[node name="ColisaoTronco" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_jggx3")

@@ -40,6 +40,7 @@ class_name ComponenteDecoracao
 @export var offset_arvore: Vector2 = Vector2(16, 48) # Metade de 32, altura total de 48
 @export_category("Cenas Prontas")
 @export var cena_decoracao_rasteira: PackedScene
+@export var cena_arvore: PackedScene
 
 # Variáveis de controle
 var posicoes_usadas: Array[Dictionary] = []
@@ -158,18 +159,29 @@ func _gerar_coisas(lista_texturas: Array, quantidade: int, dist_min: float, spri
 			nova_decoracao.setup(textura_carregada, sprite_offset)
 
 		# Se for Árvore (ou outro tipo), usa o MÉTODO ANTIGO
+		# Se for Árvore (ou outro tipo), usa a CENA NOVA
 		else:
-			var novo_sprite = Sprite2D.new()
-			novo_sprite.texture = load(lista_texturas.pick_random())
-		
-			# === A CORREÇÃO MÁGICA DO Y-SORT (Método antigo) ===
-			novo_sprite.centered = false 
-			novo_sprite.position = nova_posicao
-			novo_sprite.offset = -sprite_offset 
+			if cena_arvore == null:
+				push_warning("Cena da Arvore não configurada!")
+				return
+
+			# 1. Instancia (cria) a cena da arvore
+			var nova_arvore = cena_arvore.instantiate()
 			
-		
-			novo_sprite.name = "%s_%s" % [nome, i] # Dá um nome (bom pra debugar)
-			vegetacao_container.add_child(novo_sprite)
+			# 2. Define a posição (os "pés") para a posição sorteada
+			nova_arvore.position = nova_posicao
+			nova_arvore.name = "%s_%s" % [nome, i] # Dá um nome (bom pra debugar)
+			
+			# 3. Adiciona à cena ANTES de configurar
+			vegetacao_container.add_child(nova_arvore)
+			
+			# 4. Carrega a textura que vamos usar
+			var textura_carregada = load(lista_texturas.pick_random())
+			
+			# 5. Chama o setup da arvore (que está no arvore.gd)
+			nova_arvore.setup(textura_carregada)
+			
+			
 func _encontrar_posicao_valida(distancia_minima_nova: float) -> Variant:
 	var nova_posicao: Vector2
 	var posicao_encontrada: bool = false

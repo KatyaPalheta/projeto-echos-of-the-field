@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://cfwfrtql8sweg"]
+[gd_scene load_steps=5 format=3 uid="uid://cfwfrtql8sweg"]
 
 [ext_resource type="Script" uid="uid://ckartikmn0soo" path="res://cenas/componente_decorcao.gd" id="1_xp3o5"]
 [ext_resource type="PackedScene" uid="uid://duda7k6abdii8" path="res://cenas/decoracao_rasteira.tscn" id="2_7axnj"]
+[ext_resource type="PackedScene" uid="uid://82800h0evf7w" path="res://cenas/arvore.tscn" id="3_2psh3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ncerp"]
 size = Vector2(16, 16)
@@ -24,6 +25,7 @@ min_arvores = 4
 max_arvores = 8
 distancia_min_arvores = 20.0
 cena_decoracao_rasteira = ExtResource("2_7axnj")
+cena_arvore = ExtResource("3_2psh3")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(8, 8)
