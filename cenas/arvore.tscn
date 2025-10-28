@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://ba1gb7v8q76xf" path="res://cenas/arvore.gd" id="1_0a2hk"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jggx3"]
-size = Vector2(12, 6)
+size = Vector2(8, 16)
 
 [node name="Arvore" type="StaticBody2D"]
 y_sort_enabled = true
@@ -14,4 +14,5 @@ centered = false
 offset = Vector2(-16, -48)
 
 [node name="ColisaoTronco" type="CollisionShape2D" parent="."]
+position = Vector2(0, -8)
 shape = SubResource("RectangleShape2D_jggx3")
