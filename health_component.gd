@@ -18,8 +18,9 @@ var vida_atual: float
 func _ready() -> void:
 	vida_atual = vida_maxima
 
+
 # Função principal para causar dano
-func tomar_dano(dano: float) -> void:
+func sofrer_dano(dano: float) -> void:
 	# Não faz nada se já estiver morto
 	if vida_atual == 0.0:
 		return
@@ -67,7 +68,7 @@ func _mostrar_dano_flutuante(dano: float) -> void:
 	# 3. Adiciona o "numerozinho" à cena principal
 	#    Usamos get_tree().current_scene para garantir que ele fique
 	#    "por cima" de tudo e não seja filho do Player/Slime.
-	get_tree().current_scene.add_child(dano_label)
+	get_tree().current_scene.call_deferred("add_child", dano_label)
 	
 	# 4. Chama a função setup() que criamos no dano_flutuante.gd
 	#    e passa o dano e a posição do "dono"
