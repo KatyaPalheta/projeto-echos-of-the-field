@@ -14,7 +14,7 @@ class_name ComponenteDecoracao
 @export_range(0.0, 1.0) var chance_so_flores: float = 0.2 # 20%
 # O resto (30%) será Arvores + Flores
 
-@export var area_de_espalhamento: Rect2 = Rect2(-8, -8, 32, 32)
+@export var area_de_espalhamento: Rect2 = Rect2(0, 0, 16, 16)
 @export var max_tentativas_pos: int = 20
 
 ## --- Configurações das Flores ---
