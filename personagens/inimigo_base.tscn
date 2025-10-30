@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://bmwqf41mnett8" path="res://personagens/inimigo_base.gd" id="1_uejkv"]
 [ext_resource type="Script" uid="uid://poeui62rhe38" path="res://personagens/health_component.gd" id="2_spr2x"]
 
-[node name="InimigoBase" type="CharacterBody2D"]
+[node name="InimigoBase" type="CharacterBody2D" groups=["damageable_enemy"]]
 script = ExtResource("1_uejkv")
 
 [node name="Textura" type="Sprite2D" parent="."]

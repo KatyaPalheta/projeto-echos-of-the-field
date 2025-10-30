@@ -86,3 +86,17 @@ func _on_double_click_timer_timeout() -> void:
 
 	# Reseta o contador
 	attack_click_count = 0
+
+
+func _on_hit_box_espada_body_entered(body: Node2D) -> void:
+	# 1. Checa se o que acertamos tem o "adesivo" que criamos
+	if body.is_in_group("damageable_enemy"):
+		
+		# 2. Calcula a direção do ataque (do player para o inimigo)
+		var direcao_do_ataque = (body.global_position - global_position).normalized()
+		
+		# 3. Chama a função que JÁ EXISTE no inimigo!
+		#    (Usamos 25.0 como dano de exemplo)
+		body.sofrer_dano(25.0, direcao_do_ataque)
+		
+		print("ACERTEI O INIMIGO: ", body.name)
