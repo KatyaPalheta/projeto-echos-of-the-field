@@ -8,6 +8,7 @@ extends Node2D
 # --- Cena de Decoração ---
 @export var cena_decoracao: PackedScene
 @export var player_node: Node2D
+@export var cena_slime_teste: PackedScene
 
 # --- Lista de Máscaras ---
 @export var lista_mascaras: Array[String] = [
@@ -153,8 +154,27 @@ Verifique suas máscaras.")
 			player_node.global_position = Vector2.ZERO # Coloca no (0,0) como fallback
 	else:
 		push_warning("Nó do Player não foi configurado no GerenciadorDeTerreno!")
+		
+# --- SPAWN DO SLIME (PARA TESTE) ---
+# Se encontramos um spawn e a cena do slime foi conectada...
+	if spawn_point_encontrado and cena_slime_teste != null:
 
-# FIM DA FUNÇÃO _ready()
+		# 1. Cria (instancia) a cena do slime
+		var new_slime = cena_slime_teste.instantiate()
+
+		# 2. Posição: Pega o spawn do player e joga 50 pixels pro lado
+		#    (Usamos a spawn_position que o script já encontrou!)
+		var slime_pos = spawn_position + Vector2(8, 8) + Vector2(50, 0)
+
+		# 3. Define a posição do slime
+		new_slime.global_position = slime_pos
+
+		# 4. Adiciona o slime à cena
+		add_child(new_slime)
+
+		print("Slime de teste spawnado em: ", slime_pos)
+	# --- FIM DO SPAWN DO SLIME ---
+	# FIM DA FUNÇÃO _ready()
 
 
 # --- Função "Helper" _plantar_decoracao (VAI AQUI!) ---

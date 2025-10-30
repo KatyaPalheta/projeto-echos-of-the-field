@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://cxxjg153b16x5"]
+[gd_scene load_steps=5 format=3 uid="uid://cxxjg153b16x5"]
 
 [ext_resource type="PackedScene" uid="uid://bottcc3i4efoa" path="res://cenas/gerenciador_de_terreno.tscn" id="1_b5r0v"]
 [ext_resource type="PackedScene" uid="uid://cnhkqju6duija" path="res://personagens/player.tscn" id="2_7cgj1"]
 [ext_resource type="PackedScene" uid="uid://cfwfrtql8sweg" path="res://cenas/componente_decorcao.tscn" id="2_y68d4"]
+[ext_resource type="PackedScene" uid="uid://c1oknh4ou4w5u" path="res://personagens/smile.tscn" id="4_y68d4"]
 
 [node name="GameLevel" type="Node2D"]
 y_sort_enabled = true
@@ -11,6 +12,7 @@ y_sort_enabled = true
 y_sort_enabled = true
 cena_decoracao = ExtResource("2_y68d4")
 player_node = NodePath("../Player")
+cena_slime_teste = ExtResource("4_y68d4")
 chance_decoracao = 0.069
 
 [node name="Player" parent="." instance=ExtResource("2_7cgj1")]

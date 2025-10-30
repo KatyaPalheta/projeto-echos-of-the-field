@@ -1,5 +1,6 @@
 extends "res://personagens/personagem_base.gd"
 @onready var health_component: HealthComponent = $HealthComponent
+@onready var double_click_timer: Timer = $DoubleClickTimer
 var is_in_action: bool = false
 var attack_click_count: int = 0
 
@@ -14,7 +15,7 @@ func _on_morte():
 	# parar o movimento e desabilitar colisões.
 
 # Pegue o @onready var do Timer que você acabou de criar
-@onready var double_click_timer: Timer = $DoubleClickTimer
+
 
 func _physics_process(delta):
 
@@ -65,7 +66,9 @@ func _on_animation_finished(anim_name: String):
 	
 	# Checa se a animação que terminou é uma de "ação"
 	# (Usando os nomes que você me passou!)
-	if anim_name.begins_with("espada_") or anim_name.begins_with("magia_cura_"):
+	if anim_name.begins_with("espada_") or \
+   anim_name.begins_with("magia_cura_") or \
+   anim_name.begins_with("espada_dupla_"):
 		
 		is_in_action = false # DESTRAVA o player
 
