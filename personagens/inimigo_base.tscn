@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3 uid="uid://dn2pbvh8nkfeo"]
+
+[ext_resource type="Script" uid="uid://bmwqf41mnett8" path="res://personagens/inimigo_base.gd" id="1_uejkv"]
+[ext_resource type="Script" uid="uid://poeui62rhe38" path="res://personagens/health_component.gd" id="2_spr2x"]
+
+[node name="InimigoBase" type="CharacterBody2D"]
+script = ExtResource("1_uejkv")
+
+[node name="Textura" type="Sprite2D" parent="."]
+
+[node name="Animacao" type="AnimationPlayer" parent="."]
+
+[node name="Colisao" type="CollisionShape2D" parent="."]
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("2_spr2x")
+metadata/_custom_type_script = "uid://poeui62rhe38"
+
+[node name="AudioHit" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioMorrer" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioAtaque" type="AudioStreamPlayer2D" parent="."]

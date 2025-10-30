@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bklkio2ubbtxr"]
 
-[ext_resource type="Script" uid="uid://c82fbk31di8g3" path="res://dano_flutuante.gd" id="1_mhjkb"]
+[ext_resource type="Script" uid="uid://c82fbk31di8g3" path="res://personagens/dano_flutuante.gd" id="1_mhjkb"]
 
 [node name="DanoFlutuante" type="Label"]
 offset_right = 28.0
