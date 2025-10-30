@@ -1,5 +1,8 @@
 extends InimigoBase # <-- HERDA DO NOSSO MOLDE!
 
+@export_category("Randomização do Slime")
+@export var lista_texturas: Array[Texture2D]
+
 # --- Variáveis do Pulo do Slime ---
 @export var jump_cooldown: float = 3.0   # Tempo parado
 @export var jump_duration: float = 0.5   # Tempo pulando
@@ -8,8 +11,16 @@ extends InimigoBase # <-- HERDA DO NOSSO MOLDE!
 
 func _ready():
 	super() # <-- IMPORTANTE: Chama o _ready() do inimigo_base
+
+	# --- LÓGICA DO SORTEIO (SUA IDEIA CORRETA!) ---
+	# Sorteia qual spritesheet completo vamos usar
+	if not lista_texturas.is_empty():
+		# 'textura' é a var que herdamos do 'inimigo_base'!
+		textura.texture = lista_texturas.pick_random()
+	# --- FIM DO SORTEIO ---
+
 	current_state = State.IDLE
-	jump_timer.start(jump_cooldown) # Começa o timer para o primeiro pulo
+	jump_timer.start(jump_cooldown) # Começa o timer para o primeiro puloo
 
 func _physics_process(delta):
 	# A IA principal do Slime (pular e parar)

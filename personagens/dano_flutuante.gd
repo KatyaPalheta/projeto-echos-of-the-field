@@ -4,7 +4,7 @@ var dano_recebido: float = 0.0
 
 func _ready() -> void:
 	# Define o texto com base no dano
-	text = str(dano_recebido)
+	text = str(int(dano_recebido))
 	
 	# Pega a posição inicial
 	var pos_inicial = global_position

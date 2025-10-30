@@ -1,11 +1,23 @@
-[gd_scene load_steps=25 format=3 uid="uid://c1oknh4ou4w5u"]
+[gd_scene load_steps=37 format=3 uid="uid://c1oknh4ou4w5u"]
 
 [ext_resource type="PackedScene" uid="uid://dn2pbvh8nkfeo" path="res://personagens/inimigo_base.tscn" id="1_askva"]
 [ext_resource type="Texture2D" uid="uid://dde51emhjoogr" path="res://assets/personagens/inimigos/Slime-sheet-purple.png" id="2_bh3cl"]
 [ext_resource type="Script" uid="uid://mce6nedly6k7" path="res://smile.gd" id="2_bm8g4"]
 [ext_resource type="AudioStream" uid="uid://b15kg4vj1ssjk" path="res://assets/personagens/inimigos/audios/hit_monstro.MP3" id="3_5nmoa"]
+[ext_resource type="Texture2D" uid="uid://dno7kq7pegxq0" path="res://assets/personagens/inimigos/Big Slime_blue.png" id="3_e4jyl"]
 [ext_resource type="AudioStream" uid="uid://bn4apggykod4c" path="res://assets/personagens/inimigos/audios/passo_jelli.MP3" id="3_p3tmj"]
 [ext_resource type="AudioStream" uid="uid://lne3yx1bmgqg" path="res://assets/personagens/inimigos/audios/morte_jelli.MP3" id="4_016n7"]
+[ext_resource type="Texture2D" uid="uid://bvnqlw1m8kbab" path="res://assets/personagens/inimigos/Big Slime_golden.png" id="4_upo0c"]
+[ext_resource type="Texture2D" uid="uid://brpqeioail1c" path="res://assets/personagens/inimigos/Big Slime_gren.png" id="5_em6nw"]
+[ext_resource type="Texture2D" uid="uid://cw1s2odn2goe5" path="res://assets/personagens/inimigos/Big Slime_pink.png" id="6_h08k8"]
+[ext_resource type="Texture2D" uid="uid://dth146qn0uwvw" path="res://assets/personagens/inimigos/Big Slime_pur.png" id="7_xm1bf"]
+[ext_resource type="Texture2D" uid="uid://6sh2h24lnsav" path="res://assets/personagens/inimigos/Big Slime_rose.png" id="8_o3bfn"]
+[ext_resource type="Texture2D" uid="uid://uhvrbmmn2w3i" path="res://assets/personagens/inimigos/Slimepur.png" id="10_g5hna"]
+[ext_resource type="Texture2D" uid="uid://cvaeua8t1w2nf" path="res://assets/personagens/inimigos/Slime_blue.png" id="11_ublk7"]
+[ext_resource type="Texture2D" uid="uid://nqsrgaygt7t2" path="res://assets/personagens/inimigos/Slime_golden.png" id="12_w0jvu"]
+[ext_resource type="Texture2D" uid="uid://b4foga2gx05cn" path="res://assets/personagens/inimigos/Slime_green.png" id="13_orpia"]
+[ext_resource type="Texture2D" uid="uid://bf1u766ck7plf" path="res://assets/personagens/inimigos/Slime_pink.png" id="14_txwit"]
+[ext_resource type="Texture2D" uid="uid://c82ptb3usoxf4" path="res://assets/personagens/inimigos/Slime_rose.png" id="15_a6wmc"]
 
 [sub_resource type="Animation" id="Animation_p3tmj"]
 length = 0.001
@@ -469,14 +481,15 @@ _data = {
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bm8g4"]
+size = Vector2(10, 10)
 
 [node name="Smile" instance=ExtResource("1_askva")]
 script = ExtResource("2_bm8g4")
+lista_texturas = Array[Texture2D]([ExtResource("3_e4jyl"), ExtResource("4_upo0c"), ExtResource("5_em6nw"), ExtResource("6_h08k8"), ExtResource("7_xm1bf"), ExtResource("8_o3bfn"), ExtResource("2_bh3cl"), ExtResource("10_g5hna"), ExtResource("11_ublk7"), ExtResource("12_w0jvu"), ExtResource("13_orpia"), ExtResource("14_txwit"), ExtResource("15_a6wmc")])
 jump_cooldown = 3.0
 jump_duration = 0.5
 
 [node name="Textura" parent="." index="0"]
-texture = ExtResource("2_bh3cl")
 hframes = 4
 vframes = 15
 
