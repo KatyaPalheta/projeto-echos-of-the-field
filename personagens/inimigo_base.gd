@@ -10,11 +10,12 @@ class_name InimigoBase # <-- Muito útil para o futuro!
 # Vamos usar isso para controlar (parado, andando, atacando, morrendo)
 enum State { IDLE, WANDER, CHASE, ATTACK, HURT, DEAD }
 var current_state: State = State.IDLE
+var face_direction: Vector2 = Vector2.DOWN
 
 # --- Stats Base (cada inimigo pode mudar isso) ---
 @export var move_speed: float = 50.0
 @export var attack_damage: float = 10.0
-@export var knockback_force: float = 120.0
+@export var knockback_force: float = 400.0
 
 func _ready():
 	# Conecta o sinal de morte do HealthComponent 
@@ -50,18 +51,13 @@ func sofrer_dano(dano: float, direcao_do_ataque: Vector2):
 
 	current_state = State.HURT
 	animacao.play("hurt" + anim_sufixo) # Ex: "hurt_p"
+	velocity = direcao_do_ataque * knockback_force
 
 
 # Esta função é chamada pelo SINAL do HealthComponent
 func _on_morte():
 	current_state = State.DEAD
-
-	# --- LÓGICA ATUALIZADA ---
-	# Pega o sufixo da direção em que o inimigo estava olhando
-	# (Vamos ter que adicionar uma var _face_direction como no player)
-	# POR ENQUANTO, vamos só usar a de frente:
-
-	animacao.play("dead_f") # <-- VAI TOCAR SÓ A "dead_f" POR ENQUANTO
+	animacao.play("dead" + _get_suffix_from_direction(face_direction))
 
 	# (Aqui vamos desativar colisões e fazer ele sumir)
 func _get_suffix_from_direction(direction: Vector2) -> String:

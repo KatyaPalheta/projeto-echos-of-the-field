@@ -7,6 +7,13 @@ extends InimigoBase # <-- HERDA DO NOSSO MOLDE!
 @export var jump_cooldown: float = 3.0   # Tempo parado
 @export var jump_duration: float = 0.5   # Tempo pulando
 
+var chosen_jump_direction: Vector2 = Vector2.RIGHT # Guarda a direção do pulo
+var directions_list: Array[Vector2] = [
+	Vector2.UP, 
+	Vector2.DOWN, 
+	Vector2.LEFT, 
+	Vector2.RIGHT
+]
 @onready var jump_timer: Timer = $JumpTimer # (Vamos criar esse Timer)
 
 func _ready():
@@ -25,23 +32,31 @@ func _ready():
 func _physics_process(delta):
 	# A IA principal do Slime (pular e parar)
 
-	# Se estiver tomando dano, morto, ou atacando, não faz nada
-	if current_state == State.HURT or \
-	   current_state == State.DEAD or \
-	   current_state == State.ATTACK:
+	# --- LÓGICA DE ESTADO (HURT/DEAD/ATTACK) ---
+	# (Essa parte de cima, que checa HURT/DEAD/ATTACK, continua igual)
+	if current_state == State.DEAD or current_state == State.ATTACK:
 		velocity = Vector2.ZERO
 		move_and_slide()
 		return
+	if current_state == State.HURT:
+		velocity = velocity.move_toward(Vector2.ZERO, 1500 * delta)
+		move_and_slide()
+		return 
 
-	# Roda a lógica do estado atual
+	# --- LÓGICA DE ANIMAÇÃO (A PARTE NOVA!) ---
+	# Pega o sufixo da direção que estamos olhando (que está na "memória")
+	# Nós herdamos a função _get_suffix_from_direction do 'inimigo_base'!
+	var anim_sufixo = _get_suffix_from_direction(face_direction)
+
+	# --- LÓGICA DE MOVIMENTO (Atualizada) ---
 	match current_state:
 		State.IDLE:
 			velocity = velocity.move_toward(Vector2.ZERO, 100 * delta) # Freia
-			animacao.play("idle_f") # (Vamos ajustar a direção depois)
+			animacao.play("idle" + anim_sufixo) # <-- CORRIGIDO!
 
 		State.WANDER: # WANDER = "Pular"
-			velocity = velocity.move_toward(Vector2(100, 0), 10) # Pula (direção provisória)
-			animacao.play("jump_f") # (Vamos ajustar a direção depois)
+			velocity = velocity.move_toward(chosen_jump_direction * move_speed, 100 * delta) 
+			animacao.play("jump" + anim_sufixo) # <-- CORRIGIDO!
 
 	move_and_slide()
 
@@ -51,6 +66,8 @@ func _on_jump_timer_timeout():
 	if current_state == State.IDLE:
 		# Estava parado? Começa a pular.
 		current_state = State.WANDER
+		chosen_jump_direction = directions_list.pick_random() # SORTEIA A DIREÇÃO!
+		face_direction = chosen_jump_direction
 		jump_timer.start(jump_duration)
 	elif current_state == State.WANDER:
 		# Estava pulando? Começa a parar.

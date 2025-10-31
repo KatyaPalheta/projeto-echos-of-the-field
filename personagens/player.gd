@@ -100,6 +100,6 @@ func _on_hit_box_espada_body_entered(body: Node2D) -> void:
 		
 		# 3. Chama a função que JÁ EXISTE no inimigo!
 		#    (Usamos 25.0 como dano de exemplo)
-		body.sofrer_dano(100.0, direcao_do_ataque)
+		body.sofrer_dano(25.0, direcao_do_ataque)
 		
 		print("ACERTEI O INIMIGO: ", body.name)
