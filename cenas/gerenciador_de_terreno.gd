@@ -8,7 +8,8 @@ extends Node2D
 # --- Cena de Decoração ---
 @export var cena_decoracao: PackedScene
 @export var player_node: Node2D
-@export var cena_slime_teste: PackedScene
+@export var cena_slime: PackedScene
+@export_range(0.0, 1.0) var chance_inimigo: float = 0.05 # <-- 5% de chance por tile
 
 # --- Lista de Máscaras ---
 @export var lista_mascaras: Array[String] = [
@@ -101,6 +102,10 @@ func _ready() -> void:
 					if randf() < chance_decoracao:
 						# Chama a função helper que está LÁ EMBAIXO
 						_plantar_decoracao(coords)
+					
+					if cena_slime != null and randf() < chance_inimigo:
+						_plantar_inimigo(coords)
+					
 
 				# --- A LÓGICA DO SPAWN SEGURO ---
 				if e_terra_firme and not spawn_point_encontrado:
@@ -155,27 +160,19 @@ Verifique suas máscaras.")
 	else:
 		push_warning("Nó do Player não foi configurado no GerenciadorDeTerreno!")
 		
-# --- SPAWN DO SLIME (PARA TESTE) ---
-# Se encontramos um spawn e a cena do slime foi conectada...
-	if spawn_point_encontrado and cena_slime_teste != null:
+# --- NOVA FUNÇÃO HELPER ---
+func _plantar_inimigo(coords_do_tile: Vector2i) -> void:
+	# 1. Cria (instancia) a cena do slime
+	var new_slime = cena_slime.instantiate()
 
-		# 1. Cria (instancia) a cena do slime
-		var new_slime = cena_slime_teste.instantiate()
+	# 2. Calcula a posição global (no mundo) do canto do tile
+	var pos_global_tile = land_layer.map_to_local(coords_do_tile)
 
-		# 2. Posição: Pega o spawn do player e joga 50 pixels pro lado
-		#    (Usamos a spawn_position que o script já encontrou!)
-		var slime_pos = spawn_position + Vector2(8, 8) + Vector2(50, 0)
+	# 3. Define a posição do novo slime (centralizado no tile)
+	new_slime.global_position = pos_global_tile + Vector2(8, 8) 
 
-		# 3. Define a posição do slime
-		new_slime.global_position = slime_pos
-
-		# 4. Adiciona o slime à cena
-		add_child(new_slime)
-
-		print("Slime de teste spawnado em: ", slime_pos)
-	# --- FIM DO SPAWN DO SLIME ---
-	# FIM DA FUNÇÃO _ready()
-
+	# 4. Adiciona o novo slime à cena
+	add_child(new_slime)
 
 # --- Função "Helper" _plantar_decoracao (VAI AQUI!) ---
 func _plantar_decoracao(coords_do_tile: Vector2i) -> void:

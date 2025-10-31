@@ -22,14 +22,10 @@ func _ready():
 	# (Todo inimigo agora pode morrer!)
 	health_component.morreu.connect(_on_morte)
 	animacao.animation_finished.connect(_on_animation_finished)
+	set_physics_process(false)
+	animacao.set_process(false)
+	#visible = false
 
-# --- Funções de Estado (vamos preencher depois) ---
-
-func _physics_process(delta):
-	# Aqui vai a lógica de movimento (IA)
-	pass
-
-# --- Funções de Dano e Morte ---
 
 # Esta é a função que o player vai chamar para causar dano
 func sofrer_dano(dano: float, direcao_do_ataque: Vector2):
@@ -91,3 +87,19 @@ func _on_animation_finished(anim_name: String):
 	if anim_name.begins_with("hurt_"):
 		# ...então volte ao estado normal (parado)
 		current_state = State.IDLE
+
+
+func _on_visible_on_screen_notifier_2d_screen_entered() -> void:
+	# Ativa a física e a IA
+	set_physics_process(true)
+	# Ativa o processamento do AnimationPlayer
+	animacao.set_process(true) # Replace with function body.
+	#visible = true
+
+
+func _on_visible_on_screen_notifier_2d_screen_exited() -> void:
+	# Desativa a física e a IA (ECONOMIZA MUITO CPU!)
+	set_physics_process(false)
+	# Pausa o processamento do AnimationPlayer (ECONOMIZA MAIS CPU!)
+	animacao.set_process(false) # Replace with function body.
+	#visible = false

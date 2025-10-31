@@ -72,4 +72,4 @@ func _on_jump_timer_timeout():
 	elif current_state == State.WANDER:
 		# Estava pulando? Começa a parar.
 		current_state = State.IDLE
-		jump_timer.start(jump_cooldown)
+		jump_timer.start(randf_range(0.1, jump_cooldown))
