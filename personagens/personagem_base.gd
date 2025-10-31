@@ -11,6 +11,7 @@ var _is_moving: bool = false
 @export var _animation: AnimationPlayer 
 
 @onready var _sprite = $textura 
+@onready var _hitbox_espada = $textura/HitBoxEspada
 
 # --- NOSSOS NÓS DE ÁUDIO ---
 @onready var audio_passos_grama: AudioStreamPlayer2D = $AudioPassosGrama
@@ -105,10 +106,13 @@ func _physics_process(_delta: float) -> void:
 			_face_direction = 2 
 			if velocity.x < 0:
 				_sprite.flip_h = true 
+				_hitbox_espada.scale.x = -1
 			else:
 				_sprite.flip_h = false 
+				_hitbox_espada.scale.x = 1
 		elif _abs_vel_y > _abs_vel_x and _abs_vel_y > 0.01:
 			_sprite.flip_h = false 
+			_hitbox_espada.scale.x = 1
 			if velocity.y > 0:
 				_face_direction = 0 
 			else:
