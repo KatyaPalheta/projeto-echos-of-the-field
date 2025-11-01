@@ -1407,6 +1407,8 @@ pitch_scale = 1.14
 [node name="HealthComponent" type="Node" parent="." index="6"]
 script = ExtResource("6_jeibu")
 cena_dano_flutuante = ExtResource("7_pb42p")
+cor_dano_tomado = Color(1, 0.133333, 0.0901961, 1)
+cor_cura = Color(0.133333, 1, 0.184314, 1)
 metadata/_custom_type_script = "uid://poeui62rhe38"
 
 [node name="AudioEspada" type="AudioStreamPlayer2D" parent="." index="7"]

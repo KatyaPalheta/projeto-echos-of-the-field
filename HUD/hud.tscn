@@ -57,3 +57,13 @@ offset_right = 58.0
 offset_bottom = 10.0
 scale = Vector2(5, 5)
 texture = ExtResource("1_mi5n8")
+
+[node name="LogContainer" type="VBoxContainer" parent="."]
+anchors_preset = -1
+anchor_right = 0.006
+anchor_bottom = 0.01
+offset_left = 48.0
+offset_top = 672.0
+offset_right = 80.32
+offset_bottom = 704.32
+alignment = 2

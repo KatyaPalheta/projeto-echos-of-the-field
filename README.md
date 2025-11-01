@@ -42,3 +42,4 @@ Historico de Atualizações e alterações:
 47 - corrigod bugs visuais de proporção da barra de progressão do HP
 49 - agora o player executa animação de morte ao zerar seu HP
 50 - agora os inimigos correm pra fora da tela quando o player morre 
+51 - agora a cor do numerozinho de dano, cura e ataque são diferentes um do outro

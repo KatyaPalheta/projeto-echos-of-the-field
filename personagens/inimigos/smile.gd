@@ -110,7 +110,7 @@ func _physics_process(delta):
 			# O timer foi herdado do inimigo_base!
 			if attack_timer.is_stopped():
 				# Se o timer está parado, podemos atacar!
-				print("SLIME ATACOU!")
+				Logger.log("SLIME ATACOU!")
 				
 				# Pega a direção e toca a animação de ataque
 				anim_sufixo = _get_suffix_from_direction(face_direction)
@@ -133,6 +133,23 @@ func _physics_process(delta):
 				animacao.play("jump" + anim_sufixo)
 				# Para o timer de "WANDER" para não parar
 				jump_timer.stop()
+		# --- LÓGICA DE FLIP (CORREÇÃO DO BUG "CORRER DE COSTAS") ---
+	# Nós pegamos a variável 'textura' que foi herdada do 'inimigo_base.gd'
+	
+	# 'face_direction' é a variável que já estamos atualizando
+	# nos estados CHASE, WANDER, etc.
+
+	# Se o sprite padrão olha para a ESQUERDA:
+	if face_direction.x > 0.1:
+		# Se a direção X é positiva (indo para a DIREITA), flipa o sprite
+		textura.flip_h = true
+	elif face_direction.x < -0.1:
+		# Se a direção X é negativa (indo para a ESQUERDA), usa o sprite normal
+		textura.flip_h = false
+	
+	# (Se face_direction.x for 0, ele mantém o último flip, 
+	#  o que é bom para quando ele para e olha para cima/baixo)
+
 	move_and_slide()
 
 

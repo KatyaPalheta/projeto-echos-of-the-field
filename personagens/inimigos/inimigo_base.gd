@@ -80,7 +80,7 @@ func _on_animation_finished(anim_name: String):
 	if current_state == State.DEAD:
 		if anim_name.begins_with("dead_"):
 			queue_free()
-			print("Smile morreu!") # Se autodestrói
+			Logger.log("Smile morreu!") # Se autodestrói
 		return # Ignora todo o resto (como o "hurt_")
 
 	# --- Se ele NÃO ESTIVER MORTO, continua normal ---

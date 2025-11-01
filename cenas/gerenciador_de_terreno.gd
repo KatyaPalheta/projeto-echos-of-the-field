@@ -24,6 +24,7 @@ extends Node2D
 @export var cor_agua: Color = Color.BLUE
 @export var cor_grama: Color = Color.GREEN
 @export var cor_areia: Color = Color.SANDY_BROWN
+@export var cor_spawn: Color = Color.RED
 
 # --- Configuração do TileSet ---
 @export var id_fonte_tileset: int = 0
@@ -45,7 +46,7 @@ var spawn_position: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 
-	print("Fase 1: Iniciando Geração (Com Spawn Seguro!)...")
+	Logger.log("Fase 1: Iniciando Geração (Com Spawn Seguro!)...")
 
 	# --- PASSO 0: ESCOLHER E CARREGAR A MÁSCARA ---
 	if lista_mascaras.is_empty():
@@ -55,10 +56,10 @@ func _ready() -> void:
 	var caminho_mascara: String
 	if mascara_para_usar_index >= 0 and mascara_para_usar_index < lista_mascaras.size():
 		caminho_mascara = lista_mascaras[mascara_para_usar_index]
-		print("Usando máscara específica: ", caminho_mascara)
+		Logger.log("Usando máscara específica: %s" % caminho_mascara)
 	else:
 		caminho_mascara = lista_mascaras.pick_random() # Sorteia!
-		print("Sorteando máscara: ", caminho_mascara)
+		Logger.log("Sorteando máscara: %s" % caminho_mascara)
 
 	var mask_texture: Texture2D = load(caminho_mascara)
 	if mask_texture == null:
@@ -71,7 +72,7 @@ func _ready() -> void:
 		return
 
 	tamanho_mundo = Vector2i(mask_image.get_width(), mask_image.get_height())
-	print("Tamanho do mundo ajustado para o da máscara: ", tamanho_mundo)
+	Logger.log("Tamanho do mundo ajustado para o da máscara: %s" % tamanho_mundo)
 	# --- FIM PASSO 0 ---
 
 	# --- PASSO 1: PLANEJAMENTO (LENDO AS CORES E ACHANDO O SPAWN!) ---
@@ -83,38 +84,38 @@ func _ready() -> void:
 	spawn_point_encontrado = false
 	spawn_position = Vector2.ZERO
 
+	# ... (código de carregar a máscara) ...
+
 	for x in range(tamanho_mundo.x):
 		for y in range(tamanho_mundo.y):
 			var coords = Vector2i(x, y)
 			var pixel_color: Color = mask_image.get_pixel(x, y)
 
-			if pixel_color.is_equal_approx(cor_agua):
-				coords_agua.append(coords)
-			else: # Se não for água, é terra firme (grama OU areia)
-				var e_terra_firme = false # Flag para saber se pintamos algo aqui
-
-				if pixel_color.is_equal_approx(cor_areia):
-					coords_areia.append(coords)
-					e_terra_firme = true
-				elif pixel_color.is_equal_approx(cor_grama):
-					coords_grama.append(coords)
-					e_terra_firme = true
-					if randf() < chance_decoracao:
-						# Chama a função helper que está LÁ EMBAIXO
-						_plantar_decoracao(coords)
-					
-					if cena_slime != null and randf() < chance_inimigo:
-						_plantar_inimigo(coords)
-					
-
-				# --- A LÓGICA DO SPAWN SEGURO ---
-				if e_terra_firme and not spawn_point_encontrado:
-					spawn_position = land_layer.map_to_local(coords) # Posição (0,0) do tile
+			# --- LÓGICA ATUALIZADA ---
+			
+			# 1. Checa o SPAWN PRIMEIRO (o ponto vermelho)
+			if pixel_color.is_equal_approx(cor_spawn):
+				# É o spawn! Pinta AREIA (como você sugeriu) e salva a posição
+				coords_areia.append(coords)
+				
+				# Se já não achamos um spawn, este é o principal!
+				if not spawn_point_encontrado:
+					spawn_position = land_layer.map_to_local(coords)
 					spawn_point_encontrado = true
-					print("Primeiro ponto de spawn seguro encontrado em: ", coords) # Debug
-				# --- FIM DA LÓGICA DO SPAWN ---
+					print("Ponto de SPAWN DESIGNADO encontrado em: ", coords)
+			
+			# 2. Se não for spawn, checa o resto
+			elif pixel_color.is_equal_approx(cor_agua):
+				coords_agua.append(coords)
+			elif pixel_color.is_equal_approx(cor_areia):
+				coords_areia.append(coords)
+			elif pixel_color.is_equal_approx(cor_grama):
+				coords_grama.append(coords)
+				# ... (lógica de plantar decoração e inimigo) ...
+			
+			# (A lógica antiga do "primeiro ponto seguro" foi REMOVIDA!)
 
-	print("Planejamento Concluído. Desenhando o mapa...")
+	Logger.log("Planejamento Concluído. Desenhando o mapa...")
 
 	# --- PASSO 2: DESENHAR TUDO DE UMA VEZ (INVERTIDO!) ---
 	
@@ -133,7 +134,7 @@ func _ready() -> void:
 
 	# --- PASSO 3: LIMPAR OVERLAPS (AJUSTADO!) ---
 	# (Agora a gente apaga a água onde tem grama/areia)
-	print("Limpando overlaps...")
+	Logger.log("Limpando overlaps...")
 	for coords in coords_agua:
 		# Não precisamos mais apagar land/sand aqui, eles desenham por cima
 		pass 
@@ -152,7 +153,7 @@ func _ready() -> void:
 			if player_node.has_method("set_tilemap_refs"):
 				player_node.set_tilemap_refs(land_layer, sand_layer)
 			# --- FIM DA ADIÇÃO ---
-			print("Player posicionado no PRIMEIRO PONTO SEGURO em: ", player_node.global_position)
+			Logger.log("Player posicionado no PRIMEIRO PONTO SEGURO em: %s" % player_node.global_position)
 		else:
 			push_warning("Nenhum ponto de spawn seguro foi encontrado!Verifique suas máscaras.")
 			player_node.global_position = Vector2.ZERO # Coloca no (0,0) como fallback
@@ -197,7 +198,7 @@ func _plantar_decoracao(coords_do_tile: Vector2i) -> void:
 	add_child(nova_decoracao)
 # Esta função é chamada pelo SINAL do Player
 func _on_player_morreu() -> void:
-	print("GERENCIADOR: Player morreu! Mandando inimigos fugirem!")
+	Logger.log("GERENCIADOR: Player morreu! Mandando inimigos fugirem!")
 
 	# Pega a posição do player para os inimigos saberem de onde fugir
 	var player_pos = player_node.global_position

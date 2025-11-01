@@ -29,15 +29,33 @@ func _on_morte():
 	elif _face_direction == 2: anim_sufixo = "_p"
 
 	# 1. Toca a animação de morte
-	_animation.play("morte" + anim_sufixo) # <-- SUAS ANIMAÇÕES!
+	_animation.play("morte" + anim_sufixo)
+	
+	# (Seu som de morte já deve estar aqui, se não, adicione!)
+	# $AudioDead.play()
 
-	# 2. Desativa a colisão do player
-	$colisao.disabled = true # (Confirme se o nome é esse)
+	# 2. Desativa a colisão do player (JÁ CORRIGIDO)
+	$colisao.set_deferred("disabled", true)
 
 	# 3. Avisa ao JOGO INTEIRO que o player morreu
 	emit_signal("player_morreu")
 
-	print("O PLAYER MORREU (DE VERDADE AGORA)!")
+	# --- NOVO: O ZOOM DRAMÁTICO ---
+	
+	# 1. Cria um animador (Tween)
+	var tween = create_tween()
+	
+	# 2. Pede para ele animar a propriedade "zoom" da nossa câmera
+	#    (O $Camera2D precisa ter o nome exato da sua cena)
+	#    O 'Vector2(1.5, 1.5)' é o zoom (1.5x).
+	#    O '2.0' é a duração (2 segundos).
+	tween.tween_property($Camera2D, "zoom", Vector2(1.5, 1.5), 2.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	
+	# --- FIM DO ZOOM ---
+
+	Logger.log("O PLAYER MORREU (DE VERDA... Opa, só 'MORREU')!")
+	# (Mudei a mensagem do Logger para ficar mais curta!)
+	Logger.log("O PLAYER MORREU!")
 
 func _physics_process(delta):
 
@@ -64,12 +82,12 @@ func _physics_process(delta):
 		if Input.is_action_just_pressed("ataque_primario"): # LB + X
 			is_in_action = true
 			# _animation.play("arco_simples" + anim_sufixo)
-			print("Player usou ARCO SIMPLES!")
+			Logger.log("Player usou ARCO SIMPLES!")
 			
 		elif Input.is_action_just_pressed("ataque_especial"): # LB + Y
 			is_in_action = true
 			# _animation.play("arco_chuva" + anim_sufixo)
-			print("Player usou CHUVA DE FLECHA!")
+			Logger.log("Player usou CHUVA DE FLECHA!")
 
 	# Checa se o player está SEGURANDO o botão de MAGIA (RB)
 	elif Input.is_action_pressed("equip_magia"):
@@ -77,12 +95,12 @@ func _physics_process(delta):
 		if Input.is_action_just_pressed("ataque_primario"): # RB + X
 			is_in_action = true
 			# _animation.play("magia_fogo_simples" + anim_sufixo)
-			print("Player usou FOGO SIMPLES!")
+			Logger.log("Player usou FOGO SIMPLES!")
 			
 		elif Input.is_action_just_pressed("ataque_especial"): # RB + Y
 			is_in_action = true
 			# _animation.play("magia_fogo_master" + anim_sufixo)
-			print("Player usou FOGO MASTER BLASTER!")
+			Logger.log("Player usou FOGO MASTER BLASTER!")
 
 	# --- Ações Padrão (sem modificador pressionado) ---
 
@@ -91,19 +109,19 @@ func _physics_process(delta):
 		is_in_action = true 
 		_animation.play("magia_cura" + anim_sufixo) 
 		health_component.curar(25.0)
-		print("Player usou CURA!")
+		Logger.log("Player usou CURA!")
 
 	# Ação de Ataque Simples (Botão X) - AGORA É IMEDIATO!
 	elif Input.is_action_just_pressed("ataque_primario"):
 		is_in_action = true
 		_animation.play("espada" + anim_sufixo) # A animação de golpe simples
-		print("Player usou ATAQUE SIMPLES!")
+		Logger.log("Player usou ATAQUE SIMPLES!")
 
 	# Ação de Ataque Duplo/Especial (Botão Y) - AGORA É IMEDIATO!
 	elif Input.is_action_just_pressed("ataque_especial"):
 		is_in_action = true
 		_animation.play("espada_duplo" + anim_sufixo) # A animação de golpe duplo [cite: 53]
-		print("Player usou ATAQUE DUPLO!")
+		Logger.log("Player usou ATAQUE DUPLO!")
 
 func _on_animation_finished(anim_name: String):
 	
@@ -132,7 +150,7 @@ func _on_hit_box_espada_body_entered(body: Node2D) -> void:
 		# 3. Chama a função que JÁ EXISTE no inimigo!
 		body.sofrer_dano(25.0, direcao_do_ataque)
 		
-		print("ACERTEI O INIMIGO: ", body.name)
+		Logger.log("ACERTEI O INIMIGO: %s" % body.name)
 func receber_dano_do_inimigo(dano: float, direcao_do_ataque: Vector2):
 	# Se já estivermos mortos ou no meio de uma ação (como rolar, no futuro)
 	if health_component.vida_atual == 0.0 or is_in_action:

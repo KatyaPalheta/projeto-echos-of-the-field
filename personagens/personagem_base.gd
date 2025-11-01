@@ -139,7 +139,13 @@ func _physics_process(_delta: float) -> void:
 		2: 
 			_target_anim_name += "_p"
 	
-	if _animation.current_animation != _target_anim_name:
+	# Esta checagem agora impede o "idle" de interromper uma "ação"
+	if _animation.current_animation != _target_anim_name and \
+	   not _animation.current_animation.begins_with("espada_") and \
+	   not _animation.current_animation.begins_with("magia_cura_") and \
+	   not _animation.current_animation.begins_with("hurt_") and \
+	   not _animation.current_animation.begins_with("morte_"):
+		
 		_animation.play(_target_anim_name)
 
 # --- FUNÇÃO DE ÁUDIO (Exatamente como antes) ---
