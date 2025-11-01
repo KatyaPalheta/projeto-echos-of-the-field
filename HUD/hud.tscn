@@ -1,3 +1,59 @@
-[gd_scene format=3 uid="uid://8q4xf32uui6"]
+[gd_scene load_steps=9 format=3 uid="uid://8q4xf32uui6"]
+
+[ext_resource type="Texture2D" uid="uid://ch1u4sdlfylev" path="res://HUD/healt.png" id="1_mi5n8"]
+[ext_resource type="Script" uid="uid://cmqp1qwjheqk1" path="res://HUD/hud.gd" id="1_ncsg0"]
+[ext_resource type="Texture2D" uid="uid://6gby4vlt57uu" path="res://HUD/vida2.png" id="2_ncsg0"]
+[ext_resource type="Texture2D" uid="uid://dp8t3ri42hs7b" path="res://HUD/vida 1.png" id="3_6dvid"]
+[ext_resource type="Texture2D" uid="uid://cy4vboa0yb43m" path="res://HUD/energy.png" id="3_tnm0g"]
+[ext_resource type="Texture2D" uid="uid://cor8kf10wfdmw" path="res://HUD/energy2.png" id="4_ncsg0"]
+[ext_resource type="Texture2D" uid="uid://dqxxu5t6l87rx" path="res://HUD/mana.png" id="5_6dvid"]
+[ext_resource type="Texture2D" uid="uid://cy1j1k8erc6xs" path="res://HUD/mana2.png" id="6_y0nqa"]
 
 [node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_ncsg0")
+
+[node name="BarraVida" type="TextureProgressBar" parent="."]
+offset_left = 30.0
+offset_top = 30.0
+offset_right = 59.0
+offset_bottom = 35.0
+scale = Vector2(5, 4.925)
+nine_patch_stretch = true
+texture_under = ExtResource("2_ncsg0")
+texture_progress = ExtResource("3_6dvid")
+
+[node name="BarraEnergia" type="TextureProgressBar" parent="."]
+visible = false
+offset_left = 10.0
+offset_top = 60.0
+offset_right = 58.0
+offset_bottom = 100.0
+scale = Vector2(5, 5)
+texture_under = ExtResource("3_tnm0g")
+texture_progress = ExtResource("4_ncsg0")
+
+[node name="BarraMana" type="TextureProgressBar" parent="."]
+visible = false
+offset_left = 10.0
+offset_top = 112.0
+offset_right = 58.0
+offset_bottom = 152.0
+scale = Vector2(5, 5)
+texture_under = ExtResource("5_6dvid")
+texture_progress = ExtResource("6_y0nqa")
+
+[node name="VidaLabel" type="Label" parent="."]
+offset_left = 37.0
+offset_top = 33.0
+offset_right = 77.0
+offset_bottom = 56.0
+scale = Vector2(1, 0.759999)
+text = "100"
+
+[node name="TextureRect" type="TextureRect" parent="."]
+offset_left = 10.0
+offset_top = -6.0
+offset_right = 58.0
+offset_bottom = 10.0
+scale = Vector2(5, 5)
+texture = ExtResource("1_mi5n8")

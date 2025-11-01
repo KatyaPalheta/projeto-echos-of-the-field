@@ -1,19 +1,43 @@
 extends "res://personagens/personagem_base.gd"
-
+signal vida_atualizada(vida_atual, vida_maxima)
+signal player_morreu
 @onready var health_component: HealthComponent = $HealthComponent
 # @onready var double_click_timer: Timer = $DoubleClickTimer <-- REMOVIDO!
 var is_in_action: bool = false
+var is_dead: bool = false
 # var attack_click_count: int = 0 <-- REMOVIDO!
 
 func _ready():
 	health_component.morreu.connect(_on_morte)
+	health_component.vida_mudou.connect(_on_health_component_vida_mudou)
 	_animation.animation_finished.connect(_on_animation_finished)
+	emit_signal.call_deferred("vida_atualizada", health_component.vida_atual, health_component.vida_maxima)
 	# Não precisamos mais conectar o timer!
 	
 func _on_morte():
-	print("O PLAYER MORREU!")
-	# Aqui no futuro vamos chamar a animação de morte,
-	# parar o movimento e desabilitar colisões.
+	# Se já estiver morto, não faz nada
+	if is_dead:
+		return
+
+	is_dead = true
+	is_in_action = true # Trava o player de outras ações
+	set_physics_process(false) # Para o movimento
+
+	# Pega a direção atual para a animação
+	var anim_sufixo = "_f" 
+	if _face_direction == 1: anim_sufixo = "_c" 
+	elif _face_direction == 2: anim_sufixo = "_p"
+
+	# 1. Toca a animação de morte
+	_animation.play("morte" + anim_sufixo) # <-- SUAS ANIMAÇÕES!
+
+	# 2. Desativa a colisão do player
+	$colisao.disabled = true # (Confirme se o nome é esse)
+
+	# 3. Avisa ao JOGO INTEIRO que o player morreu
+	emit_signal("player_morreu")
+
+	print("O PLAYER MORREU (DE VERDADE AGORA)!")
 
 func _physics_process(delta):
 
@@ -134,5 +158,8 @@ func receber_dano_do_inimigo(dano: float, direcao_do_ataque: Vector2):
 		# (Opcional: Adicionar um leve knockback)
 		velocity = direcao_do_ataque * 300.0 # Ajustar valor
 		
-	# [cite_start]3. Se MORREU, a função _on_morte já está conectada [cite: 21]
-	#    e será chamada automaticamente pelo HealthComponent.
+	# Esta função "ouve" o sinal INTERNO do HealthComponent...
+func _on_health_component_vida_mudou(vida_atual: float, vida_maxima: float):
+	
+	# ...e "grita" o SINAL PÚBLICO para o mundo exterior (o GameLevel)
+	emit_signal("vida_atualizada", vida_atual, vida_maxima)

@@ -154,13 +154,16 @@ func _ready() -> void:
 			# --- FIM DA ADIÇÃO ---
 			print("Player posicionado no PRIMEIRO PONTO SEGURO em: ", player_node.global_position)
 		else:
-			push_warning("Nenhum ponto de spawn seguro foi encontrado!
-Verifique suas máscaras.")
+			push_warning("Nenhum ponto de spawn seguro foi encontrado!Verifique suas máscaras.")
 			player_node.global_position = Vector2.ZERO # Coloca no (0,0) como fallback
 	else:
 		push_warning("Nó do Player não foi configurado no GerenciadorDeTerreno!")
-		
+	if player_node != null:
+		player_node.player_morreu.connect(_on_player_morreu)
+	else:
+		push_warning("GerenciadorDeTerreno: player_node não configurado! Inimigos não fugirão.")	
 # --- NOVA FUNÇÃO HELPER ---
+
 func _plantar_inimigo(coords_do_tile: Vector2i) -> void:
 	# 1. Cria (instancia) a cena do slime
 	var new_slime = cena_slime.instantiate()
@@ -192,5 +195,14 @@ func _plantar_decoracao(coords_do_tile: Vector2i) -> void:
 
 	# Adiciona a nova decoração como filha do GerenciadorDeTerreno
 	add_child(nova_decoracao)
+# Esta função é chamada pelo SINAL do Player
+func _on_player_morreu() -> void:
+	print("GERENCIADOR: Player morreu! Mandando inimigos fugirem!")
 
+	# Pega a posição do player para os inimigos saberem de onde fugir
+	var player_pos = player_node.global_position
+
+	# "Grita" para todos no grupo "inimigos"
+	# para eles rodarem a função "fugir_do_player"
+	get_tree().call_group("inimigos", "fugir_do_player", player_pos)
 # <<< FIM DO SCRIPT >>>

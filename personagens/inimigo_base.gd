@@ -9,7 +9,7 @@ class_name InimigoBase # <-- Muito útil para o futuro!
 
 # --- Variáveis de Estado ---
 # Vamos usar isso para controlar (parado, andando, atacando, morrendo)
-enum State { IDLE, WANDER, CHASE, ATTACK, HURT, DEAD }
+enum State { IDLE, WANDER, CHASE, ATTACK, HURT, DEAD, FLEE }
 var current_state: State = State.IDLE
 var face_direction: Vector2 = Vector2.DOWN
 var player_target: Node2D = null
@@ -21,7 +21,7 @@ var player_target: Node2D = null
 
 func _ready():
 	# Conecta o sinal de morte do HealthComponent 
-	# (Todo inimigo agora pode morrer!)
+	add_to_group("inimigos")
 	health_component.morreu.connect(_on_morte)
 	animacao.animation_finished.connect(_on_animation_finished)
 	set_physics_process(false)
@@ -140,3 +140,16 @@ func _on_hit_box_ataque_body_entered(body: Node2D) -> void:
 		#    (Nós vamos criar essa função no próximo passo!)
 		#    [cite_start]Usamos a variável 'attack_damage' que já existe no inimigo! [cite: 9]
 		body.receber_dano_do_inimigo(attack_damage, direcao_do_ataque) # Replace with function body.
+# Esta função será chamada pelo GameLevel
+func fugir_do_player(posicao_do_player: Vector2):
+	if current_state == State.DEAD:
+		return # Morto não foge
+
+	current_state = State.FLEE
+	player_target = null # Para de perseguir
+
+	# Calcula a direção OPOSTA ao player
+	var flee_direction = (global_position - posicao_do_player).normalized()
+
+	# Define a velocidade de fuga (ex: 1.5x mais rápido)
+	velocity = flee_direction * (move_speed * 1.5)

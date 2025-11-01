@@ -41,6 +41,8 @@ func _physics_process(delta):
 		velocity = velocity.move_toward(Vector2.ZERO, 1500 * delta)
 		move_and_slide()
 		return 
+	if current_state == State.FLEE:
+		pass
 	# (A checagem de ATTACK foi movida para dentro do match)
 
 	var anim_sufixo = _get_suffix_from_direction(face_direction)
@@ -122,7 +124,15 @@ func _physics_process(delta):
 				# Fica parado na animação "idle" enquanto espera
 				if not animacao.current_animation.begins_with("ataque_"):
 					animacao.play("idle" + anim_sufixo)
-
+		State.FLEE:
+				# Mantém a velocidade de fuga definida pelo 'inimigo_base'
+				velocity = velocity.move_toward(velocity, 10 * delta)
+				# Atualiza o sufixo para olhar para onde está indo
+				anim_sufixo = _get_suffix_from_direction(velocity)
+				# Foge "pulando"
+				animacao.play("jump" + anim_sufixo)
+				# Para o timer de "WANDER" para não parar
+				jump_timer.stop()
 	move_and_slide()
 
 
