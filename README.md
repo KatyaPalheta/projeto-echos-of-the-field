@@ -29,3 +29,16 @@ Historico de Atualizações e alterações:
 25 - adicionado efeitos sonoros do inimigo
 26 - adicionado spaw aleatorio do inimigo com desativação longe do player
 27 - bugs simples corrigidos e refinamento de hitbox
+28 - refatoração dos botões de ataque - agora X e 1mouse é ataque simples e Y e 2mouse é ataque especial
+29 - D-Pad do controle do xbox agora tambem controla o movimento
+30 - LB e RB agora tem função de usar magia e arco (ainda não implementado)
+40 - logica do agro dos inimigos adicionada - smile detecta o player e o persegue
+41 - o player pode se afastar do inimigo para desativar o agro
+42 - incluida logica de zona de ataque - os inimigos param a 15px do personagem e preparam o ataque
+43 - o player agora tem animação ao ser atingido
+44 - o inimifgo agora tem animação de ataque
+45 - o ataque do inimigo agora causa 10 de dano ao HP do player
+46 - primeio hud adicionado - agora uma barra de vida reflete a quantidade do HP do player em tempo real
+47 - corrigod bugs visuais de proporção da barra de progressão do HP
+49 - agora o player executa animação de morte ao zerar seu HP
+50 - agora os inimigos correm pra fora da tela quando o player morre 
