@@ -1,8 +1,14 @@
-[gd_scene load_steps=4 format=3 uid="uid://dn2pbvh8nkfeo"]
+[gd_scene load_steps=6 format=3 uid="uid://dn2pbvh8nkfeo"]
 
 [ext_resource type="Script" uid="uid://bmwqf41mnett8" path="res://personagens/inimigo_base.gd" id="1_uejkv"]
 [ext_resource type="Script" uid="uid://poeui62rhe38" path="res://personagens/health_component.gd" id="2_spr2x"]
 [ext_resource type="PackedScene" uid="uid://bklkio2ubbtxr" path="res://cenas/dano_flutuante.tscn" id="3_lt0re"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_lt0re"]
+radius = 120.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_kjg7o"]
+radius = 12.0
 
 [node name="InimigoBase" type="CharacterBody2D" groups=["damageable_enemy"]]
 script = ExtResource("1_uejkv")
@@ -27,5 +33,22 @@ metadata/_custom_type_script = "uid://poeui62rhe38"
 [node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
 rect = Rect2(-10, -20, 20, 40)
 
+[node name="ZonaDeDeteccao" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ZonaDeDeteccao"]
+shape = SubResource("CircleShape2D_lt0re")
+
+[node name="AttackTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="HitBoxAtaque" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBoxAtaque"]
+shape = SubResource("CircleShape2D_kjg7o")
+disabled = true
+
 [connection signal="screen_entered" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_entered"]
 [connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_exited"]
+[connection signal="body_entered" from="ZonaDeDeteccao" to="." method="_on_zona_de_deteccao_body_entered"]
+[connection signal="body_exited" from="ZonaDeDeteccao" to="." method="_on_zona_de_deteccao_body_exited"]
+[connection signal="body_entered" from="HitBoxAtaque" to="." method="_on_hit_box_ataque_body_entered"]

@@ -16,3 +16,16 @@ Historico de Atualizações e alterações:
 12 - configuração do rect do elemento de load e descarregamento fora da tela
 13 - adicionadas animações de peteleco na grama
 14 - adicionados sons de efeito ao passar pela grama
+15 - adicionamos efeito sonoro de passos na areia e na grama
+16 - inicio da criação de combate
+17 - adicionadas animações de golpe simples e golpe duplo
+18 - adicionada mecanica de numero de dano flutuante
+19 - criada mecanica inicial de vida
+20 - adicionado efeito sonoro de golpe de espada
+21 - inicio da criação de inimigo base
+22 - adicionado inimigo smile com movimento aos pulos e spaw ao lado do player
+23 - adicioando o sistema do inimigo receber golpe
+24 - adicionado o movimento passeio do inimigo
+25 - adicionado efeitos sonoros do inimigo
+26 - adicionado spaw aleatorio do inimigo com desativação longe do player
+27 - bugs simples corrigidos e refinamento de hitbox

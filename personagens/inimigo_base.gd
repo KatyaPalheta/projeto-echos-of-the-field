@@ -5,12 +5,14 @@ class_name InimigoBase # <-- Muito útil para o futuro!
 @onready var animacao: AnimationPlayer = $Animacao
 @onready var health_component: HealthComponent = $HealthComponent 
 @onready var textura: Sprite2D = $Textura
+@onready var attack_timer: Timer = $AttackTimer
 
 # --- Variáveis de Estado ---
 # Vamos usar isso para controlar (parado, andando, atacando, morrendo)
 enum State { IDLE, WANDER, CHASE, ATTACK, HURT, DEAD }
 var current_state: State = State.IDLE
 var face_direction: Vector2 = Vector2.DOWN
+var player_target: Node2D = null
 
 # --- Stats Base (cada inimigo pode mudar isso) ---
 @export var move_speed: float = 50.0
@@ -103,3 +105,38 @@ func _on_visible_on_screen_notifier_2d_screen_exited() -> void:
 	# Pausa o processamento do AnimationPlayer (ECONOMIZA MAIS CPU!)
 	animacao.set_process(false) # Replace with function body.
 	#visible = false
+
+
+
+
+
+func _on_zona_de_deteccao_body_entered(body: Node2D) -> void:
+	# Checa se quem entrou é o Player (usando a classe base)
+	if body is PersonagemBase:
+		player_target = body # Guarda o alvo!
+		
+		# Só muda para CHASE se não estivermos sendo atingidos ou morrendo
+		if current_state != State.HURT and current_state != State.DEAD:
+			current_state = State.CHASE
+
+
+func _on_zona_de_deteccao_body_exited(body: Node2D) -> void:
+	# Checa se quem saiu é o MESMO alvo que estávamos perseguindo
+	if body == player_target:
+		player_target = null # Esquece o alvo
+		
+		# Se estávamos perseguindo, voltamos a ficar parados
+		if current_state == State.CHASE:
+			current_state = State.IDLE
+
+
+func _on_hit_box_ataque_body_entered(body: Node2D) -> void:
+	if body is PersonagemBase:
+		
+		# 2. Calcula a direção do ataque (do inimigo PARA o player)
+		var direcao_do_ataque = (body.global_position - global_position).normalized()
+		
+		# 3. Chama uma NOVA função no player para ele tomar o dano
+		#    (Nós vamos criar essa função no próximo passo!)
+		#    [cite_start]Usamos a variável 'attack_damage' que já existe no inimigo! [cite: 9]
+		body.receber_dano_do_inimigo(attack_damage, direcao_do_ataque) # Replace with function body.
