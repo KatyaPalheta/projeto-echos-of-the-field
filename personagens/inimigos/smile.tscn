@@ -1,8 +1,8 @@
 [gd_scene load_steps=30 format=3 uid="uid://c1oknh4ou4w5u"]
 
-[ext_resource type="PackedScene" uid="uid://dn2pbvh8nkfeo" path="res://personagens/inimigo_base.tscn" id="1_askva"]
+[ext_resource type="PackedScene" uid="uid://dn2pbvh8nkfeo" path="res://personagens/inimigos/inimigo_base.tscn" id="1_askva"]
 [ext_resource type="Texture2D" uid="uid://dde51emhjoogr" path="res://assets/personagens/inimigos/Slime-sheet-purple.png" id="2_bh3cl"]
-[ext_resource type="Script" uid="uid://mce6nedly6k7" path="res://smile.gd" id="2_bm8g4"]
+[ext_resource type="Script" uid="uid://mce6nedly6k7" path="res://personagens/inimigos/smile.gd" id="2_bm8g4"]
 [ext_resource type="AudioStream" uid="uid://b15kg4vj1ssjk" path="res://assets/personagens/inimigos/audios/hit_monstro.MP3" id="3_5nmoa"]
 [ext_resource type="AudioStream" uid="uid://bn4apggykod4c" path="res://assets/personagens/inimigos/audios/passo_jelli.MP3" id="3_p3tmj"]
 [ext_resource type="AudioStream" uid="uid://lne3yx1bmgqg" path="res://assets/personagens/inimigos/audios/morte_jelli.MP3" id="4_016n7"]

@@ -6,7 +6,7 @@
 [ext_resource type="AudioStream" uid="uid://dtnbhhfn0x1gh" path="res://assets/terrain/audios/passos.MP3" id="3_wfqsr"]
 [ext_resource type="AudioStream" uid="uid://d3hoouw3hpf7q" path="res://assets/terrain/audios/sand.MP3" id="4_of8di"]
 [ext_resource type="Script" uid="uid://poeui62rhe38" path="res://personagens/health_component.gd" id="6_jeibu"]
-[ext_resource type="PackedScene" uid="uid://bklkio2ubbtxr" path="res://cenas/dano_flutuante.tscn" id="7_pb42p"]
+[ext_resource type="PackedScene" uid="uid://bklkio2ubbtxr" path="res://personagens/dano_flutuante.tscn" id="7_pb42p"]
 [ext_resource type="AudioStream" uid="uid://1bvtwrbrhi5k" path="res://assets/terrain/audios/espada.MP3" id="8_erscc"]
 [ext_resource type="AudioStream" uid="uid://41vnsiqmmdwe" path="res://assets/terrain/audios/cura.MP3" id="9_20r4p"]
 [ext_resource type="AudioStream" uid="uid://cvw1nbps5nxqw" path="res://assets/terrain/audios/morte_player.MP3" id="10_20r4p"]

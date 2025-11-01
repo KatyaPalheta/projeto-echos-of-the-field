@@ -1,8 +1,8 @@
 [gd_scene load_steps=6 format=3 uid="uid://dn2pbvh8nkfeo"]
 
-[ext_resource type="Script" uid="uid://bmwqf41mnett8" path="res://personagens/inimigo_base.gd" id="1_uejkv"]
+[ext_resource type="Script" uid="uid://bmwqf41mnett8" path="res://personagens/inimigos/inimigo_base.gd" id="1_uejkv"]
 [ext_resource type="Script" uid="uid://poeui62rhe38" path="res://personagens/health_component.gd" id="2_spr2x"]
-[ext_resource type="PackedScene" uid="uid://bklkio2ubbtxr" path="res://cenas/dano_flutuante.tscn" id="3_lt0re"]
+[ext_resource type="PackedScene" uid="uid://bklkio2ubbtxr" path="res://personagens/dano_flutuante.tscn" id="3_lt0re"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_lt0re"]
 radius = 120.0
