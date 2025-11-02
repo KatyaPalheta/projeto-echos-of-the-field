@@ -7,6 +7,10 @@ class_name InimigoBase # <-- Muito útil para o futuro!
 @onready var textura: Sprite2D = $Textura
 @onready var attack_timer: Timer = $AttackTimer
 
+@onready var sinal_alerta: Sprite2D = $SinalAlerta
+@onready var audio_alerta: AudioStreamPlayer2D = $AudioAlerta
+@onready var alerta_timer: Timer = $AlertaTimer
+
 # --- Variáveis de Estado ---
 # Vamos usar isso para controlar (parado, andando, atacando, morrendo)
 enum State { IDLE, WANDER, CHASE, ATTACK, HURT, DEAD, FLEE }
@@ -24,6 +28,7 @@ func _ready():
 	add_to_group("inimigos")
 	health_component.morreu.connect(_on_morte)
 	animacao.animation_finished.connect(_on_animation_finished)
+	alerta_timer.timeout.connect(_on_alerta_timer_timeout)
 	set_physics_process(false)
 	animacao.set_process(false)
 	#visible = false
@@ -87,8 +92,15 @@ func _on_animation_finished(anim_name: String):
 	
 	# Se a animação que acabou foi a de "tomar dano"...
 	if anim_name.begins_with("hurt_"):
-		# ...então volte ao estado normal (parado)
-		current_state = State.IDLE
+		
+		# LÓGICA ATUALIZADA:
+		# Se o player AINDA ESTIVER no nosso radar (player_target não é nulo)...
+		if player_target != null:
+			# ...então volte a PERSEGUIR!
+			current_state = State.CHASE
+		else:
+			# ...senão, AGORA SIM, volte ao estado normal (parado)
+			current_state = State.IDLE
 
 
 func _on_visible_on_screen_notifier_2d_screen_entered() -> void:
@@ -114,10 +126,14 @@ func _on_zona_de_deteccao_body_entered(body: Node2D) -> void:
 	# Checa se quem entrou é o Player (usando a classe base)
 	if body is PersonagemBase:
 		player_target = body # Guarda o alvo!
-		
+		var estava_passivo = (current_state == State.IDLE or current_state == State.WANDER)
 		# Só muda para CHASE se não estivermos sendo atingidos ou morrendo
 		if current_state != State.HURT and current_state != State.DEAD:
 			current_state = State.CHASE
+			if estava_passivo:
+				sinal_alerta.visible = true
+				audio_alerta.play()
+				alerta_timer.start() # Inicia o timer de 0.5s
 
 
 func _on_zona_de_deteccao_body_exited(body: Node2D) -> void:
@@ -153,3 +169,7 @@ func fugir_do_player(posicao_do_player: Vector2):
 
 	# Define a velocidade de fuga (ex: 1.5x mais rápido)
 	velocity = flee_direction * (move_speed * 1.5)
+	# Esta função é chamada pelo sinal 'timeout' do AlertaTimer
+func _on_alerta_timer_timeout() -> void:
+	# Esconde o "!"
+	sinal_alerta.visible = false

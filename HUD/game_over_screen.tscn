@@ -1,0 +1,53 @@
+[gd_scene load_steps=4 format=3 uid="uid://cuujdyiyio17w"]
+
+[ext_resource type="Script" uid="uid://cb1oikowj7cbj" path="res://HUD/game_over_screen.gd" id="1_1nw10"]
+[ext_resource type="Texture2D" uid="uid://x0rdr7moyhbt" path="res://HUD/botton1.png" id="2_ht14v"]
+[ext_resource type="Texture2D" uid="uid://bh1jn1iracu3n" path="res://HUD/botton2.png" id="3_ucu52"]
+
+[node name="GameOverScreen" type="CanvasLayer"]
+process_mode = 3
+script = ExtResource("1_1nw10")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 6
+size_flags_vertical = 6
+size_flags_stretch_ratio = 0.0
+color = Color(0.709804, 0.811765, 1, 0.309804)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -128.0
+offset_top = -80.0
+offset_right = -128.0
+offset_bottom = -80.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(5, 5)
+size_flags_horizontal = 6
+size_flags_vertical = 6
+alignment = 1
+
+[node name="TextureButton" type="TextureButton" parent="VBoxContainer"]
+layout_mode = 2
+texture_normal = ExtResource("2_ht14v")
+texture_pressed = ExtResource("3_ucu52")
+ignore_texture_size = true
+
+[node name="Label" type="Label" parent="VBoxContainer/TextureButton"]
+layout_mode = 0
+offset_left = 4.8
+offset_right = 47.8
+offset_bottom = 23.0
+theme_override_font_sizes/font_size = 12
+text = "Restart"
+
+[connection signal="pressed" from="VBoxContainer/TextureButton" to="." method="_on_texture_button_pressed"]

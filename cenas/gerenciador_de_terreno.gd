@@ -21,10 +21,11 @@ extends Node2D
 @export var mascara_para_usar_index: int = -1 # -1 = Aleatório
 
 # --- Cores da Máscara ---
-@export var cor_agua: Color = Color.BLUE
-@export var cor_grama: Color = Color.GREEN
-@export var cor_areia: Color = Color.SANDY_BROWN
-@export var cor_spawn: Color = Color.RED
+# (Certifique-se de que a cor da água também está correta!)
+@export var cor_agua: Color = Color("#0000FF") # <-- CONFIRME O HEX DO SEU AZUL
+@export var cor_grama: Color = Color("#7CFF00") # <-- TROQUE PELO HEX DO SEU VERDE
+@export var cor_areia: Color = Color("#F4A460") # <-- TROQUE PELO HEX DA SUA AREIA
+@export var cor_spawn: Color = Color("#FF0000") # <-- TROQUE PELO HEX DO SEU VERMELHO
 
 # --- Configuração do TileSet ---
 @export var id_fonte_tileset: int = 0
@@ -110,8 +111,15 @@ func _ready() -> void:
 			elif pixel_color.is_equal_approx(cor_areia):
 				coords_areia.append(coords)
 			elif pixel_color.is_equal_approx(cor_grama):
+						
+				# --- AS LINHAS QUE FALTAVAM! ---
 				coords_grama.append(coords)
-				# ... (lógica de plantar decoração e inimigo) ...
+				if randf() < chance_decoracao:
+					_plantar_decoracao(coords)
+				
+				if cena_slime != null and randf() < chance_inimigo:
+					_plantar_inimigo(coords)
+				# --- FIM DA ADIÇÃO ---
 			
 			# (A lógica antiga do "primeiro ponto seguro" foi REMOVIDA!)
 
@@ -198,7 +206,7 @@ func _plantar_decoracao(coords_do_tile: Vector2i) -> void:
 	add_child(nova_decoracao)
 # Esta função é chamada pelo SINAL do Player
 func _on_player_morreu() -> void:
-	Logger.log("GERENCIADOR: Player morreu! Mandando inimigos fugirem!")
+	Logger.log("GERENCIADOR: Player morreu! Agora os inimigos fogem!")
 
 	# Pega a posição do player para os inimigos saberem de onde fugir
 	var player_pos = player_node.global_position

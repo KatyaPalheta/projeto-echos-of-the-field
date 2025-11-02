@@ -1,8 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://dn2pbvh8nkfeo"]
+[gd_scene load_steps=8 format=3 uid="uid://dn2pbvh8nkfeo"]
 
 [ext_resource type="Script" uid="uid://bmwqf41mnett8" path="res://personagens/inimigos/inimigo_base.gd" id="1_uejkv"]
 [ext_resource type="Script" uid="uid://poeui62rhe38" path="res://personagens/health_component.gd" id="2_spr2x"]
 [ext_resource type="PackedScene" uid="uid://bklkio2ubbtxr" path="res://personagens/dano_flutuante.tscn" id="3_lt0re"]
+[ext_resource type="Texture2D" uid="uid://b6elp3vtu8n2p" path="res://HUD/alert.png" id="4_brd8b"]
+[ext_resource type="AudioStream" uid="uid://bud6wxjfvc3o0" path="res://assets/personagens/inimigos/audios/alerte.mp3" id="5_ego8o"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_lt0re"]
 radius = 120.0
@@ -46,6 +48,19 @@ one_shot = true
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitBoxAtaque"]
 shape = SubResource("CircleShape2D_kjg7o")
 disabled = true
+
+[node name="SinalAlerta" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(0, -16)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("4_brd8b")
+
+[node name="AudioAlerta" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5_ego8o")
+volume_db = -11.856
+
+[node name="AlertaTimer" type="Timer" parent="."]
+wait_time = 0.5
 
 [connection signal="screen_entered" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_entered"]
 [connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_exited"]

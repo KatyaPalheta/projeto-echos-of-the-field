@@ -43,3 +43,6 @@ Historico de Atualizações e alterações:
 49 - agora o player executa animação de morte ao zerar seu HP
 50 - agora os inimigos correm pra fora da tela quando o player morre 
 51 - agora a cor do numerozinho de dano, cura e ataque são diferentes um do outro
+52 - ao morrer um zoom out acontece e cena se afasta
+53 - ao morrer uma tela de restart aparece para o player jogar novamente
+54 - ao detectar o player um sinal sonoro e um alerta na cabeça do inimigo aparecem

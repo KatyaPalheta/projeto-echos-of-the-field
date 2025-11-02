@@ -15,46 +15,34 @@ func _ready():
 	# Não precisamos mais conectar o timer!
 	
 func _on_morte():
-	# Se já estiver morto, não faz nada
 	if is_dead:
 		return
 
 	is_dead = true
-	is_in_action = true # Trava o player de outras ações
-	set_physics_process(false) # Para o movimento
+	is_in_action = true 
+	set_physics_process(false) 
 
-	# Pega a direção atual para a animação
 	var anim_sufixo = "_f" 
 	if _face_direction == 1: anim_sufixo = "_c" 
 	elif _face_direction == 2: anim_sufixo = "_p"
 
-	# 1. Toca a animação de morte
 	_animation.play("morte" + anim_sufixo)
+	$AudioDead.play()
 	
-	# (Seu som de morte já deve estar aqui, se não, adicione!)
-	# $AudioDead.play()
-
-	# 2. Desativa a colisão do player (JÁ CORRIGIDO)
 	$colisao.set_deferred("disabled", true)
-
-	# 3. Avisa ao JOGO INTEIRO que o player morreu
 	emit_signal("player_morreu")
-
-	# --- NOVO: O ZOOM DRAMÁTICO ---
 	
-	# 1. Cria um animador (Tween)
+	# --- CÓDIGO DO ZOOM ---
 	var tween = create_tween()
-	
-	# 2. Pede para ele animar a propriedade "zoom" da nossa câmera
-	#    (O $Camera2D precisa ter o nome exato da sua cena)
-	#    O 'Vector2(1.5, 1.5)' é o zoom (1.5x).
-	#    O '2.0' é a duração (2 segundos).
 	tween.tween_property($Camera2D, "zoom", Vector2(1.5, 1.5), 2.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	
-	# --- FIM DO ZOOM ---
-
-	Logger.log("O PLAYER MORREU (DE VERDA... Opa, só 'MORREU')!")
-	# (Mudei a mensagem do Logger para ficar mais curta!)
+	# --- MUDANÇA AQUI ---
+	# CARREGA A TELA DE MORTE IMEDIATAMENTE!
+	# (A LINHA 'await tween.finished' FOI REMOVIDA!)
+	var game_over_scene = load("res://HUD/game_over_screen.tscn") # (Confirme seu caminho!)
+	var game_over_instance = game_over_scene.instantiate()
+	add_child(game_over_instance)
+	
 	Logger.log("O PLAYER MORREU!")
 
 func _physics_process(delta):
