@@ -1,6 +1,8 @@
 extends CharacterBody2D
 class_name InimigoBase # <-- Muito útil para o futuro!
 
+signal morreu_e_deu_energia(valor)
+
 # --- Componentes (como no player) ---
 @onready var animacao: AnimationPlayer = $Animacao
 @onready var health_component: HealthComponent = $HealthComponent 
@@ -61,6 +63,7 @@ func sofrer_dano(dano: float, direcao_do_ataque: Vector2):
 func _on_morte():
 	current_state = State.DEAD
 	animacao.play("dead" + _get_suffix_from_direction(face_direction))
+	emit_signal("morreu_e_deu_energia", 25.0)
 
 	# (Aqui vamos desativar colisões e fazer ele sumir)
 func _get_suffix_from_direction(direction: Vector2) -> String:

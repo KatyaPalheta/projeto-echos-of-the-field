@@ -1,16 +1,19 @@
-[gd_scene load_steps=9 format=3 uid="uid://8q4xf32uui6"]
+[gd_scene load_steps=10 format=3 uid="uid://8q4xf32uui6"]
 
 [ext_resource type="Texture2D" uid="uid://ch1u4sdlfylev" path="res://HUD/healt.png" id="1_mi5n8"]
 [ext_resource type="Script" uid="uid://cmqp1qwjheqk1" path="res://HUD/hud.gd" id="1_ncsg0"]
 [ext_resource type="Texture2D" uid="uid://6gby4vlt57uu" path="res://HUD/vida2.png" id="2_ncsg0"]
 [ext_resource type="Texture2D" uid="uid://dp8t3ri42hs7b" path="res://HUD/vida 1.png" id="3_6dvid"]
 [ext_resource type="Texture2D" uid="uid://cy4vboa0yb43m" path="res://HUD/energy.png" id="3_tnm0g"]
-[ext_resource type="Texture2D" uid="uid://cor8kf10wfdmw" path="res://HUD/energy2.png" id="4_ncsg0"]
-[ext_resource type="Texture2D" uid="uid://dqxxu5t6l87rx" path="res://HUD/mana.png" id="5_6dvid"]
-[ext_resource type="Texture2D" uid="uid://cy1j1k8erc6xs" path="res://HUD/mana2.png" id="6_y0nqa"]
+[ext_resource type="Texture2D" uid="uid://djser4yy5u546" path="res://HUD/manastar2.png" id="3_y0nqa"]
+[ext_resource type="Texture2D" uid="uid://dev8swwlcjiw6" path="res://HUD/energia2.png" id="4_6dvid"]
+[ext_resource type="Texture2D" uid="uid://dlevrech0ardb" path="res://HUD/energia.png" id="5_y0nqa"]
+[ext_resource type="Texture2D" uid="uid://d1g2mjyit7108" path="res://HUD/manastar.png" id="7_ncsg0"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_ncsg0")
+tex_estrela_cheia = ExtResource("7_ncsg0")
+tex_estrela_vazia = ExtResource("3_y0nqa")
 
 [node name="BarraVida" type="TextureProgressBar" parent="."]
 offset_left = 30.0
@@ -23,24 +26,13 @@ texture_under = ExtResource("2_ncsg0")
 texture_progress = ExtResource("3_6dvid")
 
 [node name="BarraEnergia" type="TextureProgressBar" parent="."]
-visible = false
 offset_left = 10.0
 offset_top = 60.0
 offset_right = 58.0
 offset_bottom = 100.0
 scale = Vector2(5, 5)
-texture_under = ExtResource("3_tnm0g")
-texture_progress = ExtResource("4_ncsg0")
-
-[node name="BarraMana" type="TextureProgressBar" parent="."]
-visible = false
-offset_left = 10.0
-offset_top = 112.0
-offset_right = 58.0
-offset_bottom = 152.0
-scale = Vector2(5, 5)
-texture_under = ExtResource("5_6dvid")
-texture_progress = ExtResource("6_y0nqa")
+texture_under = ExtResource("4_6dvid")
+texture_progress = ExtResource("5_y0nqa")
 
 [node name="VidaLabel" type="Label" parent="."]
 offset_left = 37.0
@@ -50,7 +42,23 @@ offset_bottom = 56.0
 scale = Vector2(1, 0.759999)
 text = "100"
 
-[node name="TextureRect" type="TextureRect" parent="."]
+[node name="EnergiaLabel" type="Label" parent="."]
+offset_left = 35.0
+offset_top = 99.0
+offset_right = 75.0
+offset_bottom = 122.0
+scale = Vector2(1, 0.759999)
+text = "0"
+
+[node name="TexturaEnergia" type="TextureRect" parent="."]
+offset_left = 10.0
+offset_top = 60.0
+offset_right = 58.0
+offset_bottom = 76.0
+scale = Vector2(5, 5)
+texture = ExtResource("3_tnm0g")
+
+[node name="TexturaVida" type="TextureRect" parent="."]
 offset_left = 10.0
 offset_top = -6.0
 offset_right = 58.0
@@ -67,3 +75,27 @@ offset_top = 672.0
 offset_right = 80.32
 offset_bottom = 704.32
 alignment = 2
+
+[node name="CargasCuraContainer" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(52, 16)
+offset_left = 32.0
+offset_top = 144.0
+offset_right = 72.0
+offset_bottom = 184.0
+scale = Vector2(3, 3)
+alignment = 1
+
+[node name="Estrela1" type="TextureRect" parent="CargasCuraContainer"]
+layout_mode = 2
+texture = ExtResource("7_ncsg0")
+stretch_mode = 2
+
+[node name="Estrela2" type="TextureRect" parent="CargasCuraContainer"]
+layout_mode = 2
+texture = ExtResource("7_ncsg0")
+stretch_mode = 2
+
+[node name="Estrela3" type="TextureRect" parent="CargasCuraContainer"]
+layout_mode = 2
+texture = ExtResource("7_ncsg0")
+stretch_mode = 2

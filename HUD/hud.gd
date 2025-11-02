@@ -7,47 +7,50 @@ extends CanvasLayer
 
 @onready var vida_label: Label = $VidaLabel
 
+# --- NOVO! A REFERÊNCIA QUE FALTAVA ---
+@onready var energia_label: Label = $EnergiaLabel 
+# (Baseado no seu print 'image_23a0f0.png', o nome do nó é esse!)
+
 @onready var log_container: VBoxContainer = $LogContainer
 
-# --- ADIÇÃO 1: A FUNÇÃO _READY() QUE FALTAVA ---
+@onready var estrela1: TextureRect = $CargasCuraContainer/Estrela1
+@onready var estrela2: TextureRect = $CargasCuraContainer/Estrela2
+@onready var estrela3: TextureRect = $CargasCuraContainer/Estrela3
+
+@export var tex_estrela_cheia: Texture2D
+@export var tex_estrela_vazia: Texture2D
+
 func _ready():
-	# Conecta esta cena ao sinal do nosso Autoload "Logger"
-	# (O 'Logger' já existe globalmente porque o registramos)
 	Logger.log_updated.connect(_on_log_updated)
-# --- FIM DA ADIÇÃO ---
 
-
-# Esta é a função que o player vai chamar.
-# Ela vai receber a vida direto do HealthComponent.
 func atualizar_vida(vida_atual: float, vida_maxima: float) -> void:
-	
-	# Garante que a barra saiba qual é o máximo
 	barra_vida.max_value = vida_maxima
 	vida_label.text = str(int(vida_atual))
-	# Atualiza o valor (o preenchimento) da barra
 	barra_vida.value = vida_atual
 
-# --- FUNÇÕES FUTURAS (Prontas para quando precisarmos) ---
-# ... (suas funções de atualizar_energia e atualizar_mana ficam aqui) ...
-func atualizar_energia(energia_atual: float, energia_maxima: float) -> void:
+# --- FUNÇÃO ATUALIZADA ---
+func atualizar_energia(energia_atual: float, energia_maxima: float):
 	barra_energia.max_value = energia_maxima
+	
+	# --- NOVO! A LINHA QUE FALTAVA ---
+	energia_label.text = str(int(energia_atual))
+	
 	barra_energia.value = energia_atual
 
 func atualizar_mana(mana_atual: float, mana_maxima: float) -> void:
 	barra_mana.max_value = mana_maxima
 	barra_mana.value = mana_atual
 
-# --- ADIÇÃO 2: A NOVA FUNÇÃO QUE RECEBE O LOG ---
-# Esta função é chamada pelo SINAL do Logger
 func _on_log_updated(messages: Array[String]):
-	
-	# 1. Limpa o log antigo (remove todos os Labels antigos)
 	for child in log_container.get_children():
 		child.queue_free()
-		
-	# 2. Cria os novos labels (o array já vem na ordem certa: do topo para baixo)
 	for msg in messages:
 		var new_label = Label.new()
 		new_label.text = msg
 		# (Opcional: Adicione um LabelSettings aqui para a fonte ficar pixelada)
 		log_container.add_child(new_label)
+
+func atualizar_cargas_cura(cargas_restantes: int):
+	estrela1.texture = tex_estrela_cheia if cargas_restantes >= 1 else tex_estrela_vazia
+	estrela2.texture = tex_estrela_cheia if cargas_restantes >= 2 else tex_estrela_vazia
+	estrela3.texture = tex_estrela_cheia if cargas_restantes == 3 else tex_estrela_vazia

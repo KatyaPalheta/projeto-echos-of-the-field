@@ -23,6 +23,7 @@ Logger="*res://HUD/Logger.gd"
 
 window/size/viewport_width=1280
 window/size/viewport_height=768
+window/size/mode=3
 window/stretch/mode="canvas_items"
 
 [dotnet]

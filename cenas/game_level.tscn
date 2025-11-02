@@ -26,4 +26,6 @@ y_sort_enabled = true
 
 [node name="HUD" parent="." instance=ExtResource("5_hwfjb")]
 
+[connection signal="cargas_cura_mudou" from="Player" to="HUD" method="atualizar_cargas_cura"]
+[connection signal="energia_mudou" from="Player" to="HUD" method="atualizar_energia"]
 [connection signal="vida_atualizada" from="Player" to="HUD" method="atualizar_vida"]

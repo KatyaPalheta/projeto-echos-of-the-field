@@ -1,17 +1,27 @@
 extends "res://personagens/personagem_base.gd"
 signal vida_atualizada(vida_atual, vida_maxima)
 signal player_morreu
+signal cargas_cura_mudou(cargas_restantes)
+signal energia_mudou(energia_atual, energia_maxima)
+
 @onready var health_component: HealthComponent = $HealthComponent
 # @onready var double_click_timer: Timer = $DoubleClickTimer <-- REMOVIDO!
 var is_in_action: bool = false
 var is_dead: bool = false
-# var attack_click_count: int = 0 <-- REMOVIDO!
+var cargas_de_cura: int = 3
+var energia_maxima: float = 100.0
+var energia_atual: float = 0.0
+var custo_golpe_duplo: float = 100.0 # Quanto custa o golpe
+var current_attack_damage = 25.0
+
 
 func _ready():
 	health_component.morreu.connect(_on_morte)
 	health_component.vida_mudou.connect(_on_health_component_vida_mudou)
 	_animation.animation_finished.connect(_on_animation_finished)
 	emit_signal.call_deferred("vida_atualizada", health_component.vida_atual, health_component.vida_maxima)
+	emit_signal.call_deferred("cargas_cura_mudou", cargas_de_cura)
+	emit_signal.call_deferred("energia_mudou", energia_atual, energia_maxima)
 	# Não precisamos mais conectar o timer!
 	
 func _on_morte():
@@ -93,23 +103,56 @@ func _physics_process(delta):
 	# --- Ações Padrão (sem modificador pressionado) ---
 
 	# Ação de Cura (Botão B)
+	# Ação de Cura (Botão B) - LÓGICA ATUALIZADA
 	elif Input.is_action_just_pressed("curar"):
-		is_in_action = true 
-		_animation.play("magia_cura" + anim_sufixo) 
-		health_component.curar(25.0)
-		Logger.log("Player usou CURA!")
+		
+		# 1. Checa se o player PODE se curar
+		if cargas_de_cura > 0:
+			# 2. Gasta a carga
+			cargas_de_cura -= 1
+			
+			# 3. Executa a cura
+			is_in_action = true 
+			_animation.play("magia_cura" + anim_sufixo) 
+			health_component.curar(25.0)
+			emit_signal("cargas_cura_mudou", cargas_de_cura)
+			
+			# (Vamos adicionar o sinal para o HUD no próximo passo!)
+			Logger.log("Cura usada! Restam: %s" % cargas_de_cura)
+			
+		else:
+			# 4. Acabaram as cargas
+			Logger.log("Sem cargas de cura!")
+			# (Aqui podemos tocar um som de "falha" no futuro)
 
-	# Ação de Ataque Simples (Botão X) - AGORA É IMEDIATO!
+	# ( ... sua lógica de cura (Botão B) vem antes daqui ... ) [cite: 53, 59-60]
+
+	# Ação de Ataque Simples (Botão X) - LÓGICA ATUALIZADA
 	elif Input.is_action_just_pressed("ataque_primario"):
 		is_in_action = true
-		_animation.play("espada" + anim_sufixo) # A animação de golpe simples
+		current_attack_damage = 25.0 # <-- CORREÇÃO IMPORTANTE! (Reseta o dano)
+		_animation.play("espada" + anim_sufixo)
 		Logger.log("Player usou ATAQUE SIMPLES!")
 
-	# Ação de Ataque Duplo/Especial (Botão Y) - AGORA É IMEDIATO!
+	# Ação de Ataque Duplo/Especial (Botão Y) - LÓGICA ATUALIZADA
 	elif Input.is_action_just_pressed("ataque_especial"):
-		is_in_action = true
-		_animation.play("espada_duplo" + anim_sufixo) # A animação de golpe duplo [cite: 53]
-		Logger.log("Player usou ATAQUE DUPLO!")
+		
+		# 1. Checa se temos energia suficiente (usando round() para evitar bugs)
+		if round(energia_atual) >= custo_golpe_duplo:
+			# 2. Gasta a energia
+			energia_atual -= custo_golpe_duplo
+			emit_signal("energia_mudou", energia_atual, energia_maxima) # Avisa o HUD [cite: 61]
+			
+			# 3. Executa o golpe
+			is_in_action = true
+			current_attack_damage = 50.0 # Dano dobrado! [cite: 61]
+			_animation.play("espada_duplo" + anim_sufixo)
+			Logger.log("Golpe Duplo usado!")
+			
+		else:
+			# 4. Sem energia (AGORA CORRIGIDO - SÓ AVISA!)
+			Logger.log("Sem energia para o Golpe Duplo!")
+			# (O código duplicado de ataque foi removido daqui!)
 
 func _on_animation_finished(anim_name: String):
 	
@@ -123,11 +166,6 @@ func _on_animation_finished(anim_name: String):
 		is_in_action = false # DESTRAVA o player
 
 
-# --- FUNÇÃO REMOVIDA ---
-# func _on_double_click_timer_timeout() -> void:
-#	(Todo o conteúdo desta função foi removido) 
-
-
 func _on_hit_box_espada_body_entered(body: Node2D) -> void:
 	# 1. Checa se o que acertamos tem o "adesivo" que criamos
 	if body.is_in_group("damageable_enemy"):
@@ -136,7 +174,7 @@ func _on_hit_box_espada_body_entered(body: Node2D) -> void:
 		var direcao_do_ataque = (body.global_position - global_position).normalized()
 		
 		# 3. Chama a função que JÁ EXISTE no inimigo!
-		body.sofrer_dano(25.0, direcao_do_ataque)
+		body.sofrer_dano(current_attack_damage, direcao_do_ataque)
 		
 		Logger.log("ACERTEI O INIMIGO: %s" % body.name)
 func receber_dano_do_inimigo(dano: float, direcao_do_ataque: Vector2):
@@ -169,3 +207,12 @@ func _on_health_component_vida_mudou(vida_atual: float, vida_maxima: float):
 	
 	# ...e "grita" o SINAL PÚBLICO para o mundo exterior (o GameLevel)
 	emit_signal("vida_atualizada", vida_atual, vida_maxima)
+# --- NOVA FUNÇÃO ---
+# O GerenciadorDeTerreno vai chamar isso quando um inimigo morrer
+func ganhar_energia(quantidade: float):
+	# Adiciona energia, sem passar do máximo
+	energia_atual = min(energia_maxima, energia_atual + quantidade)
+
+	# Avisa o HUD que a energia mudou!
+	emit_signal("energia_mudou", energia_atual, energia_maxima)
+	Logger.log("Energia ganha! Total: %s" % int(energia_atual))

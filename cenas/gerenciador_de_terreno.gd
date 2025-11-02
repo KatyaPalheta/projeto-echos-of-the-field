@@ -185,6 +185,7 @@ func _plantar_inimigo(coords_do_tile: Vector2i) -> void:
 
 	# 4. Adiciona o novo slime à cena
 	add_child(new_slime)
+	new_slime.morreu_e_deu_energia.connect(_on_inimigo_morreu_energia)
 
 # --- Função "Helper" _plantar_decoracao (VAI AQUI!) ---
 func _plantar_decoracao(coords_do_tile: Vector2i) -> void:
@@ -214,4 +215,10 @@ func _on_player_morreu() -> void:
 	# "Grita" para todos no grupo "inimigos"
 	# para eles rodarem a função "fugir_do_player"
 	get_tree().call_group("inimigos", "fugir_do_player", player_pos)
-# <<< FIM DO SCRIPT >>>
+# --- NOVA FUNÇÃO ---
+# Chamada pelo SINAL 'morreu_e_deu_energia' de QUALQUER inimigo
+# --- NOVA FUNÇÃO ---
+# Chamada pelo SINAL 'morreu_e_deu_energia' de QUALQUER inimigo
+func _on_inimigo_morreu_energia(valor: float):
+	if player_node != null:
+		player_node.ganhar_energia(valor)
