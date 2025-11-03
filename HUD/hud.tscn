@@ -55,6 +55,7 @@ _data = {
 script = ExtResource("1_ncsg0")
 tex_estrela_cheia = ExtResource("7_ncsg0")
 tex_estrela_vazia = ExtResource("3_y0nqa")
+metadata/_edit_horizontal_guides_ = [114.0]
 
 [node name="BarraVida" type="TextureProgressBar" parent="."]
 offset_left = 30.0
@@ -111,10 +112,10 @@ texture = ExtResource("1_mi5n8")
 anchors_preset = -1
 anchor_right = 0.006
 anchor_bottom = 0.01
-offset_left = 48.0
-offset_top = 672.0
-offset_right = 80.32
-offset_bottom = 704.32
+offset_left = 49.0
+offset_top = 560.0
+offset_right = 81.32
+offset_bottom = 592.32
 alignment = 2
 
 [node name="CargasCuraContainer" type="HBoxContainer" parent="."]
@@ -167,3 +168,18 @@ text = "0 / 10"
 position = Vector2(1192, 64)
 scale = Vector2(2, 2)
 texture = ExtResource("11_03xa0")
+
+[node name="OndaLabel" type="Label" parent="."]
+visible = false
+offset_left = 581.0
+offset_top = 54.0
+offset_right = 706.0
+offset_bottom = 104.0
+theme_override_font_sizes/font_size = 36
+text = "Onda 1"
+
+[node name="OndaTimer" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true
+
+[connection signal="timeout" from="OndaTimer" to="." method="_on_onda_timer_timeout"]

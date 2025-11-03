@@ -4,7 +4,7 @@ extends Node
 signal log_updated(messages)
 
 # Nosso limite de 3 mensagens
-const MAX_MESSAGES = 3
+const MAX_MESSAGES = 8
 var log_history: Array[String] = []
 
 # Esta é a função "pública" que qualquer script vai chamar

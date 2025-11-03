@@ -6,9 +6,9 @@ signal stats_atualizadas(inimigos_mortos, inimigos_total, onda_atual)
 # --- REGRAS DA "BI" (Nós!) ---
 # Formato: [Inimigos para Matar, Chance de Spawn]
 var ONDAS = [
-	[10, 0.01], # Onda 1: Matar 10, chance de 5%
-	[20, 0.02], # Onda 2: Matar 20, chance de 8%
-	[40, 0.05]  # Onda 3: Matar 40, chance de 12%
+	[3, 0.005], # Onda 1: Matar 10, chance de 5%
+	[6, 0.008], # Onda 2: Matar 20, chance de 8%
+	[9, 0.01]  # Onda 3: Matar 40, chance de 12%
 ]
 
 # --- DADOS PERSISTENTES (O que o jogo "lembra") ---
@@ -32,15 +32,11 @@ func iniciar_onda() -> float:
 	var chance_spawn = dados_onda[1]
 
 	# Avisa o HUD para atualizar (ex: "0 / 10")
-	emit_signal("stats_atualizadas", inimigos_mortos, inimigos_total_na_onda, onda_atual_index + 1)
+	emit_signal.call_deferred("stats_atualizadas", inimigos_mortos, inimigos_total_na_onda, onda_atual_index + 1)
 
 	# Retorna a "densidade" (chance) para o GerenciadorDeTerreno
 	return chance_spawn
 
-# Chamado pelo InimigoBase quando ele morre
-# (Em GameManager.gd)
-
-# Chamado pelo InimigoBase quando ele morre
 func registrar_morte_inimigo():
 	inimigos_mortos += 1
 
@@ -66,4 +62,4 @@ func registrar_morte_inimigo():
 			onda_atual_index = 0 # Recomeça do zero
 
 		# "dar refresh no game level"
-		get_tree().reload_current_scene()
+		get_tree().call_deferred("change_scene_to_file", get_tree().current_scene.scene_file_path)

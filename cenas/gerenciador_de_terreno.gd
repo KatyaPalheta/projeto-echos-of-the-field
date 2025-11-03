@@ -124,7 +124,7 @@ func _ready() -> void:
 				# --- FIM DA ADIÇÃO ---
 			
 			# (A lógica antiga do "primeiro ponto seguro" foi REMOVIDA!)
-	Logger.log("Começar! %s Slimes nasceram no mapa." % inimigos_spawnados_count)
+	Logger.log.call_deferred("Começar! %s Slimes nasceram no mapa." % inimigos_spawnados_count)
 	print("Começar! ", inimigos_spawnados_count, " Slimes nasceram no mapa." )
 	Logger.log("Planejamento Concluído. Desenhando o mapa...")
 
