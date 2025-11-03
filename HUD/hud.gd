@@ -11,6 +11,7 @@ extends CanvasLayer
 # (Baseado no seu print 'image_23a0f0.png', o nome do nó é esse!)
 
 @onready var log_container: VBoxContainer = $LogContainer
+@onready var contador_label: Label = $ContadorLabel
 
 @onready var estrela1: TextureRect = $CargasCuraContainer/Estrela1
 @onready var estrela2: TextureRect = $CargasCuraContainer/Estrela2
@@ -21,6 +22,7 @@ extends CanvasLayer
 
 func _ready():
 	Logger.log_updated.connect(_on_log_updated)
+	GameManager.stats_atualizadas.connect(atualizar_contador_inimigos)
 
 func atualizar_vida(vida_atual: float, vida_maxima: float) -> void:
 	barra_vida.max_value = vida_maxima
@@ -50,3 +52,8 @@ func atualizar_cargas_cura(cargas_restantes: int):
 	estrela1.texture = tex_estrela_cheia if cargas_restantes >= 1 else tex_estrela_vazia
 	estrela2.texture = tex_estrela_cheia if cargas_restantes >= 2 else tex_estrela_vazia
 	estrela3.texture = tex_estrela_cheia if cargas_restantes == 3 else tex_estrela_vazia
+# --- NOVA FUNÇÃO ---
+# Chamada pelo SINAL 'stats_atualizadas' do GameManager
+func atualizar_contador_inimigos(mortos: int, total: int, _onda: int):
+	# (Podemos adicionar o "onda" no futuro!)
+	contador_label.text = "%s / %s" % [mortos, total]

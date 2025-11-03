@@ -1,7 +1,7 @@
 extends CharacterBody2D
 class_name InimigoBase # <-- Muito útil para o futuro!
 
-signal morreu_e_deu_energia(valor)
+#signal morreu_e_deu_energia(valor)
 
 # --- Componentes (como no player) ---
 @onready var animacao: AnimationPlayer = $Animacao
@@ -63,7 +63,12 @@ func sofrer_dano(dano: float, direcao_do_ataque: Vector2):
 func _on_morte():
 	current_state = State.DEAD
 	animacao.play("dead" + _get_suffix_from_direction(face_direction))
-	emit_signal("morreu_e_deu_energia", 25.0)
+
+	# --- LÓGICA ATUALIZADA ---
+	# (Removemos o 'emit_signal("morreu_e_deu_energia", 25.0)')
+
+	# Avisa ao Cérebro Mestre que uma morte ocorreu
+	GameManager.registrar_morte_inimigo()
 
 	# (Aqui vamos desativar colisões e fazer ele sumir)
 func _get_suffix_from_direction(direction: Vector2) -> String:

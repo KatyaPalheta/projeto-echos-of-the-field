@@ -14,7 +14,6 @@ y_sort_enabled = true
 cena_decoracao = ExtResource("2_y68d4")
 player_node = NodePath("../Player")
 cena_slime = ExtResource("4_y68d4")
-chance_inimigo = 0.01
 cor_spawn = Color(0.878431, 0.0941176, 0.0941176, 1)
 chance_decoracao = 0.08
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://8q4xf32uui6"]
+[gd_scene load_steps=15 format=3 uid="uid://8q4xf32uui6"]
 
 [ext_resource type="Texture2D" uid="uid://ch1u4sdlfylev" path="res://HUD/healt.png" id="1_mi5n8"]
 [ext_resource type="Script" uid="uid://cmqp1qwjheqk1" path="res://HUD/hud.gd" id="1_ncsg0"]
@@ -9,6 +9,47 @@
 [ext_resource type="Texture2D" uid="uid://dev8swwlcjiw6" path="res://HUD/energia2.png" id="4_6dvid"]
 [ext_resource type="Texture2D" uid="uid://dlevrech0ardb" path="res://HUD/energia.png" id="5_y0nqa"]
 [ext_resource type="Texture2D" uid="uid://d1g2mjyit7108" path="res://HUD/manastar.png" id="7_ncsg0"]
+[ext_resource type="Texture2D" uid="uid://23jigeks4awg" path="res://HUD/slime icone.png" id="10_q5vrg"]
+[ext_resource type="Texture2D" uid="uid://ca6qiboe6vek" path="res://HUD/painel.png" id="11_03xa0"]
+
+[sub_resource type="Animation" id="Animation_p7pl8"]
+resource_name = "iconeslime"
+length = 2.0
+loop_mode = 1
+step = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame_coords")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0), Vector2i(3, 0), Vector2i(4, 0), Vector2i(5, 0), Vector2i(6, 0), Vector2i(7, 0), Vector2i(8, 0), Vector2i(9, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_4jypp"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame_coords")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2i(0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_bknfm"]
+_data = {
+&"RESET": SubResource("Animation_4jypp"),
+&"iconeslime": SubResource("Animation_p7pl8")
+}
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_ncsg0")
@@ -99,3 +140,30 @@ stretch_mode = 2
 layout_mode = 2
 texture = ExtResource("7_ncsg0")
 stretch_mode = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = 1
+position = Vector2(1192, 47)
+scale = Vector2(5, 5)
+texture = ExtResource("10_q5vrg")
+hframes = 10
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_bknfm")
+}
+autoplay = "iconeslime"
+
+[node name="ContadorLabel" type="Label" parent="."]
+z_index = 1
+offset_left = 1168.0
+offset_top = 64.0
+offset_right = 1221.0
+offset_bottom = 92.0
+theme_override_font_sizes/font_size = 20
+text = "0 / 10"
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(1192, 64)
+scale = Vector2(2, 2)
+texture = ExtResource("11_03xa0")

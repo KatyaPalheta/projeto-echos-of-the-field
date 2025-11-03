@@ -9,7 +9,7 @@ extends Node2D
 @export var cena_decoracao: PackedScene
 @export var player_node: Node2D
 @export var cena_slime: PackedScene
-@export_range(0.0, 1.0) var chance_inimigo: float = 0.05 # <-- 5% de chance por tile
+#@export_range(0.0, 1.0) var chance_inimigo: float = 0.05 # <-- 5% de chance por tile
 
 # --- Lista de Máscaras ---
 @export var lista_mascaras: Array[String] = [
@@ -48,7 +48,7 @@ var spawn_position: Vector2 = Vector2.ZERO
 func _ready() -> void:
 
 	Logger.log("Fase 1: Iniciando Geração (Com Spawn Seguro!)...")
-
+	var chance_inimigo = GameManager.iniciar_onda()
 	# --- PASSO 0: ESCOLHER E CARREGAR A MÁSCARA ---
 	if lista_mascaras.is_empty():
 		push_error("ERRO: A lista de máscaras está vazia!")
@@ -81,6 +81,7 @@ func _ready() -> void:
 	var coords_grama: Array[Vector2i] = []
 	var coords_areia: Array[Vector2i] = []
 
+	var inimigos_spawnados_count: int = 0
 	# Resetamos as variáveis de spawn a cada geração
 	spawn_point_encontrado = false
 	spawn_position = Vector2.ZERO
@@ -119,10 +120,12 @@ func _ready() -> void:
 				
 				if cena_slime != null and randf() < chance_inimigo:
 					_plantar_inimigo(coords)
+					inimigos_spawnados_count += 1 # Conta +1 inimigo!
 				# --- FIM DA ADIÇÃO ---
 			
 			# (A lógica antiga do "primeiro ponto seguro" foi REMOVIDA!)
-
+	Logger.log("Começar! %s Slimes nasceram no mapa." % inimigos_spawnados_count)
+	print("Começar! ", inimigos_spawnados_count, " Slimes nasceram no mapa." )
 	Logger.log("Planejamento Concluído. Desenhando o mapa...")
 
 	# --- PASSO 2: DESENHAR TUDO DE UMA VEZ (INVERTIDO!) ---
@@ -162,6 +165,7 @@ func _ready() -> void:
 				player_node.set_tilemap_refs(land_layer, sand_layer)
 			# --- FIM DA ADIÇÃO ---
 			Logger.log("Player posicionado no PRIMEIRO PONTO SEGURO em: %s" % player_node.global_position)
+			GameManager.set_player_reference(player_node)
 		else:
 			push_warning("Nenhum ponto de spawn seguro foi encontrado!Verifique suas máscaras.")
 			player_node.global_position = Vector2.ZERO # Coloca no (0,0) como fallback
@@ -185,7 +189,7 @@ func _plantar_inimigo(coords_do_tile: Vector2i) -> void:
 
 	# 4. Adiciona o novo slime à cena
 	add_child(new_slime)
-	new_slime.morreu_e_deu_energia.connect(_on_inimigo_morreu_energia)
+	#new_slime.morreu_e_deu_energia.connect(_on_inimigo_morreu_energia)
 
 # --- Função "Helper" _plantar_decoracao (VAI AQUI!) ---
 func _plantar_decoracao(coords_do_tile: Vector2i) -> void:
@@ -219,6 +223,3 @@ func _on_player_morreu() -> void:
 # Chamada pelo SINAL 'morreu_e_deu_energia' de QUALQUER inimigo
 # --- NOVA FUNÇÃO ---
 # Chamada pelo SINAL 'morreu_e_deu_energia' de QUALQUER inimigo
-func _on_inimigo_morreu_energia(valor: float):
-	if player_node != null:
-		player_node.ganhar_energia(valor)
