@@ -213,7 +213,7 @@ tracks/1/path = NodePath("AudioEspada")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0.3),
+"times": PackedFloat32Array(0.1),
 "transitions": PackedFloat32Array(1),
 "values": [{
 "args": [0.0],
@@ -490,7 +490,7 @@ tracks/1/path = NodePath("AudioEspada")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0.3),
+"times": PackedFloat32Array(0.1),
 "transitions": PackedFloat32Array(1),
 "values": [{
 "args": [0.0],
@@ -557,7 +557,7 @@ tracks/1/path = NodePath("AudioEspada")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0.285714),
+"times": PackedFloat32Array(0.1),
 "transitions": PackedFloat32Array(1),
 "values": [{
 "args": [0.0],
@@ -1391,9 +1391,6 @@ libraries = {
 &"": SubResource("AnimationLibrary_erscc")
 }
 autoplay = "magia_fogo_p"
-
-[node name="Camera2D" parent="." index="3"]
-zoom = Vector2(5, 5)
 
 [node name="AudioPassosGrama" type="AudioStreamPlayer2D" parent="." index="4"]
 stream = ExtResource("3_wfqsr")

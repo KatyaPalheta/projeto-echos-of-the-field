@@ -46,3 +46,5 @@ Historico de Atualizações e alterações:
 52 - ao morrer um zoom out acontece e cena se afasta
 53 - ao morrer uma tela de restart aparece para o player jogar novamente
 54 - ao detectar o player um sinal sonoro e um alerta na cabeça do inimigo aparecem
+55 -  golpe duplo agora custa 50
+56 - o botão menu agora pausa o jogo

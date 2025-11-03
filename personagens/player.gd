@@ -11,7 +11,7 @@ var is_dead: bool = false
 var cargas_de_cura: int = 3
 var energia_maxima: float = 100.0
 var energia_atual: float = 0.0
-var custo_golpe_duplo: float = 100.0 # Quanto custa o golpe
+var custo_golpe_duplo: float = 50.0 # Quanto custa o golpe
 var current_attack_damage = 25.0
 
 
@@ -57,8 +57,19 @@ func _on_morte():
 
 func _physics_process(delta):
 
-	# Se o player está no meio de uma ação (atacando/curando),
-	# ele não pode se mover e não pode começar outra ação.
+	if Input.is_action_just_pressed("ui_accept"):
+		# 1. Carrega a cena do menu de pause
+		var pause_menu_scene = load("res://HUD/pause_menu.tscn") # <-- CONFIRME O CAMINHO!
+		var pause_instance = pause_menu_scene.instantiate()
+		
+		# 2. Adiciona o menu à tela
+		add_child(pause_instance)
+		
+		# 3. Pausa o jogo (o menu vai assumir daqui)
+		get_tree().paused = true
+		
+		# 4. Para de processar o player neste frame
+		return
 	if is_in_action:
 		return # Pula todo o resto da função [cite: 52]
 

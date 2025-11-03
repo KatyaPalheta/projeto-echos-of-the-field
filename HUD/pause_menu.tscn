@@ -1,0 +1,49 @@
+[gd_scene load_steps=4 format=3 uid="uid://c8ob5jraxijfa"]
+
+[ext_resource type="Texture2D" uid="uid://x0rdr7moyhbt" path="res://HUD/botton1.png" id="1_ppbhg"]
+[ext_resource type="Script" uid="uid://mhfddi8jn34c" path="res://HUD/PauseMenu.gd" id="1_rlg28"]
+[ext_resource type="Texture2D" uid="uid://bh1jn1iracu3n" path="res://HUD/botton2.png" id="2_rlg28"]
+
+[node name="PauseMenu" type="CanvasLayer"]
+process_mode = 3
+script = ExtResource("1_rlg28")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.215686)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -118.0
+offset_top = -68.0
+offset_right = -65.9999
+offset_bottom = -28.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(5, 5)
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="TextureButton" type="TextureButton" parent="VBoxContainer"]
+layout_mode = 2
+texture_normal = ExtResource("1_ppbhg")
+texture_pressed = ExtResource("2_rlg28")
+
+[node name="Label" type="Label" parent="VBoxContainer/TextureButton"]
+layout_mode = 0
+offset_left = 3.66667
+offset_top = 1.66667
+offset_right = 47.6667
+offset_bottom = 24.6667
+theme_override_font_sizes/font_size = 10
+text = "Continua"
+
+[connection signal="pressed" from="VBoxContainer/TextureButton" to="." method="_on_continue_button_pressed"]

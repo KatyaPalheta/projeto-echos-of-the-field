@@ -3,7 +3,6 @@ extends CanvasLayer
 # Pega as referências das três barras
 @onready var barra_vida: TextureProgressBar = $BarraVida
 @onready var barra_energia: TextureProgressBar = $BarraEnergia
-@onready var barra_mana: TextureProgressBar = $BarraMana
 
 @onready var vida_label: Label = $VidaLabel
 
@@ -37,9 +36,6 @@ func atualizar_energia(energia_atual: float, energia_maxima: float):
 	
 	barra_energia.value = energia_atual
 
-func atualizar_mana(mana_atual: float, mana_maxima: float) -> void:
-	barra_mana.max_value = mana_maxima
-	barra_mana.value = mana_atual
 
 func _on_log_updated(messages: Array[String]):
 	for child in log_container.get_children():
