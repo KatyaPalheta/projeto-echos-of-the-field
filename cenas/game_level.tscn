@@ -19,6 +19,8 @@ chance_decoracao = 0.08
 
 [node name="Player" parent="." instance=ExtResource("2_7cgj1")]
 y_sort_enabled = true
+reticulo_scene = null
+flecha_scene = null
 
 [node name="HUD" parent="." instance=ExtResource("5_hwfjb")]
 

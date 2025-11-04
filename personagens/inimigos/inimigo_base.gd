@@ -37,7 +37,7 @@ func _ready():
 
 
 # Esta é a função que o player vai chamar para causar dano
-func sofrer_dano(dano: float, direcao_do_ataque: Vector2):
+func sofrer_dano(dano: float, direcao_do_ataque: Vector2, aplicar_knockback: bool = true):
 	if current_state == State.DEAD:
 		return 
 

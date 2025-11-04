@@ -62,6 +62,8 @@ volume_db = -11.856
 [node name="AlertaTimer" type="Timer" parent="."]
 wait_time = 0.5
 
+[node name="PontoDoReticulo" type="Marker2D" parent="."]
+
 [connection signal="screen_entered" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_entered"]
 [connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_exited"]
 [connection signal="body_entered" from="ZonaDeDeteccao" to="." method="_on_zona_de_deteccao_body_entered"]

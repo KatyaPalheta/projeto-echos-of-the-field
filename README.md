@@ -44,7 +44,15 @@ Historico de Atualizações e alterações:
 50 - agora os inimigos correm pra fora da tela quando o player morre 
 51 - agora a cor do numerozinho de dano, cura e ataque são diferentes um do outro
 52 - ao morrer um zoom out acontece e cena se afasta
-53 - ao morrer uma tela de restart aparece para o player jogar novamente
+53 - ao morrer uma tela de restart aparece para o player jogar novamente o botão menu aciona o botão restart
 54 - ao detectar o player um sinal sonoro e um alerta na cabeça do inimigo aparecem
-55 -  golpe duplo agora custa 50
-56 - o botão menu agora pausa o jogo
+55 - a barra de energia agora aparece abaixo da vida do player inicia o jogo vazia
+56 - matar um inimigo carrega 25 pontos na barra
+57 -  golpe duplo agora custa 50 e da o dobro de dano
+58 - o botão menu agora pausa o jogo
+59 - 3 estrelas azuis agora são as cargas de cura do player.
+60 - um contador de mosntro foi implementado
+61 - um objetivo de morte de monstro foi adicionado
+62 - um painel mostra monstros mortos / quantos devem ser mortos
+63 - um sistema de ondas foi implementado - ao atingir o objetivo o mapa reseta com chance de monstro maior
+64 - um script de Game Management foi criado para controles globais de persistencia
