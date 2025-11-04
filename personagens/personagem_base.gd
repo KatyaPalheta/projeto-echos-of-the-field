@@ -144,7 +144,9 @@ func _physics_process(_delta: float) -> void:
 	   not _animation.current_animation.begins_with("espada_") and \
 	   not _animation.current_animation.begins_with("magia_cura_") and \
 	   not _animation.current_animation.begins_with("hurt_") and \
-	   not _animation.current_animation.begins_with("morte_"):
+	   not _animation.current_animation.begins_with("morte_") and \
+	   not _animation.current_animation.begins_with("aim_") and \
+	   not _animation.current_animation.begins_with("arco_simples_"):
 		
 		_animation.play(_target_anim_name)
 

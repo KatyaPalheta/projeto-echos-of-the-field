@@ -5,7 +5,10 @@ signal cargas_cura_mudou(cargas_restantes)
 signal energia_mudou(energia_atual, energia_maxima)
 
 @onready var health_component: HealthComponent = $HealthComponent
-# @onready var double_click_timer: Timer = $DoubleClickTimer <-- REMOVIDO!
+@onready var audio_arco_puxar: AudioStreamPlayer2D = $AudioArcoPuxar
+@export var cena_flecha: PackedScene # <-- ARRASTE O 'flecha.tscn' AQUI NO INSPETOR!
+
+var is_aiming: bool = false
 var is_in_action: bool = false
 var is_dead: bool = false
 var cargas_de_cura: int = 3
@@ -55,128 +58,118 @@ func _on_morte():
 	
 	Logger.log("O PLAYER MORREU!")
 
+# [Em: player.gd]
+
 func _physics_process(delta):
 
+	# 1. Checagem de Pausa
 	if Input.is_action_just_pressed("ui_accept"):
-		# 1. Carrega a cena do menu de pause
-		var pause_menu_scene = load("res://HUD/pause_menu.tscn") # <-- CONFIRME O CAMINHO!
+		var pause_menu_scene = load("res://HUD/pause_menu.tscn")
 		var pause_instance = pause_menu_scene.instantiate()
-		
-		# 2. Adiciona o menu à tela
 		add_child(pause_instance)
-		
-		# 3. Pausa o jogo (o menu vai assumir daqui)
 		get_tree().paused = true
-		
-		# 4. Para de processar o player neste frame
 		return
+
+	# 2. Checagem de "Em Ação"
 	if is_in_action:
-		return # Pula todo o resto da função [cite: 52]
+		return 
 
-	# --- 1. Lógica de Movimento (só roda se NÃO estiver em ação) ---
-	super(delta) 
-
-	# --- 2. Lógica de Animação (vamos pegar a direção) ---
+	# 3. Pegar Direção (para as animações)
 	var anim_sufixo = "_f" 
 	if _face_direction == 1:
 		anim_sufixo = "_c" 
 	elif _face_direction == 2:
 		anim_sufixo = "_p"
 
-	# --- 3. Lógica de Ações (LÓGICA NOVA E RESPONSIVA) ---
+	# --- 4. LÓGICA DE AÇÕES (Prioridade Total) ---
 
-	# Checa se o player está SEGURANDO o botão do ARCO (LB)
+	# --- AÇÕES DE MIRA (LB) ---
 	if Input.is_action_pressed("equip_arco"):
 		
+		# (LÓGICA DO SOM DE "PUXAR")
+		if not is_aiming:
+			audio_arco_puxar.play() 
+		
+		is_aiming = true # Trava o movimento
+		
 		if Input.is_action_just_pressed("ataque_primario"): # LB + X
-			is_in_action = true
-			# _animation.play("arco_simples" + anim_sufixo)
+			is_in_action = true 
+			_animation.play("arco_disparo" + anim_sufixo) 
+			_disparar_flecha(anim_sufixo)
+			audio_arco_puxar.stop() 
 			Logger.log("Player usou ARCO SIMPLES!")
 			
 		elif Input.is_action_just_pressed("ataque_especial"): # LB + Y
-			is_in_action = true
-			# _animation.play("arco_chuva" + anim_sufixo)
-			Logger.log("Player usou CHUVA DE FLECHA!")
+			audio_arco_puxar.stop() 
+			Logger.log("Player usou CHUVA DE FLECHA (Ainda não implementado)!")
 
-	# Checa se o player está SEGURANDO o botão de MAGIA (RB)
+		else:
+			_animation.play("arco_mira" + anim_sufixo) 
+
+	# --- AÇÕES DE MAGIA (RB) ---
 	elif Input.is_action_pressed("equip_magia"):
+		is_aiming = false 
+		audio_arco_puxar.stop() 
+		pass
+
+	# --- AÇÕES PADRÃO (Sem modificador) ---
+	else:
+		if is_aiming:
+			audio_arco_puxar.stop() 
 		
-		if Input.is_action_just_pressed("ataque_primario"): # RB + X
-			is_in_action = true
-			# _animation.play("magia_fogo_simples" + anim_sufixo)
-			Logger.log("Player usou FOGO SIMPLES!")
-			
-		elif Input.is_action_just_pressed("ataque_especial"): # RB + Y
-			is_in_action = true
-			# _animation.play("magia_fogo_master" + anim_sufixo)
-			Logger.log("Player usou FOGO MASTER BLASTER!")
+		is_aiming = false # Garante que não está mirando
 
-	# --- Ações Padrão (sem modificador pressionado) ---
-
-	# Ação de Cura (Botão B)
-	# Ação de Cura (Botão B) - LÓGICA ATUALIZADA
-	elif Input.is_action_just_pressed("curar"):
+		# --- AQUI ESTÁ O CÓDIGO QUE FALTAVA ---
 		
-		# 1. Checa se o player PODE se curar
-		if cargas_de_cura > 0:
-			# 2. Gasta a carga
-			cargas_de_cura -= 1
-			
-			# 3. Executa a cura
-			is_in_action = true 
-			_animation.play("magia_cura" + anim_sufixo) 
-			health_component.curar(25.0)
-			emit_signal("cargas_cura_mudou", cargas_de_cura)
-			
-			# (Vamos adicionar o sinal para o HUD no próximo passo!)
-			Logger.log("Cura usada! Restam: %s" % cargas_de_cura)
-			
-		else:
-			# 4. Acabaram as cargas
-			Logger.log("Sem cargas de cura!")
-			# (Aqui podemos tocar um som de "falha" no futuro)
+		if Input.is_action_just_pressed("curar"):
+			if cargas_de_cura > 0:
+				cargas_de_cura -= 1
+				is_in_action = true 
+				_animation.play("magia_cura" + anim_sufixo) 
+				health_component.curar(25.0)
+				emit_signal("cargas_cura_mudou", cargas_de_cura)
+				Logger.log("Cura usada! Restam: %s" % cargas_de_cura) #[cite: 55-57]
+			else:
+				Logger.log("Sem cargas de cura!") #[cite: 57]
 
-	# ( ... sua lógica de cura (Botão B) vem antes daqui ... ) [cite: 53, 59-60]
-
-	# Ação de Ataque Simples (Botão X) - LÓGICA ATUALIZADA
-	elif Input.is_action_just_pressed("ataque_primario"):
-		is_in_action = true
-		current_attack_damage = 25.0 # <-- CORREÇÃO IMPORTANTE! (Reseta o dano)
-		_animation.play("espada" + anim_sufixo)
-		Logger.log("Player usou ATAQUE SIMPLES!")
-
-	# Ação de Ataque Duplo/Especial (Botão Y) - LÓGICA ATUALIZADA
-	elif Input.is_action_just_pressed("ataque_especial"):
-		
-		# 1. Checa se temos energia suficiente (usando round() para evitar bugs)
-		if round(energia_atual) >= custo_golpe_duplo:
-			# 2. Gasta a energia
-			energia_atual -= custo_golpe_duplo
-			emit_signal("energia_mudou", energia_atual, energia_maxima) # Avisa o HUD [cite: 61]
-			
-			# 3. Executa o golpe
+		elif Input.is_action_just_pressed("ataque_primario"):
 			is_in_action = true
-			current_attack_damage = 50.0 # Dano dobrado! [cite: 61]
-			_animation.play("espada_duplo" + anim_sufixo)
-			Logger.log("Golpe Duplo usado!")
-			
-		else:
-			# 4. Sem energia (AGORA CORRIGIDO - SÓ AVISA!)
-			Logger.log("Sem energia para o Golpe Duplo!")
-			# (O código duplicado de ataque foi removido daqui!)
+			current_attack_damage = 25.0 #[cite: 57]
+			_animation.play("espada" + anim_sufixo)
+			Logger.log("Player usou ATAQUE SIMPLES!") #[cite: 57]
+
+		elif Input.is_action_just_pressed("ataque_especial"):
+			if round(energia_atual) >= custo_golpe_duplo: #[cite: 57]
+				energia_atual -= custo_golpe_duplo #[cite: 57]
+				emit_signal("energia_mudou", energia_atual, energia_maxima) #[cite: 57]
+				is_in_action = true
+				current_attack_damage = 50.0 #[cite: 58]
+				_animation.play("espada_duplo" + anim_sufixo) #[cite: 59]
+				Logger.log("Golpe Duplo usado!") #[cite: 59]
+			else:
+				Logger.log("Sem energia para o Golpe Duplo!") #[cite: 59]
+		# --- FIM DO CÓDIGO QUE FALTAVA ---
+
+
+	# --- 5. LÓGICA DE MOVIMENTO ---
+	if not is_in_action and not is_aiming:
+		super(delta) 
+	else:
+		velocity = Vector2.ZERO
 
 func _on_animation_finished(anim_name: String):
 	
 	# Checa se a animação que terminou é uma de "ação"
-	# (Adicione os nomes das animações de arco/magia aqui quando as tiver)
 	if anim_name.begins_with("espada_") or \
 	   anim_name.begins_with("magia_cura_") or \
 	   anim_name.begins_with("espada_duplo_") or \
-	   anim_name.begins_with("hurt_"): # <-- ADICIONE ISSO AQUI
+	   anim_name.begins_with("hurt_") or \
+	   anim_name.begins_with("arco_disparo_"): # <-- MUDANÇA AQUI
+		
+		# Nota: "arco_mira_" NÃO está aqui.
+		# Isso é intencional! A mira só para quando você solta o botão LB.
 		
 		is_in_action = false # DESTRAVA o player
-
-
 func _on_hit_box_espada_body_entered(body: Node2D) -> void:
 	# 1. Checa se o que acertamos tem o "adesivo" que criamos
 	if body.is_in_group("damageable_enemy"):
@@ -227,3 +220,29 @@ func ganhar_energia(quantidade: float):
 	# Avisa o HUD que a energia mudou!
 	emit_signal("energia_mudou", energia_atual, energia_maxima)
 	Logger.log("Energia ganha! Total: %s" % int(energia_atual))
+# [Em: player.gd]
+# (Nova função, coloque no final do script)
+
+func _disparar_flecha(sufixo_anim: String):
+	if cena_flecha == null:
+		push_warning("Cena da Flecha não configurada no Player!")
+		return
+
+	var flecha = cena_flecha.instantiate()
+	
+	# 1. Define a Direção
+	var direcao_disparo = Vector2.DOWN # Padrão (sufixo "_f")
+	if sufixo_anim == "_c":
+		direcao_disparo = Vector2.UP
+	elif sufixo_anim == "_p":
+		# Se for perfil, checa o flip do sprite
+		direcao_disparo = Vector2.RIGHT if not _sprite.flip_h else Vector2.LEFT
+
+	flecha.direcao = direcao_disparo
+	
+	# 2. Define a Posição Inicial
+	# (Começa no centro do player, ajuste o offset se precisar)
+	flecha.global_position = global_position 
+	
+	# 3. Adiciona a flecha na cena principal (NÃO como filha do player)
+	get_parent().add_child(flecha)

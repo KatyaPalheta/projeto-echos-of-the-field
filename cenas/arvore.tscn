@@ -5,7 +5,7 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jggx3"]
 size = Vector2(8, 16)
 
-[node name="Arvore" type="StaticBody2D"]
+[node name="Arvore" type="StaticBody2D" groups=["obstaculos"]]
 y_sort_enabled = true
 script = ExtResource("1_0a2hk")
 
