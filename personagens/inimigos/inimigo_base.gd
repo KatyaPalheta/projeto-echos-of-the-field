@@ -37,6 +37,8 @@ func _ready():
 
 
 # Esta é a função que o player vai chamar para causar dano
+# [Em: inimigo_base.gd]
+
 func sofrer_dano(dano: float, direcao_do_ataque: Vector2):
 	if current_state == State.DEAD:
 		return 
@@ -45,18 +47,20 @@ func sofrer_dano(dano: float, direcao_do_ataque: Vector2):
 
 	# --- CORREÇÃO DO BUG DE ORDEM ---
 	# O sinal "morreu" já pode ter sido emitido e mudado nosso estado.
-	# Se já morremos, pare aqui! Não toque a animação "hurt".
 	if current_state == State.DEAD:
-		return # Deixa a função _on_morte cuidar do resto.
-
+		return # Deixa a função _on_morte cuidar do resto. [cite: 65]
+	
 	# --- LÓGICA ATUALIZADA ---
-	# Se chegamos aqui, é porque NÃO morremos (só tomamos dano).
 	# Pega o sufixo da direção DE ONDE VEIO O ATAQUE
 	var anim_sufixo = _get_suffix_from_direction(direcao_do_ataque)
 
 	current_state = State.HURT
-	animacao.play("hurt" + anim_sufixo) # Ex: "hurt_p"
-	velocity = direcao_do_ataque * knockback_force
+	animacao.play("hurt" + anim_sufixo) # Ex: "hurt_p" [cite: 67]
+	
+	# --- NOSSA MUDANÇA CHAVE! ---
+	# Só aplica o knockback se a direção do ataque NÃO FOR Vector2.ZERO
+	if direcao_do_ataque != Vector2.ZERO:
+		velocity = direcao_do_ataque * knockback_force
 
 
 # Esta função é chamada pelo SINAL do HealthComponent
