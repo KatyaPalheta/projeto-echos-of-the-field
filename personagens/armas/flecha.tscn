@@ -1,5 +1,14 @@
-[gd_scene format=3 uid="uid://f21j78uq7ea1"]
+[gd_scene load_steps=2 format=3 uid="uid://f21j78uq7ea1"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8d8xc"]
 
 [node name="Flecha" type="Area2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_8d8xc")
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
