@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://f21j78uq7ea1"]
+[gd_scene load_steps=6 format=3 uid="uid://f21j78uq7ea1"]
 
 [ext_resource type="Script" uid="uid://bl1pr6c15cuml" path="res://personagens/armas/flecha.gd" id="1_na6yd"]
+[ext_resource type="PackedScene" uid="uid://rlyp61x5hdm4" path="res://personagens/armas/impacto_flecha.tscn" id="2_3ofii"]
 [ext_resource type="Texture2D" uid="uid://3st2otlgaojd" path="res://personagens/armas/flecha1.png" id="2_garr7"]
 [ext_resource type="AudioStream" uid="uid://b7hcrm28bnblw" path="res://personagens/armas/disparo.MP3" id="3_3ofii"]
 
@@ -9,6 +10,7 @@ size = Vector2(13, 7)
 
 [node name="Flecha" type="Area2D"]
 script = ExtResource("1_na6yd")
+cena_impacto = ExtResource("2_3ofii")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_garr7")

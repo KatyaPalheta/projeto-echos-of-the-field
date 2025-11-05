@@ -33,47 +33,36 @@ func set_tilemap_refs(land_map: TileMapLayer, sand_map: TileMapLayer) -> void:
 	land_layer_ref = land_map
 	sand_layer_ref = sand_map
 
+# [Em: personagem_base.gd]
 
 func _physics_process(_delta: float) -> void:
 	
+	# --- LÓGICA DE MOVIMENTO (8-Way) ---
 	var _direcao: Vector2 = Input.get_vector(
 		"move_esquerda", "move_direita", "move_cima", "move_baixo"
 	)
 	
-	if _direcao.length_squared() > 0.01:
-		if abs(_direcao.x) > 0.01 and abs(_direcao.y) > 0.01:
-			if abs(_direcao.x) > abs(_direcao.y):
-				_direcao.y = 0
-			else:
-				_direcao.x = 0
-			_direcao = _direcao.normalized()
+	# Apenas normalizamos o vetor. Isso permite diagonais
+	_direcao = _direcao.normalized()
 	
 	velocity = _direcao * _velocidade_movimento
 	move_and_slide()
+	# --- FIM DA LÓGICA DE MOVIMENTO ---
+	
 	
 	# --- DETECÇÃO DO SOLO (MÉTODO NOVO: Por Coordenadas de Tile) ---
-	# Checa se o Gerenciador já nos deu as referências
 	if land_layer_ref == null or sand_layer_ref == null:
-		# Se ainda não deu, não faz nada
 		pass 
 	else:
-		# 1. Converte a posição GLOBAL do player para uma coordenada de TILE
 		var map_coords: Vector2i = land_layer_ref.local_to_map(global_position)
 		
-		# 2. Checa AREIA primeiro (porque ela desenha por cima da grama [cite: 17])
-		# get_cell_source_id() retorna -1 se não houver NENHUM tile ali
 		if sand_layer_ref.get_cell_source_id(map_coords) != -1:
 			terreno_atual = "areia"
-		# 3. Se não for areia, checa GRAMA
-		elif land_layer_ref.get_cell_source_id(map_coords) != -1:
+		elif land_layer_ref.get_cell_source_id(map_coords) != -1: #[cite: 74]
 			terreno_atual = "grama"
-		# 4. (Opcional) Se não for nenhum dos dois (ex: água), o terreno_atual
-		#    continua sendo o último que era (grama ou areia).
-			
-	# --- FIM DA DETECÇÃO ---
 	
 	
-	# --- LÓGICA DE ÁUDIO E ANIMAÇÃO (Exatamente como antes) ---
+	# --- LÓGICA DE ÁUDIO E ANIMAÇÃO (ESSA PARTE ESTAVA FALTANDO!) ---
 	var esta_se_movendo_agora: bool = velocity.length_squared() > 0.01
 	var mudou_de_terreno: bool = (terreno_atual != _ultimo_terreno)
 	
@@ -97,7 +86,7 @@ func _physics_process(_delta: float) -> void:
 	_ultimo_terreno = terreno_atual
 	
 	
-	# --- LÓGICA DE ANIMAÇÃO (Exatamente como antes) ---
+	# --- LÓGICA DE ANIMAÇÃO (ESSA PARTE TAMBÉM ESTAVA FALTANDO!) ---
 	if _is_moving:
 		var _abs_vel_x = abs(velocity.x)
 		var _abs_vel_y = abs(velocity.y)
@@ -139,18 +128,17 @@ func _physics_process(_delta: float) -> void:
 		2: 
 			_target_anim_name += "_p"
 	
-	# Esta checagem agora impede o "idle" de interromper uma "ação"
+	# Esta checagem impede o "idle" de interromper uma "ação"
+	# (Note que as animações de arco não estão aqui, pois
+	# elas são controladas pelo 'player.gd', o que está correto)
 	if _animation.current_animation != _target_anim_name and \
 	   not _animation.current_animation.begins_with("espada_") and \
 	   not _animation.current_animation.begins_with("magia_cura_") and \
 	   not _animation.current_animation.begins_with("hurt_") and \
-	   not _animation.current_animation.begins_with("morte_") and \
-	   not _animation.current_animation.begins_with("aim_") and \
-	   not _animation.current_animation.begins_with("arco_simples_"):
+	   not _animation.current_animation.begins_with("morte_"):
 		
 		_animation.play(_target_anim_name)
 
-# --- FUNÇÃO DE ÁUDIO (Exatamente como antes) ---
 func _tocar_som_loop(tipo_terreno: String) -> void:
 	if tipo_terreno == "grama":
 		audio_passos_grama.play()

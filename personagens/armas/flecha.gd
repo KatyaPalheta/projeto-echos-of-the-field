@@ -1,46 +1,59 @@
 # [Script: flecha.gd]
 extends Area2D
 
-# Stats da flecha
+# --- Nossas Variáveis ---
+@export var cena_impacto: PackedScene # (Plugue a cena de impacto aqui no Inspetor!)
+
 var direcao: Vector2 = Vector2.RIGHT
-var velocidade: float = 350.0 # (Ajuste a gosto)
-var dano: float = 10.0
+var velocidade: float = 350.0
+var dano: float = 20.0 # <-- DANO ATUALIZADO!
 
 @onready var audio_disparo = $AudioDisparo
 
 func _ready():
-	# Toca o "zapt" do disparo assim que nasce
 	audio_disparo.play()
 	
-	# Garante que o sprite da flecha olhe para onde vai
-	# (Se sua flecha "deitada" aponta para a Direita, isso funciona)
+	# Define a rotação da flecha (ex: 0°, 90°, 180°...)
 	rotation = direcao.angle()
 	
-	# Conecta os sinais
 	body_entered.connect(_on_body_entered)
-	$VisibleOnScreenNotifier2D.screen_exited.connect(queue_free) # Some se sair da tela
+	$VisibleOnScreenNotifier2D.screen_exited.connect(queue_free)
 
 func _physics_process(delta: float):
-	# O movimento!
 	global_position += direcao * velocidade * delta
 
+# --- FUNÇÃO _on_body_entered ATUALIZADA ---
 func _on_body_entered(body: Node2D):
+	
 	# 1. Checa se acertou um inimigo
 	if body.is_in_group("damageable_enemy"):
-		
-		# Chama a função de dano, mas com Vetor ZERO para não dar knockback
 		body.sofrer_dano(dano, Vector2.ZERO)
 		
-		# (Se vc tiver um som de acerto, toque ele aqui)
+		# (Se tivermos uma cena de impacto configurada, spawna ela)
+		if cena_impacto != null:
+			_spawnar_impacto()
 		
-		# Se destrói
-		queue_free()
+		queue_free() # Flecha se destrói
 
 	# 2. Checa se acertou um obstáculo (ex: Árvore)
-	# (Para isso funcionar, suas Árvores precisam estar no grupo "obstaculos")
 	if body.is_in_group("obstaculos"):
 		
-		# (Toca som de "thunk" na madeira aqui)
+		# (Também spawna o impacto em obstáculos)
+		if cena_impacto != null:
+			_spawnar_impacto()
 		
-		# Se destrói
-		queue_free()
+		queue_free() # Flecha se destrói
+
+# --- NOSSA NOVA FUNÇÃO HELPER ---
+func _spawnar_impacto():
+	# 1. Cria a cena de impacto
+	var impacto = cena_impacto.instantiate()
+	
+	# 2. Posição: Onde a flecha está agora
+	impacto.global_position = global_position
+	
+	# 3. Rotação: A MESMA rotação da flecha! (A MÁGICA QUE VC PEDIU)
+	impacto.rotation = rotation 
+	
+	# 4. Adiciona ao mundo (para não sumir junto com a flecha)
+	get_parent().add_child(impacto)

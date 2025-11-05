@@ -1,0 +1,71 @@
+[gd_scene load_steps=7 format=3 uid="uid://rlyp61x5hdm4"]
+
+[ext_resource type="Texture2D" uid="uid://d2kt4e8xc4dck" path="res://personagens/armas/flecha1impac.png" id="1_80bxq"]
+[ext_resource type="Script" uid="uid://cagl0upyq727p" path="res://personagens/armas/impacto_flecha.gd" id="2_irpc4"]
+[ext_resource type="AudioStream" uid="uid://cg4jy5lf5i46c" path="res://personagens/armas/impacto.MP3" id="2_jidd1"]
+
+[sub_resource type="Animation" id="Animation_irpc4"]
+resource_name = "impacto"
+length = 0.3
+step = 0.07
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0714286, 0.142857, 0.214286),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AudioStreamPlayer2D")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [0.0],
+"method": &"play"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_6ts31"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_wyy45"]
+_data = {
+&"RESET": SubResource("Animation_6ts31"),
+&"impacto": SubResource("Animation_irpc4")
+}
+
+[node name="ImpactoFlecha" type="Sprite2D"]
+texture = ExtResource("1_80bxq")
+hframes = 4
+script = ExtResource("2_irpc4")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_wyy45")
+}
+autoplay = "impacto"
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("2_jidd1")
