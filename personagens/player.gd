@@ -6,7 +6,9 @@ signal energia_mudou(energia_atual, energia_maxima)
 
 @onready var health_component: HealthComponent = $HealthComponent
 @onready var audio_arco_puxar: AudioStreamPlayer2D = $AudioArcoPuxar
-@export var cena_flecha: PackedScene # <-- ARRASTE O 'flecha.tscn' AQUI NO INSPETOR!
+@export var cena_flecha: PackedScene 
+@onready var mira_sprite: Sprite2D = $textura/Mira
+@onready var aim_raycast: RayCast2D = $AimRaycast 
 
 var is_aiming: bool = false
 var is_in_action: bool = false
@@ -16,6 +18,7 @@ var energia_maxima: float = 100.0
 var energia_atual: float = 0.0
 var custo_golpe_duplo: float = 50.0 # Quanto custa o golpe
 var current_attack_damage = 25.0
+var alvo_travado: Node2D = null
 
 
 func _ready():
@@ -59,6 +62,7 @@ func _on_morte():
 	Logger.log("O PLAYER MORREU!")
 
 # [Em: player.gd]
+# [Em: player.gd]
 
 func _physics_process(delta):
 
@@ -72,9 +76,13 @@ func _physics_process(delta):
 
 	# 2. Checagem de "Em Ação"
 	if is_in_action:
+		# (NOVO!) Se estamos em ação (ex: atirando), escondemos a mira
+		if mira_sprite.visible:
+			mira_sprite.visible = false
+			alvo_travado = null
 		return 
 
-	# 3. Pegar Direção (para as animações)
+	# 3. Pegar Direção
 	var anim_sufixo = "_f" 
 	if _face_direction == 1:
 		anim_sufixo = "_c" 
@@ -86,16 +94,27 @@ func _physics_process(delta):
 	# --- AÇÕES DE MIRA (LB) ---
 	if Input.is_action_pressed("equip_arco"):
 		
-		# (LÓGICA DO SOM DE "PUXAR")
 		if not is_aiming:
 			audio_arco_puxar.play() 
 		
-		is_aiming = true # Trava o movimento
+		is_aiming = true 
+
+		# --- LÓGICA DO RAYCAST (AQUI!) ---
+		_atualizar_alvo_com_raycast(anim_sufixo)
+		
+		# --- LÓGICA DA MIRA VISUAL (AQUI!) ---
+		if alvo_travado != null:
+			mira_sprite.visible = true
+			mira_sprite.global_position = alvo_travado.global_position
+		else:
+			mira_sprite.visible = false
+		# --- FIM DA LÓGICA DE MIRA ---
+
 		
 		if Input.is_action_just_pressed("ataque_primario"): # LB + X
 			is_in_action = true 
 			_animation.play("arco_disparo" + anim_sufixo) 
-			_disparar_flecha(anim_sufixo)
+			_disparar_flecha(anim_sufixo) # (Agora vai usar o alvo_travado!)
 			audio_arco_puxar.stop() 
 			Logger.log("Player usou ARCO SIMPLES!")
 			
@@ -109,18 +128,21 @@ func _physics_process(delta):
 	# --- AÇÕES DE MAGIA (RB) ---
 	elif Input.is_action_pressed("equip_magia"):
 		is_aiming = false 
-		audio_arco_puxar.stop() 
+		audio_arco_puxar.stop()
+		mira_sprite.visible = false # (NOVO!) Esconde a mira
+		alvo_travado = null       # (NOVO!) Esquece o alvo
 		pass
 
 	# --- AÇÕES PADRÃO (Sem modificador) ---
 	else:
 		if is_aiming:
 			audio_arco_puxar.stop() 
+			mira_sprite.visible = false # (NOVO!) Esconde a mira
+			alvo_travado = null       # (NOVO!) Esquece o alvo
 		
-		is_aiming = false # Garante que não está mirando
+		is_aiming = false 
 
-		# --- AQUI ESTÁ O CÓDIGO QUE FALTAVA ---
-		
+		# ... (lógica de cura, espada, etc. continua igual) ...
 		if Input.is_action_just_pressed("curar"):
 			if cargas_de_cura > 0:
 				cargas_de_cura -= 1
@@ -128,28 +150,26 @@ func _physics_process(delta):
 				_animation.play("magia_cura" + anim_sufixo) 
 				health_component.curar(25.0)
 				emit_signal("cargas_cura_mudou", cargas_de_cura)
-				Logger.log("Cura usada! Restam: %s" % cargas_de_cura) #[cite: 55-57]
+				Logger.log("Cura usada! Restam: %s" % cargas_de_cura)
 			else:
-				Logger.log("Sem cargas de cura!") #[cite: 57]
+				Logger.log("Sem cargas de cura!")
 
 		elif Input.is_action_just_pressed("ataque_primario"):
 			is_in_action = true
-			current_attack_damage = 25.0 #[cite: 57]
+			current_attack_damage = 25.0
 			_animation.play("espada" + anim_sufixo)
-			Logger.log("Player usou ATAQUE SIMPLES!") #[cite: 57]
+			Logger.log("Player usou ATAQUE SIMPLES!")
 
 		elif Input.is_action_just_pressed("ataque_especial"):
-			if round(energia_atual) >= custo_golpe_duplo: #[cite: 57]
-				energia_atual -= custo_golpe_duplo #[cite: 57]
-				emit_signal("energia_mudou", energia_atual, energia_maxima) #[cite: 57]
+			if round(energia_atual) >= custo_golpe_duplo:
+				energia_atual -= custo_golpe_duplo
+				emit_signal("energia_mudou", energia_atual, energia_maxima)
 				is_in_action = true
-				current_attack_damage = 50.0 #[cite: 58]
-				_animation.play("espada_duplo" + anim_sufixo) #[cite: 59]
-				Logger.log("Golpe Duplo usado!") #[cite: 59]
+				current_attack_damage = 50.0
+				_animation.play("espada_duplo" + anim_sufixo)
+				Logger.log("Golpe Duplo usado!")
 			else:
-				Logger.log("Sem energia para o Golpe Duplo!") #[cite: 59]
-		# --- FIM DO CÓDIGO QUE FALTAVA ---
-
+				Logger.log("Sem energia para o Golpe Duplo!")
 
 	# --- 5. LÓGICA DE MOVIMENTO ---
 	if not is_in_action and not is_aiming:
@@ -222,6 +242,7 @@ func ganhar_energia(quantidade: float):
 	Logger.log("Energia ganha! Total: %s" % int(energia_atual))
 # [Em: player.gd]
 # (Nova função, coloque no final do script)
+# [Em: player.gd]
 
 func _disparar_flecha(sufixo_anim: String):
 	if cena_flecha == null:
@@ -229,20 +250,57 @@ func _disparar_flecha(sufixo_anim: String):
 		return
 
 	var flecha = cena_flecha.instantiate()
+	var direcao_disparo: Vector2
+
+	# --- LÓGICA DE DIREÇÃO ATUALIZADA ---
 	
-	# 1. Define a Direção
-	var direcao_disparo = Vector2.DOWN # Padrão (sufixo "_f")
-	if sufixo_anim == "_c":
-		direcao_disparo = Vector2.UP
-	elif sufixo_anim == "_p":
-		# Se for perfil, checa o flip do sprite
-		direcao_disparo = Vector2.RIGHT if not _sprite.flip_h else Vector2.LEFT
+	# 1. Se temos um alvo travado...
+	if alvo_travado != null:
+		# ... a direção é do player ATÉ o alvo!
+		direcao_disparo = (alvo_travado.global_position - global_position).normalized()
+
+	# 2. Se NÃO temos alvo (tiro cego)...
+	else:
+		# ... a direção é para onde o player está olhando (como era antes).
+		if sufixo_anim == "_c":
+			direcao_disparo = Vector2.UP
+		elif sufixo_anim == "_p":
+			direcao_disparo = Vector2.RIGHT if not _sprite.flip_h else Vector2.LEFT
+		else: # Padrão (sufixo "_f")
+			direcao_disparo = Vector2.DOWN
 
 	flecha.direcao = direcao_disparo
 	
 	# 2. Define a Posição Inicial
-	# (Começa no centro do player, ajuste o offset se precisar)
 	flecha.global_position = global_position 
 	
-	# 3. Adiciona a flecha na cena principal (NÃO como filha do player)
+	# 3. Adiciona a flecha na cena principal
 	get_parent().add_child(flecha)
+# [Em: player.gd]
+# (Nova função, coloque no final do script)
+
+func _atualizar_alvo_com_raycast(sufixo_anim: String):
+	# 1. Aponta o RayCast na direção correta
+	var comprimento_raio = aim_raycast.target_position.x # (Pega o 100 que configuramos)
+	
+	if sufixo_anim == "_c":
+		aim_raycast.target_position = Vector2(0, -comprimento_raio)
+	elif sufixo_anim == "_p":
+		var dir_x = comprimento_raio if not _sprite.flip_h else -comprimento_raio
+		aim_raycast.target_position = Vector2(dir_x, 0)
+	else: # Padrão (sufixo "_f")
+		aim_raycast.target_position = Vector2(0, comprimento_raio)
+
+	# 2. Força o RayCast a checar AGORA
+	aim_raycast.force_raycast_update()
+
+	# 3. Checa o resultado
+	if aim_raycast.is_colliding():
+		var corpo = aim_raycast.get_collider()
+		# Checa se o que acertamos é um inimigo válido
+		if corpo.is_in_group("damageable_enemy"):
+			alvo_travado = corpo
+			return # Achamos um alvo!
+			
+	# 4. Se não colidiu, ou não era um inimigo...
+	alvo_travado = null # ...esquecemos o alvo.

@@ -48,3 +48,4 @@ Historico de Atualizações e alterações:
 54 - ao detectar o player um sinal sonoro e um alerta na cabeça do inimigo aparecem
 55 -  golpe duplo agora custa 50
 56 - o botão menu agora pausa o jogo
+57 - o botão LB ativa o arco, ele dispara uma flecha com o X
