@@ -1,0 +1,25 @@
+[gd_scene load_steps=6 format=3 uid="uid://cia0lbt2y4dco"]
+
+[ext_resource type="Texture2D" uid="uid://c3gdow3x3hvih" path="res://personagens/armas/missel.png" id="1_508ma"]
+[ext_resource type="Script" uid="uid://c807pmjr222qc" path="res://personagens/armas/missil_de_fogo.gd" id="1_cbs8m"]
+[ext_resource type="AudioStream" uid="uid://da67tpleacs6f" path="res://personagens/armas/fire_magic.MP3" id="2_cbs8m"]
+[ext_resource type="PackedScene" uid="uid://h5wlqvevsnko" path="res://personagens/armas/impacto_fogo.tscn" id="2_v20as"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_v20as"]
+size = Vector2(10, 7)
+
+[node name="MissilDeFogo" type="Area2D"]
+collision_layer = 0
+script = ExtResource("1_cbs8m")
+cena_impacto_fogo = ExtResource("2_v20as")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_508ma")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_v20as")
+
+[node name="AudioFloush" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("2_cbs8m")
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
