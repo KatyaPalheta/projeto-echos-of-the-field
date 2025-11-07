@@ -8,7 +8,7 @@ signal energia_mudou(energia_atual, energia_maxima)
 @onready var audio_arco_puxar: AudioStreamPlayer2D = $AudioArcoPuxar
 @export var cena_flecha: PackedScene 
 @onready var mira_sprite: Sprite2D = $textura/Mira
-@onready var aim_raycast: RayCast2D = $AimRaycast 
+@onready var cone_de_mira: Area2D = $ConeDeMira
 
 var is_aiming: bool = false
 var is_in_action: bool = false
@@ -63,6 +63,8 @@ func _on_morte():
 
 # [Em: player.gd]
 # [Em: player.gd]
+# [Em: player.gd]
+# Substitua sua _physics_process inteira por esta:
 
 func _physics_process(delta):
 
@@ -76,7 +78,7 @@ func _physics_process(delta):
 
 	# 2. Checagem de "Em Ação"
 	if is_in_action:
-		# (NOVO!) Se estamos em ação (ex: atirando), escondemos a mira
+		# Se estamos em ação (ex: atirando), escondemos a mira
 		if mira_sprite.visible:
 			mira_sprite.visible = false
 			alvo_travado = null
@@ -91,7 +93,7 @@ func _physics_process(delta):
 
 	# --- 4. LÓGICA DE AÇÕES (Prioridade Total) ---
 
-	# --- AÇÕES DE MIRA (LB) ---
+	# --- AÇÕES DE MIRA (LT - Ação "equip_arco") ---
 	if Input.is_action_pressed("equip_arco"):
 		
 		if not is_aiming:
@@ -99,8 +101,8 @@ func _physics_process(delta):
 		
 		is_aiming = true 
 
-		# --- LÓGICA DO RAYCAST (AQUI!) ---
-		_atualizar_alvo_com_raycast(anim_sufixo)
+		# --- LÓGICA DO CONE (AQUI!) ---
+		_atualizar_alvo_com_cone(anim_sufixo) # <-- MUDANÇA AQUI
 		
 		# --- LÓGICA DA MIRA VISUAL (AQUI!) ---
 		if alvo_travado != null:
@@ -111,34 +113,51 @@ func _physics_process(delta):
 		# --- FIM DA LÓGICA DE MIRA ---
 
 		
-		if Input.is_action_just_pressed("ataque_primario"): # LB + X
+		if Input.is_action_just_pressed("ataque_primario"): # LT + X
 			is_in_action = true 
 			_animation.play("arco_disparo" + anim_sufixo) 
-			_disparar_flecha(anim_sufixo) # (Agora vai usar o alvo_travado!)
+			_disparar_flecha(anim_sufixo) 
 			audio_arco_puxar.stop() 
 			Logger.log("Player usou ARCO SIMPLES!")
 			
-		elif Input.is_action_just_pressed("ataque_especial"): # LB + Y
-			audio_arco_puxar.stop() 
-			Logger.log("Player usou CHUVA DE FLECHA (Ainda não implementado)!")
+		elif Input.is_action_just_pressed("ataque_especial"): # LT + Y
+			
+			# --- LÓGICA DA RAJADA (AQUI!) ---
+			# Checa se temos energia (usando a mesma var da espada)
+			if round(energia_atual) >= custo_golpe_duplo:
+				energia_atual -= custo_golpe_duplo
+				emit_signal("energia_mudou", energia_atual, energia_maxima)
+				
+				is_in_action = true 
+				audio_arco_puxar.stop() 
+				_animation.play("arco_disparo" + anim_sufixo) # (Reusa a animação de disparo)
+				
+				# Chama a nova função de rajada
+				_disparar_rajada_de_flechas(anim_sufixo)
+				
+				Logger.log("Player usou RAJADA DE FLECHAS!")
+			else:
+				Logger.log("Sem energia para a Rajada de Flechas!")
+			# --- FIM DA LÓGICA DA RAJADA ---
 
 		else:
+			# Se não atirou, toca a animação de "mirar"
 			_animation.play("arco_mira" + anim_sufixo) 
 
 	# --- AÇÕES DE MAGIA (RB) ---
 	elif Input.is_action_pressed("equip_magia"):
 		is_aiming = false 
 		audio_arco_puxar.stop()
-		mira_sprite.visible = false # (NOVO!) Esconde a mira
-		alvo_travado = null       # (NOVO!) Esquece o alvo
-		pass
+		mira_sprite.visible = false # Esconde a mira
+		alvo_travado = null       # Esquece o alvo
+		pass # (Aqui virá a lógica da US-61)
 
 	# --- AÇÕES PADRÃO (Sem modificador) ---
 	else:
 		if is_aiming:
 			audio_arco_puxar.stop() 
-			mira_sprite.visible = false # (NOVO!) Esconde a mira
-			alvo_travado = null       # (NOVO!) Esquece o alvo
+			mira_sprite.visible = false # Esconde a mira
+			alvo_travado = null       # Esquece o alvo
 		
 		is_aiming = false 
 
@@ -173,6 +192,7 @@ func _physics_process(delta):
 
 	# --- 5. LÓGICA DE MOVIMENTO ---
 	if not is_in_action and not is_aiming:
+		# (Chama o _physics_process do personagem_base.gd)
 		super(delta) 
 	else:
 		velocity = Vector2.ZERO
@@ -279,28 +299,61 @@ func _disparar_flecha(sufixo_anim: String):
 # [Em: player.gd]
 # (Nova função, coloque no final do script)
 
-func _atualizar_alvo_com_raycast(sufixo_anim: String):
-	# 1. Aponta o RayCast na direção correta
-	var comprimento_raio = aim_raycast.target_position.x # (Pega o 100 que configuramos)
-	
+# --- NOVA FUNÇÃO (Substitui a _atualizar_alvo_com_raycast) ---
+# Atualiza o alvo baseado no inimigo mais próximo dentro do ConeDeMira.
+func _atualizar_alvo_com_cone(sufixo_anim: String):
+	# 1. Gira o cone para apontar na direção do player
+	# (0 rad = baixo, -PI/2 = esquerda, PI/2 = direita, PI = cima)
 	if sufixo_anim == "_c":
-		aim_raycast.target_position = Vector2(0, -comprimento_raio)
+		cone_de_mira.rotation = PI
 	elif sufixo_anim == "_p":
-		var dir_x = comprimento_raio if not _sprite.flip_h else -comprimento_raio
-		aim_raycast.target_position = Vector2(dir_x, 0)
+		# Usamos o flip do sprite para saber se é esquerda ou direita
+		cone_de_mira.rotation = PI / 2.0 if _sprite.flip_h else -PI / 2.0
 	else: # Padrão (sufixo "_f")
-		aim_raycast.target_position = Vector2(0, comprimento_raio)
+		cone_de_mira.rotation = 0
 
-	# 2. Força o RayCast a checar AGORA
-	aim_raycast.force_raycast_update()
+	# 2. Pega todos os inimigos que estão DENTRO do cone
+	var corpos_no_cone = cone_de_mira.get_overlapping_bodies()
+	
+	# 3. Se não tem ninguém, limpa o alvo
+	if corpos_no_cone.is_empty():
+		alvo_travado = null
+		return
 
-	# 3. Checa o resultado
-	if aim_raycast.is_colliding():
-		var corpo = aim_raycast.get_collider()
-		# Checa se o que acertamos é um inimigo válido
+	# 4. Se tem inimigos, acha o MAIS PRÓXIMO
+	var inimigo_mais_proximo: Node2D = null
+	var menor_distancia_quadrada: float = INF # Começa com infinito
+	
+	for corpo in corpos_no_cone:
+		# Checa se o corpo é um inimigo válido (do grupo)
 		if corpo.is_in_group("damageable_enemy"):
-			alvo_travado = corpo
-			return # Achamos um alvo!
+			var dist_quadrada = global_position.distance_squared_to(corpo.global_position)
 			
-	# 4. Se não colidiu, ou não era um inimigo...
-	alvo_travado = null # ...esquecemos o alvo.
+			if dist_quadrada < menor_distancia_quadrada:
+				menor_distancia_quadrada = dist_quadrada
+				inimigo_mais_proximo = corpo
+
+	# 5. Define o alvo
+	alvo_travado = inimigo_mais_proximo
+# --- NOVA FUNÇÃO (Para o Ataque Especial do Arco) ---
+func _disparar_rajada_de_flechas(sufixo_anim: String):
+	if cena_flecha == null:
+		push_warning("Cena da Flecha não configurada no Player!")
+		return
+
+	# Vamos usar um Timer para disparar as flechas
+	# com um pequeno atraso entre elas (0.1s)
+	
+	# Dispara a Flecha 1 (Imediata)
+	_disparar_flecha(sufixo_anim) 
+	
+	# Dispara a Flecha 2 (Após 0.1s)
+	await get_tree().create_timer(0.1).timeout
+	# (Checa se o player ainda está vivo e mirando)
+	if is_dead or not is_aiming: return
+	_disparar_flecha(sufixo_anim)
+
+	# Dispara a Flecha 3 (Após 0.1s)
+	await get_tree().create_timer(0.1).timeout
+	if is_dead or not is_aiming: return
+	_disparar_flecha(sufixo_anim)

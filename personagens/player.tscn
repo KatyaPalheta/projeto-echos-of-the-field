@@ -1,4 +1,4 @@
-[gd_scene load_steps=68 format=3 uid="uid://cnhkqju6duija"]
+[gd_scene load_steps=69 format=3 uid="uid://cnhkqju6duija"]
 
 [ext_resource type="PackedScene" uid="uid://wfv6d3q4n54l" path="res://personagens/personagem_base.tscn" id="1_g6smn"]
 [ext_resource type="Script" uid="uid://dremfquadjvsr" path="res://personagens/player.gd" id="2_e213c"]
@@ -1456,6 +1456,9 @@ _data = {
 &"walk_p": SubResource("Animation_e213c")
 }
 
+[sub_resource type="ConvexPolygonShape2D" id="ConvexPolygonShape2D_6idsq"]
+points = PackedVector2Array(-10, 10, -48.304, 72, 0, 90, 48.304, 72, 10, 10, 0, 0)
+
 [node name="Player" node_paths=PackedStringArray("_animation") instance=ExtResource("1_g6smn")]
 scale = Vector2(0.993707, 1)
 script = ExtResource("2_e213c")
@@ -1486,6 +1489,7 @@ disabled = true
 
 [node name="Mira" type="Sprite2D" parent="textura" index="1"]
 visible = false
+z_index = 10
 texture = ExtResource("5_6idsq")
 
 [node name="animacao" parent="." index="2"]
@@ -1531,8 +1535,10 @@ volume_db = 3.759
 stream = ExtResource("13_2u5g0")
 pitch_scale = 0.8
 
-[node name="AimRaycast" type="RayCast2D" parent="." index="13"]
-enabled = false
-target_position = Vector2(100, 0)
+[node name="ConeDeMira" type="Area2D" parent="." index="13"]
+collision_layer = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ConeDeMira" index="0"]
+shape = SubResource("ConvexPolygonShape2D_6idsq")
 
 [connection signal="body_entered" from="textura/HitBoxEspada" to="." method="_on_hit_box_espada_body_entered"]
