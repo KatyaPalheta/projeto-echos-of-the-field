@@ -1,4 +1,4 @@
-[gd_scene load_steps=69 format=3 uid="uid://cnhkqju6duija"]
+[gd_scene load_steps=70 format=3 uid="uid://cnhkqju6duija"]
 
 [ext_resource type="PackedScene" uid="uid://wfv6d3q4n54l" path="res://personagens/personagem_base.tscn" id="1_g6smn"]
 [ext_resource type="Script" uid="uid://dremfquadjvsr" path="res://personagens/player.gd" id="2_e213c"]
@@ -15,6 +15,7 @@
 [ext_resource type="AudioStream" uid="uid://cv783c3648n4i" path="res://assets/terrain/audios/dor.MP3" id="11_s3o5a"]
 [ext_resource type="AudioStream" uid="uid://cca3paaurvh1o" path="res://personagens/armas/tencionando.MP3" id="12_8xnse"]
 [ext_resource type="AudioStream" uid="uid://bd0xuxhulvmgc" path="res://personagens/armas/thwackbow.MP3" id="13_2u5g0"]
+[ext_resource type="AudioStream" uid="uid://ye6hc5uoapi5" path="res://personagens/armas/casting.MP3" id="16_5s2va"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_e213c"]
 radius = 2.0
@@ -1463,6 +1464,7 @@ points = PackedVector2Array(-10, 10, -48.304, 72, 0, 90, 48.304, 72, 10, 10, 0, 
 scale = Vector2(0.993707, 1)
 script = ExtResource("2_e213c")
 cena_flecha = ExtResource("3_j7ync")
+cena_missil_de_fogo = null
 _animation = NodePath("animacao")
 
 [node name="colisao" parent="." index="0"]
@@ -1540,5 +1542,8 @@ collision_layer = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ConeDeMira" index="0"]
 shape = SubResource("ConvexPolygonShape2D_6idsq")
+
+[node name="AudioCastMagia" type="AudioStreamPlayer2D" parent="." index="14"]
+stream = ExtResource("16_5s2va")
 
 [connection signal="body_entered" from="textura/HitBoxEspada" to="." method="_on_hit_box_espada_body_entered"]

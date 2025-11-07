@@ -8,6 +8,7 @@ class_name InimigoBase # <-- Muito útil para o futuro!
 @onready var health_component: HealthComponent = $HealthComponent 
 @onready var textura: Sprite2D = $Textura
 @onready var attack_timer: Timer = $AttackTimer
+@onready var audio_hurt: AudioStreamPlayer2D = $AudioHit
 
 @onready var sinal_alerta: Sprite2D = $SinalAlerta
 @onready var audio_alerta: AudioStreamPlayer2D = $AudioAlerta
@@ -45,35 +46,31 @@ func _ready():
 	dot_timer.timeout.connect(_on_dot_timer_timeout)
 	#visible = false
 
-
-# Esta é a função que o player vai chamar para causar dano
-# [Em: inimigo_base.gd]
-
 func sofrer_dano(dano: float, direcao_do_ataque: Vector2):
 	if current_state == State.DEAD:
 		return 
 
 	health_component.sofrer_dano(dano)
 
-	# --- CORREÇÃO DO BUG DE ORDEM ---
-	# O sinal "morreu" já pode ter sido emitido e mudado nosso estado.
+	# --- ATUALIZAÇÃO DE ÁUDIO (Sua ideia!) ---
+	if audio_hurt != null:
+		audio_hurt.play()
+	# --- FIM DA ATUALIZAÇÃO ---
+
+	# O sinal "morreu" já pode ter sido emitido
 	if current_state == State.DEAD:
-		return # Deixa a função _on_morte cuidar do resto. [cite: 65]
+		return 
 	
-	# --- LÓGICA ATUALIZADA ---
-	# Pega o sufixo da direção DE ONDE VEIO O ATAQUE
 	var anim_sufixo = _get_suffix_from_direction(direcao_do_ataque)
 
 	current_state = State.HURT
-	animacao.play("hurt" + anim_sufixo) # Ex: "hurt_p" [cite: 67]
+	animacao.play("hurt" + anim_sufixo) 
 	
-	# --- NOSSA MUDANÇA CHAVE! ---
-	# Só aplica o knockback se a direção do ataque NÃO FOR Vector2.ZERO
-	if direcao_do_ataque != Vector2.ZERO:
+	# (Esta lógica  já cuida do "sem knockback" 
+	#  quando passamos Vector2.ZERO)
+	if direcao_do_ataque != Vector2.ZERO: 
 		velocity = direcao_do_ataque * knockback_force
 
-
-# Esta função é chamada pelo SINAL do HealthComponent
 func _on_morte():
 	current_state = State.DEAD
 	animacao.play("dead" + _get_suffix_from_direction(face_direction))

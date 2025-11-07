@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://cxxjg153b16x5"]
+[gd_scene load_steps=7 format=3 uid="uid://cxxjg153b16x5"]
 
 [ext_resource type="PackedScene" uid="uid://bottcc3i4efoa" path="res://cenas/gerenciador_de_terreno.tscn" id="1_b5r0v"]
 [ext_resource type="PackedScene" uid="uid://cnhkqju6duija" path="res://personagens/player.tscn" id="2_7cgj1"]
 [ext_resource type="PackedScene" uid="uid://cfwfrtql8sweg" path="res://cenas/componente_decorcao.tscn" id="2_y68d4"]
 [ext_resource type="PackedScene" uid="uid://c1oknh4ou4w5u" path="res://personagens/inimigos/smile.tscn" id="4_y68d4"]
+[ext_resource type="PackedScene" uid="uid://cia0lbt2y4dco" path="res://personagens/armas/missil_de_fogo.tscn" id="5_4jypp"]
 [ext_resource type="PackedScene" uid="uid://8q4xf32uui6" path="res://HUD/hud.tscn" id="5_hwfjb"]
 
 [node name="GameLevel" type="Node2D"]
@@ -19,6 +20,7 @@ chance_decoracao = 0.08
 
 [node name="Player" parent="." instance=ExtResource("2_7cgj1")]
 y_sort_enabled = true
+cena_missil_de_fogo = ExtResource("5_4jypp")
 
 [node name="HUD" parent="." instance=ExtResource("5_hwfjb")]
 

@@ -4,11 +4,15 @@ signal player_morreu
 signal cargas_cura_mudou(cargas_restantes)
 signal energia_mudou(energia_atual, energia_maxima)
 
-@onready var health_component: HealthComponent = $HealthComponent
-@onready var audio_arco_puxar: AudioStreamPlayer2D = $AudioArcoPuxar
-@export var cena_flecha: PackedScene 
 @onready var mira_sprite: Sprite2D = $textura/Mira
 @onready var cone_de_mira: Area2D = $ConeDeMira
+@onready var health_component: HealthComponent = $HealthComponent
+@onready var audio_arco_puxar: AudioStreamPlayer2D = $AudioArcoPuxar
+@onready var audio_cast_magia: AudioStreamPlayer2D = $AudioCastMagia
+
+@export var cena_flecha: PackedScene 
+@export var cena_missil_de_fogo: PackedScene
+
 
 var is_aiming: bool = false
 var is_in_action: bool = false
@@ -61,10 +65,8 @@ func _on_morte():
 	
 	Logger.log("O PLAYER MORREU!")
 
-# [Em: player.gd]
-# [Em: player.gd]
-# [Em: player.gd]
-# Substitua sua _physics_process inteira por esta:
+## [Em: player.gd]
+# (Substitua sua _physics_process inteira por esta versão CORRIGIDA)
 
 func _physics_process(delta):
 
@@ -97,21 +99,18 @@ func _physics_process(delta):
 	if Input.is_action_pressed("equip_arco"):
 		
 		if not is_aiming:
-			audio_arco_puxar.play() 
+			audio_arco_puxar.play()
 		
 		is_aiming = true 
+		audio_cast_magia.stop() 
 
-		# --- LÓGICA DO CONE (AQUI!) ---
-		_atualizar_alvo_com_cone(anim_sufixo) # <-- MUDANÇA AQUI
+		_atualizar_alvo_com_cone(anim_sufixo)
 		
-		# --- LÓGICA DA MIRA VISUAL (AQUI!) ---
 		if alvo_travado != null:
 			mira_sprite.visible = true
 			mira_sprite.global_position = alvo_travado.global_position
 		else:
 			mira_sprite.visible = false
-		# --- FIM DA LÓGICA DE MIRA ---
-
 		
 		if Input.is_action_just_pressed("ataque_primario"): # LT + X
 			is_in_action = true 
@@ -121,52 +120,75 @@ func _physics_process(delta):
 			Logger.log("Player usou ARCO SIMPLES!")
 			
 		elif Input.is_action_just_pressed("ataque_especial"): # LT + Y
-			
-			# --- LÓGICA DA RAJADA (AQUI!) ---
-			# Checa se temos energia (usando a mesma var da espada)
 			if round(energia_atual) >= custo_golpe_duplo:
 				energia_atual -= custo_golpe_duplo
 				emit_signal("energia_mudou", energia_atual, energia_maxima)
-				
 				is_in_action = true 
 				audio_arco_puxar.stop() 
-				_animation.play("arco_disparo" + anim_sufixo) # (Reusa a animação de disparo)
-				
-				# Chama a nova função de rajada
+				_animation.play("arco_disparo" + anim_sufixo)
 				_disparar_rajada_de_flechas(anim_sufixo)
-				
 				Logger.log("Player usou RAJADA DE FLECHAS!")
 			else:
 				Logger.log("Sem energia para a Rajada de Flechas!")
-			# --- FIM DA LÓGICA DA RAJADA ---
-
 		else:
-			# Se não atirou, toca a animação de "mirar"
-			_animation.play("arco_mira" + anim_sufixo) 
+			_animation.play("arco_mira" + anim_sufixo)
 
-	# --- AÇÕES DE MAGIA (RB) ---
+	# --- AÇÕES DE MAGIA (RT - Ação "equip_magia") ---
 	elif Input.is_action_pressed("equip_magia"):
-		is_aiming = false 
+		
+		if not is_aiming: 
+			audio_cast_magia.play()
+		
+		is_aiming = true 
 		audio_arco_puxar.stop()
-		mira_sprite.visible = false # Esconde a mira
-		alvo_travado = null       # Esquece o alvo
-		pass # (Aqui virá a lógica da US-61)
+
+		_atualizar_alvo_com_cone(anim_sufixo)
+		
+		if alvo_travado != null:
+			mira_sprite.visible = true
+			mira_sprite.global_position = alvo_travado.global_position
+		else:
+			mira_sprite.visible = false
+
+		if Input.is_action_just_pressed("ataque_primario"): # RT + X
+			is_in_action = true 
+			_animation.play("magia_fogo" + anim_sufixo) 
+			_disparar_missil(anim_sufixo) 
+			Logger.log("Player usou MÍSSIL DE FOGO!")
+			
+		elif Input.is_action_just_pressed("ataque_especial"): # RT + Y
+			if round(energia_atual) >= custo_golpe_duplo:
+				energia_atual -= custo_golpe_duplo
+				emit_signal("energia_mudou", energia_atual, energia_maxima)
+				is_in_action = true
+				_animation.play("magia_fogo" + anim_sufixo)
+				_disparar_leque_de_misseis(anim_sufixo)
+				Logger.log("Player usou LEQUE DE FOGO!")
+			else:
+				Logger.log("Sem energia para o Leque de Fogo!")
+		else:
+			# --- CORREÇÃO AQUI ---
+			# (Se não atirou, toca a animação de "canalizar" em loop)
+			# (Usando o nome que você me disse que existe: "magia_fogo")
+			_animation.play("magia_fogo" + anim_sufixo)
+			# --- FIM DA CORREÇÃO ---
 
 	# --- AÇÕES PADRÃO (Sem modificador) ---
 	else:
 		if is_aiming:
 			audio_arco_puxar.stop() 
-			mira_sprite.visible = false # Esconde a mira
-			alvo_travado = null       # Esquece o alvo
+			audio_cast_magia.stop()
+			mira_sprite.visible = false 
+			alvo_travado = null       
 		
-		is_aiming = false 
+		is_aiming = false
 
 		# ... (lógica de cura, espada, etc. continua igual) ...
 		if Input.is_action_just_pressed("curar"):
 			if cargas_de_cura > 0:
 				cargas_de_cura -= 1
 				is_in_action = true 
-				_animation.play("magia_cura" + anim_sufixo) 
+				_animation.play("magia_cura" + anim_sufixo)
 				health_component.curar(25.0)
 				emit_signal("cargas_cura_mudou", cargas_de_cura)
 				Logger.log("Cura usada! Restam: %s" % cargas_de_cura)
@@ -192,7 +214,6 @@ func _physics_process(delta):
 
 	# --- 5. LÓGICA DE MOVIMENTO ---
 	if not is_in_action and not is_aiming:
-		# (Chama o _physics_process do personagem_base.gd)
 		super(delta) 
 	else:
 		velocity = Vector2.ZERO
@@ -204,10 +225,8 @@ func _on_animation_finished(anim_name: String):
 	   anim_name.begins_with("magia_cura_") or \
 	   anim_name.begins_with("espada_duplo_") or \
 	   anim_name.begins_with("hurt_") or \
-	   anim_name.begins_with("arco_disparo_"): # <-- MUDANÇA AQUI
-		
-		# Nota: "arco_mira_" NÃO está aqui.
-		# Isso é intencional! A mira só para quando você solta o botão LB.
+	   anim_name.begins_with("arco_disparo_") or \
+	   anim_name.begins_with("magia_fogo"): 
 		
 		is_in_action = false # DESTRAVA o player
 func _on_hit_box_espada_body_entered(body: Node2D) -> void:
@@ -357,3 +376,75 @@ func _disparar_rajada_de_flechas(sufixo_anim: String):
 	await get_tree().create_timer(0.1).timeout
 	if is_dead or not is_aiming: return
 	_disparar_flecha(sufixo_anim)
+
+# [Em: player.gd]
+# (Adicione estas DUAS novas funções no final do script)
+
+# (Dispara UM míssil de fogo - RT+X)
+func _disparar_missil(sufixo_anim: String):
+	if cena_missil_de_fogo == null:
+		push_warning("Cena do Míssil de Fogo não configurada no Player!")
+		return
+
+	var missil = cena_missil_de_fogo.instantiate()
+	var direcao_disparo: Vector2
+
+	# --- LÓGICA DE DIREÇÃO (Idêntica à da flecha) ---
+	# 1. Se temos um alvo travado...
+	if alvo_travado != null:
+		direcao_disparo = (alvo_travado.global_position - global_position).normalized() #[cite: 34]
+	# 2. Se NÃO temos alvo (tiro cego)...
+	else:
+		if sufixo_anim == "_c": #[cite: 35]
+			direcao_disparo = Vector2.UP
+		elif sufixo_anim == "_p": #[cite: 35]
+			direcao_disparo = Vector2.RIGHT if not _sprite.flip_h else Vector2.LEFT
+		else: # Padrão (sufixo "_f")
+			direcao_disparo = Vector2.DOWN #[cite: 35]
+	# --- FIM DA LÓGICA DE DIREÇÃO ---
+
+	missil.direcao = direcao_disparo
+	missil.global_position = global_position 
+	get_parent().add_child(missil)
+
+
+# (Dispara o LEQUE de mísseis - RT+Y)
+func _disparar_leque_de_misseis(sufixo_anim: String):
+	if cena_missil_de_fogo == null:
+		push_warning("Cena do Míssil de Fogo não configurada no Player!")
+		return
+
+	var direcao_base: Vector2
+
+	# --- LÓGICA DE DIREÇÃO (Idêntica à da flecha) ---
+	if alvo_travado != null:
+		direcao_base = (alvo_travado.global_position - global_position).normalized() #[cite: 34]
+	else:
+		if sufixo_anim == "_c": #[cite: 35]
+			direcao_base = Vector2.UP
+		elif sufixo_anim == "_p": #[cite: 35]
+			direcao_base = Vector2.RIGHT if not _sprite.flip_h else Vector2.LEFT
+		else: # Padrão (sufixo "_f")
+			direcao_base = Vector2.DOWN #[cite: 35]
+	# --- FIM DA LÓGICA DE DIREÇÃO ---
+
+	# --- LÓGICA DO LEQUE (O que você pediu!) ---
+	var angulo_leque = deg_to_rad(10) # 10 graus de abertura
+
+	# 1. Míssil Esquerdo (-10 graus)
+	var missil_esq = cena_missil_de_fogo.instantiate()
+	missil_esq.direcao = direcao_base.rotated(-angulo_leque)
+	missil_esq.global_position = global_position
+	get_parent().add_child(missil_esq)
+	
+	# 2. Míssil Central (0 graus)
+	var missil_cen = cena_missil_de_fogo.instantiate()
+	missil_cen.direcao = direcao_base
+	missil_cen.global_position = global_position
+	get_parent().add_child(missil_cen)
+	
+	# 3. Míssil Direito (+10 graus)
+	var missil_dir = cena_missil_de_fogo.instantiate()
+	missil_dir.direcao = direcao_base.rotated(angulo_leque)
+	missil_dir.global_position = global_position
+	get_parent().add_child(missil_dir)
