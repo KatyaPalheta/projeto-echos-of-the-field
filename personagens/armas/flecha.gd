@@ -11,7 +11,7 @@ var dano: float = 20.0 # <-- DANO ATUALIZADO!
 @onready var audio_disparo = $AudioDisparo
 
 func _ready():
-	audio_disparo.play()
+	
 	
 	# Define a rotação da flecha (ex: 0°, 90°, 180°...)
 	rotation = direcao.angle()

@@ -226,7 +226,6 @@ func _physics_process(delta):
 	else:
 		velocity = Vector2.ZERO
 		move_and_slide()
-
 func _on_animation_finished(anim_name: String):
 	
 	# --- CORREÇÃO PARTE 2 AQUI ---
@@ -426,10 +425,8 @@ func _disparar_leque_de_misseis(sufixo_anim: String):
 		return
 
 	# --- NOSSAS NOVAS VARIÁVEIS DE CONTROLE ---
-	# (É SÓ MUDAR AQUI PARA TER MAIS MÍSSEIS!)
-	var quantidade_misseis: int = 5 # (Use 3, 5, 7... números ímpares!)
-	var angulo_passo: float = deg_to_rad(10) # 10 graus entre cada míssil
-	# --- FIM DAS VARIÁVEIS ---
+	var quantidade_misseis: int = 3 
+	var angulo_passo: float = deg_to_rad(10) 
 	
 	var direcao_base: Vector2
 
@@ -442,17 +439,17 @@ func _disparar_leque_de_misseis(sufixo_anim: String):
 		direcao_base = Vector2.DOWN
 	
 	# --- A MÁGICA DO LOOP ---
-	# (Calcula o ângulo do primeiro míssil, o mais à esquerda)
-	var angulo_inicial: float = -(quantidade_misseis / 2) * angulo_passo
+	
+	# --- CORREÇÃO DO BUG AMARELO AQUI ---
+	# (Mudamos '2' para '2.0' para forçar a divisão com decimais)
+	var angulo_inicial: float = -(quantidade_misseis / 2.0) * angulo_passo
+	# --- FIM DA CORREÇÃO ---
 	
 	for i in range(quantidade_misseis):
-		# 1. Calcula o ângulo deste míssil
 		var angulo_offset = angulo_inicial + (i * angulo_passo)
 		var direcao_atual = direcao_base.rotated(angulo_offset)
 		
-		# 2. Cria o míssil
 		var missil = cena_missil_de_fogo.instantiate()
 		missil.direcao = direcao_atual
 		missil.global_position = global_position
 		get_parent().add_child(missil)
-	# --- FIM DO LOOP ---

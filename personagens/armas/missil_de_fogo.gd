@@ -22,13 +22,7 @@ func _ready():
 	# Define a rotação (igual fizemos na flecha) 
 	rotation = direcao.angle()
 	
-	# (OPCIONAL: Gire o sprite se o seu desenho estiver "de lado")
-	# sprite.rotation_degrees = 90 
-	
-	# (Plugue seu som "Floush" no stream do AudioFloush no editor)
-	audio_floush.play() #[cite: 28]
-	
-	# Conecta os sinais
+		# Conecta os sinais
 	body_entered.connect(_on_body_entered)
 	notifier.screen_exited.connect(queue_free) 
 
