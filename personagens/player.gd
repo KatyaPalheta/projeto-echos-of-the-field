@@ -64,9 +64,8 @@ func _on_morte():
 	add_child(game_over_instance)
 	
 	Logger.log("O PLAYER MORREU!")
-
-## [Em: player.gd]
-# (Substitua sua _physics_process inteira por esta versão CORRIGIDA)
+# [Em: player.gd]
+# (Substitua sua _physics_process inteira por esta)
 
 func _physics_process(delta):
 
@@ -78,14 +77,6 @@ func _physics_process(delta):
 		get_tree().paused = true
 		return
 
-	# 2. Checagem de "Em Ação"
-	if is_in_action:
-		# Se estamos em ação (ex: atirando), escondemos a mira
-		if mira_sprite.visible:
-			mira_sprite.visible = false
-			alvo_travado = null
-		return 
-
 	# 3. Pegar Direção
 	var anim_sufixo = "_f" 
 	if _face_direction == 1:
@@ -94,15 +85,21 @@ func _physics_process(delta):
 		anim_sufixo = "_p"
 
 	# --- 4. LÓGICA DE AÇÕES (Prioridade Total) ---
+	
+	if is_in_action:
+		pass 
 
 	# --- AÇÕES DE MIRA (LT - Ação "equip_arco") ---
-	if Input.is_action_pressed("equip_arco"):
+	elif Input.is_action_pressed("equip_arco"):
 		
 		if not is_aiming:
 			audio_arco_puxar.play()
 		
 		is_aiming = true 
 		audio_cast_magia.stop() 
+
+		audio_passos_areia.stop()
+		audio_passos_grama.stop()
 
 		_atualizar_alvo_com_cone(anim_sufixo)
 		
@@ -138,9 +135,13 @@ func _physics_process(delta):
 		
 		if not is_aiming: 
 			audio_cast_magia.play()
+			_animation.play("magia_fogo" + anim_sufixo)
 		
 		is_aiming = true 
 		audio_arco_puxar.stop()
+
+		audio_passos_areia.stop()
+		audio_passos_grama.stop()
 
 		_atualizar_alvo_com_cone(anim_sufixo)
 		
@@ -152,7 +153,7 @@ func _physics_process(delta):
 
 		if Input.is_action_just_pressed("ataque_primario"): # RT + X
 			is_in_action = true 
-			_animation.play("magia_fogo" + anim_sufixo) 
+			_animation.play("magia_fogo" + anim_sufixo)
 			_disparar_missil(anim_sufixo) 
 			Logger.log("Player usou MÍSSIL DE FOGO!")
 			
@@ -167,11 +168,7 @@ func _physics_process(delta):
 			else:
 				Logger.log("Sem energia para o Leque de Fogo!")
 		else:
-			# --- CORREÇÃO AQUI ---
-			# (Se não atirou, toca a animação de "canalizar" em loop)
-			# (Usando o nome que você me disse que existe: "magia_fogo")
-			_animation.play("magia_fogo" + anim_sufixo)
-			# --- FIM DA CORREÇÃO ---
+			pass
 
 	# --- AÇÕES PADRÃO (Sem modificador) ---
 	else:
@@ -179,11 +176,22 @@ func _physics_process(delta):
 			audio_arco_puxar.stop() 
 			audio_cast_magia.stop()
 			mira_sprite.visible = false 
-			alvo_travado = null       
-		
+			alvo_travado = null
+			
+			# --- O POLIMENTO DO "CANCELAR" ESTÁ AQUI! ---
+			# Se a animação atual é uma de "mira" (arco) ou 
+			# "canalizar" (fogo), e nós NÃO acabamos de atirar...
+			if not is_in_action and ( \
+			   _animation.current_animation.begins_with("arco_mira_") or \
+			   _animation.current_animation.begins_with("magia_fogo_") \
+			   ):
+				
+				# ... Cancela ela e volta pro "idle" IMEDIATAMENTE!
+				_animation.play("idle" + anim_sufixo)
+			# --- FIM DA CORREÇÃO ---
+			
 		is_aiming = false
 
-		# ... (lógica de cura, espada, etc. continua igual) ...
 		if Input.is_action_just_pressed("curar"):
 			if cargas_de_cura > 0:
 				cargas_de_cura -= 1
@@ -217,16 +225,17 @@ func _physics_process(delta):
 		super(delta) 
 	else:
 		velocity = Vector2.ZERO
+		move_and_slide()
 
 func _on_animation_finished(anim_name: String):
 	
-	# Checa se a animação que terminou é uma de "ação"
+	# --- CORREÇÃO PARTE 2 AQUI ---
 	if anim_name.begins_with("espada_") or \
 	   anim_name.begins_with("magia_cura_") or \
 	   anim_name.begins_with("espada_duplo_") or \
 	   anim_name.begins_with("hurt_") or \
 	   anim_name.begins_with("arco_disparo_") or \
-	   anim_name.begins_with("magia_fogo"): 
+	   anim_name.begins_with("magia_fogo_"): 
 		
 		is_in_action = false # DESTRAVA o player
 func _on_hit_box_espada_body_entered(body: Node2D) -> void:
@@ -406,45 +415,44 @@ func _disparar_missil(sufixo_anim: String):
 	missil.direcao = direcao_disparo
 	missil.global_position = global_position 
 	get_parent().add_child(missil)
-
+# [Em: player.gd]
+# (Substitua SÓ esta função)
 
 # (Dispara o LEQUE de mísseis - RT+Y)
+# --- VERSÃO "ARQUITETO" (Com Loop!) ---
 func _disparar_leque_de_misseis(sufixo_anim: String):
 	if cena_missil_de_fogo == null:
 		push_warning("Cena do Míssil de Fogo não configurada no Player!")
 		return
 
+	# --- NOSSAS NOVAS VARIÁVEIS DE CONTROLE ---
+	# (É SÓ MUDAR AQUI PARA TER MAIS MÍSSEIS!)
+	var quantidade_misseis: int = 5 # (Use 3, 5, 7... números ímpares!)
+	var angulo_passo: float = deg_to_rad(10) # 10 graus entre cada míssil
+	# --- FIM DAS VARIÁVEIS ---
+	
 	var direcao_base: Vector2
 
-	# --- LÓGICA DE DIREÇÃO (Idêntica à da flecha) ---
-	if alvo_travado != null:
-		direcao_base = (alvo_travado.global_position - global_position).normalized() #[cite: 34]
-	else:
-		if sufixo_anim == "_c": #[cite: 35]
-			direcao_base = Vector2.UP
-		elif sufixo_anim == "_p": #[cite: 35]
-			direcao_base = Vector2.RIGHT if not _sprite.flip_h else Vector2.LEFT
-		else: # Padrão (sufixo "_f")
-			direcao_base = Vector2.DOWN #[cite: 35]
-	# --- FIM DA LÓGICA DE DIREÇÃO ---
-
-	# --- LÓGICA DO LEQUE (O que você pediu!) ---
-	var angulo_leque = deg_to_rad(10) # 10 graus de abertura
-
-	# 1. Míssil Esquerdo (-10 graus)
-	var missil_esq = cena_missil_de_fogo.instantiate()
-	missil_esq.direcao = direcao_base.rotated(-angulo_leque)
-	missil_esq.global_position = global_position
-	get_parent().add_child(missil_esq)
+	# (A lógica "burra" de direção continua igual)
+	if sufixo_anim == "_c":
+		direcao_base = Vector2.UP
+	elif sufixo_anim == "_p":
+		direcao_base = Vector2.RIGHT if not _sprite.flip_h else Vector2.LEFT
+	else: # Padrão (sufixo "_f")
+		direcao_base = Vector2.DOWN
 	
-	# 2. Míssil Central (0 graus)
-	var missil_cen = cena_missil_de_fogo.instantiate()
-	missil_cen.direcao = direcao_base
-	missil_cen.global_position = global_position
-	get_parent().add_child(missil_cen)
+	# --- A MÁGICA DO LOOP ---
+	# (Calcula o ângulo do primeiro míssil, o mais à esquerda)
+	var angulo_inicial: float = -(quantidade_misseis / 2) * angulo_passo
 	
-	# 3. Míssil Direito (+10 graus)
-	var missil_dir = cena_missil_de_fogo.instantiate()
-	missil_dir.direcao = direcao_base.rotated(angulo_leque)
-	missil_dir.global_position = global_position
-	get_parent().add_child(missil_dir)
+	for i in range(quantidade_misseis):
+		# 1. Calcula o ângulo deste míssil
+		var angulo_offset = angulo_inicial + (i * angulo_passo)
+		var direcao_atual = direcao_base.rotated(angulo_offset)
+		
+		# 2. Cria o míssil
+		var missil = cena_missil_de_fogo.instantiate()
+		missil.direcao = direcao_atual
+		missil.global_position = global_position
+		get_parent().add_child(missil)
+	# --- FIM DO LOOP ---

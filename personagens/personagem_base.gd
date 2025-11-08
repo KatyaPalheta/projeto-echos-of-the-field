@@ -34,59 +34,51 @@ func set_tilemap_refs(land_map: TileMapLayer, sand_map: TileMapLayer) -> void:
 	sand_layer_ref = sand_map
 
 # [Em: personagem_base.gd]
-
+# (Substitua esta função inteira)
 func _physics_process(_delta: float) -> void:
 	
-	# --- LÓGICA DE MOVIMENTO (8-Way) ---
 	var _direcao: Vector2 = Input.get_vector(
 		"move_esquerda", "move_direita", "move_cima", "move_baixo"
 	)
 	
-	# Apenas normalizamos o vetor. Isso permite diagonais
-	_direcao = _direcao.normalized()
+	if _direcao.length_squared() > 0.01:
+		if abs(_direcao.x) > 0.01 and abs(_direcao.y) > 0.01:
+			if abs(_direcao.x) > abs(_direcao.y):
+				_direcao.y = 0
+			else:
+				_direcao.x = 0
+			_direcao = _direcao.normalized()
 	
 	velocity = _direcao * _velocidade_movimento
 	move_and_slide()
-	# --- FIM DA LÓGICA DE MOVIMENTO ---
 	
-	
-	# --- DETECÇÃO DO SOLO (MÉTODO NOVO: Por Coordenadas de Tile) ---
 	if land_layer_ref == null or sand_layer_ref == null:
 		pass 
 	else:
 		var map_coords: Vector2i = land_layer_ref.local_to_map(global_position)
-		
 		if sand_layer_ref.get_cell_source_id(map_coords) != -1:
 			terreno_atual = "areia"
-		elif land_layer_ref.get_cell_source_id(map_coords) != -1: #[cite: 74]
+		elif land_layer_ref.get_cell_source_id(map_coords) != -1:
 			terreno_atual = "grama"
 	
-	
-	# --- LÓGICA DE ÁUDIO E ANIMAÇÃO (ESSA PARTE ESTAVA FALTANDO!) ---
 	var esta_se_movendo_agora: bool = velocity.length_squared() > 0.01
 	var mudou_de_terreno: bool = (terreno_atual != _ultimo_terreno)
 	
-	# 1. Player COMEÇOU a se mover
 	if esta_se_movendo_agora and not _is_moving:
 		_tocar_som_loop(terreno_atual)
 	
-	# 2. Player PAROU
 	if not esta_se_movendo_agora and _is_moving:
 		audio_passos_grama.stop()
 		audio_passos_areia.stop()
 	
-	# 3. Player MUDOU DE TERRENO
 	if esta_se_movendo_agora and mudou_de_terreno:
 		audio_passos_grama.stop() 
 		audio_passos_areia.stop()
 		_tocar_som_loop(terreno_atual)
 		
-	# 4. Atualiza os estados
 	_is_moving = esta_se_movendo_agora
 	_ultimo_terreno = terreno_atual
 	
-	
-	# --- LÓGICA DE ANIMAÇÃO (ESSA PARTE TAMBÉM ESTAVA FALTANDO!) ---
 	if _is_moving:
 		var _abs_vel_x = abs(velocity.x)
 		var _abs_vel_y = abs(velocity.y)
@@ -128,14 +120,14 @@ func _physics_process(_delta: float) -> void:
 		2: 
 			_target_anim_name += "_p"
 	
-	# Esta checagem impede o "idle" de interromper uma "ação"
-	# (Note que as animações de arco não estão aqui, pois
-	# elas são controladas pelo 'player.gd', o que está correto)
+	
 	if _animation.current_animation != _target_anim_name and \
 	   not _animation.current_animation.begins_with("espada_") and \
 	   not _animation.current_animation.begins_with("magia_cura_") and \
 	   not _animation.current_animation.begins_with("hurt_") and \
-	   not _animation.current_animation.begins_with("morte_"):
+	   not _animation.current_animation.begins_with("morte_") and \
+	   not _animation.current_animation.begins_with("arco_disparo_") and \
+	   not _animation.current_animation.begins_with("magia_fogo_"):
 		
 		_animation.play(_target_anim_name)
 

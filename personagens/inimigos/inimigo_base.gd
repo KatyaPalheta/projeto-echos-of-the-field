@@ -9,6 +9,8 @@ class_name InimigoBase # <-- Muito útil para o futuro!
 @onready var textura: Sprite2D = $Textura
 @onready var attack_timer: Timer = $AttackTimer
 @onready var audio_hurt: AudioStreamPlayer2D = $AudioHit
+@onready var efeito_queimadura: Sprite2D = $EfeitoQueimadura
+@onready var efeito_queimadura_anim: AnimationPlayer = $EfeitoQueimadura/AnimationPlayer
 
 @onready var sinal_alerta: Sprite2D = $SinalAlerta
 @onready var audio_alerta: AudioStreamPlayer2D = $AudioAlerta
@@ -16,12 +18,12 @@ class_name InimigoBase # <-- Muito útil para o futuro!
 
 @onready var dot_timer: Timer = $DoTTimer
 @onready var audio_queimadura: AudioStreamPlayer2D = $AudioQueimadura
-@export var cena_efeito_queimadura: PackedScene
+
 
 # Variáveis de controle do DoT (Dano Contínuo)
 var dot_dano_por_tick: float = 0.0
 var dot_duracao_restante: float = 0.0
-var node_efeito_queimadura: Node2D = null # Guarda o "foguinho"
+
 
 # --- Variáveis de Estado ---
 # Vamos usar isso para controlar (parado, andando, atacando, morrendo)
@@ -192,40 +194,31 @@ func _on_alerta_timer_timeout() -> void:
 	# Esconde o "!"
 	sinal_alerta.visible = false
 # [Em: inimigo_base.gd]
-# (Nova função, adicione no final do script)
+# (Substitua esta função)
 
-# Esta função é chamada pelo MissilDeFogo!
 func aplicar_queimadura(dano_por_segundo: float, duracao_total: float):
-	# Se já estiver morto, não faz nada
 	if current_state == State.DEAD:
 		return
+	if audio_hurt != null:
+		audio_hurt.play()
 
-	# 1. Salva os valores do dano
 	dot_dano_por_tick = dano_por_segundo
-	
-	# 2. LÓGICA DE REINÍCIO (O que você pediu!)
-	# "Cancela o antigo e começa o novo"
 	dot_duracao_restante = duracao_total
 	
-	# 3. Lógica do Áudio (Loop)
 	if not audio_queimadura.playing:
 		audio_queimadura.play()
 		
-	# 4. Lógica do Efeito Visual (Foguinho)
-	if node_efeito_queimadura == null: # Se ainda não tem um foguinho...
-		if cena_efeito_queimadura != null:
-			node_efeito_queimadura = cena_efeito_queimadura.instantiate()
-			add_child(node_efeito_queimadura) # ...cria e adiciona!
+	# --- ARQUITETURA "BRUTA" ---
+	if efeito_queimadura != null:
+		efeito_queimadura.visible = true
+		
+		# (A linha "position.y = 1" foi REMOVIDA daqui!
+		#  Agora vamos controlar isso no Editor.)
+		
+		if efeito_queimadura_anim != null:
+			efeito_queimadura_anim.play("queimar") 
 	
-	# 5. Lógica do Timer
-	# (Inicia o timer. Mesmo se já estava rodando, ele reinicia a contagem para 1.0s)
-	dot_timer.start(1.0) # O "Tick" do dano será a cada 1 segundo
-# [Em: inimigo_base.gd]
-# (Nova função, adicione no final do script)
-
-# [Em: inimigo_base.gd]
-# (Substitua esta função)
-
+	dot_timer.start(1.0)
 func _on_dot_timer_timeout():
 	# 1. Se a duração acabou, para tudo
 	dot_duracao_restante -= 1.0 # (Subtrai 1 segundo)
@@ -247,16 +240,23 @@ func _on_dot_timer_timeout():
 	dot_timer.start(1.0)
 
 # (Nova função "helper" para limpar tudo)
+# [Em: inimigo_base.gd]
+# (Substitua esta função)
+
 func _parar_queimadura():
 	dot_timer.stop()
 	audio_queimadura.stop()
 	dot_duracao_restante = 0.0
 	
-	# Se o "foguinho" existe, destrói ele
-	if node_efeito_queimadura != null:
-		node_efeito_queimadura.queue_free()
-		node_efeito_queimadura = null
-
+	# --- A SUA ARQUITETURA "BRUTA"! ---
+	if efeito_queimadura != null:
+		# 1. ESCONDE o foguinho!
+		efeito_queimadura.visible = false
+		
+		# 2. PARA a animação (para economizar CPU)
+		if efeito_queimadura_anim != null:
+			efeito_queimadura_anim.stop()
+	# --- FIM DA CORREÇÃO ---
 # --- ATUALIZAÇÃO IMPORTANTE ---
 # Precisamos garantir que a queimadura pare se o inimigo morrer!
 # Substitua sua função _on_morte INTEIRA por esta:

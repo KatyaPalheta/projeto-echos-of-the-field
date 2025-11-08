@@ -6,9 +6,9 @@ signal stats_atualizadas(inimigos_mortos, inimigos_total, onda_atual)
 # --- REGRAS DA "BI" (Nós!) ---
 # Formato: [Inimigos para Matar, Chance de Spawn]
 var ONDAS = [
-	[3, 0.005], # Onda 1: Matar 10, chance de 5%
-	[6, 0.008], # Onda 2: Matar 20, chance de 8%
-	[9, 0.01]  # Onda 3: Matar 40, chance de 12%
+	[10, 0.005], # Onda 1: Matar 10, chance de 5%
+	[15, 0.008], # Onda 2: Matar 20, chance de 8%
+	[20, 0.01]  # Onda 3: Matar 40, chance de 12%
 ]
 
 # --- DADOS PERSISTENTES (O que o jogo "lembra") ---
