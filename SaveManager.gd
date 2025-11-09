@@ -51,13 +51,19 @@ func salvar_dados():
 		Logger.log("[ERRO] FALHA AO SALVAR O JOGO! Código: %s" % erro)
 		# --- FIM DA CORREÇÃO ---
 
-# (Uma função "helper" para o HUD pegar o tempo formatado)
 func get_tempo_total_formatado() -> String:
 	if dados_atuais == null:
 		return "00:00"
 		
-	var total_segundos = int(dados_atuais.tempo_total_gasto)
-	var minutos = total_segundos / 60
-	var segundos = total_segundos % 60
+	# 1. Pega o tempo como float (decimal)
+	var tempo_float: float = dados_atuais.tempo_total_gasto
+	
+	# --- CORREÇÃO AQUI ---
+	# 2. Arredonda para baixo a divisão de floats
+	var minutos = int(floor(tempo_float / 60.0))
+	
+	# 3. Pega o "resto" dos segundos (usando a função de resto de float)
+	var segundos = int(fmod(tempo_float, 60.0))
+	# --- FIM DA CORREÇÃO ---
 	
 	return "%02d:%02d" % [minutos, segundos]
