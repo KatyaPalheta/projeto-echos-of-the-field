@@ -70,7 +70,7 @@ func _on_morte():
 func _physics_process(delta):
 
 	# 1. Checagem de Pausa
-	if Input.is_action_just_pressed("ui_accept"):
+	if Input.is_action_just_pressed("ui_pausar"):
 		var pause_menu_scene = load("res://HUD/pause_menu.tscn")
 		var pause_instance = pause_menu_scene.instantiate()
 		add_child(pause_instance)

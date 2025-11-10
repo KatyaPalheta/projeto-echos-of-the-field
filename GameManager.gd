@@ -43,13 +43,24 @@ func set_player_reference(player: Node2D):
 	player_ref = player
 
 func iniciar_onda() -> float:
-	# ... (esta função continua igual à anterior) ...
 	inimigos_mortos = 0
+	
 	if onda_atual_index < 0 or onda_atual_index >= ONDAS.size():
 		onda_atual_index = 0 
+		
+	# --- A SUA NOVA ARQUITETURA DE GARANTIA! ---
+	if onda_atual_index == 0: # Se esta é a Onda 1...
+		if SaveManager.dados_atuais != null:
+			# ...ZERA o tempo total gasto!
+			SaveManager.dados_atuais.tempo_total_gasto = 0.0
+			Logger.log("Iniciando Onda 1, cronômetro de partida zerado!")
+	# --- FIM DA NOVA ARQUITETURA ---
+
 	var dados_onda = ONDAS[onda_atual_index]
 	inimigos_total_na_onda = dados_onda[0]
 	var chance_spawn = dados_onda[1]
+
+	# (O cronômetro da *onda* começa aqui)
 	tempo_inicio_onda = Time.get_ticks_msec() / 1000.0
 	emit_signal.call_deferred("stats_atualizadas", inimigos_mortos, inimigos_total_na_onda, onda_atual_index + 1)
 	return chance_spawn
