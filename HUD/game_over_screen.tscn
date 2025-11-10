@@ -44,11 +44,11 @@ ignore_texture_size = true
 
 [node name="Label" type="Label" parent="VBoxContainer/TextureButton"]
 layout_mode = 0
-offset_left = 8.4
-offset_top = 2.2
-offset_right = 51.4
-offset_bottom = 25.2
-theme_override_font_sizes/font_size = 10
-text = "Restart"
+offset_left = 7.4
+offset_top = 2.4
+offset_right = 50.4
+offset_bottom = 25.4
+theme_override_font_sizes/font_size = 9
+text = "Reiniciar"
 
 [connection signal="pressed" from="VBoxContainer/TextureButton" to="." method="_on_texture_button_pressed"]

@@ -1,65 +1,129 @@
+# [Em: GameManager.gd]
+# (Versão final com o "Respiro" de 1 segundo)
+
 extends Node
 
-# O sinal que o HUD vai ouvir
 signal stats_atualizadas(inimigos_mortos, inimigos_total, onda_atual)
 
-# --- REGRAS DA "BI" (Nós!) ---
-# Formato: [Inimigos para Matar, Chance de Spawn]
+const CENA_TRANSICAO = preload("res://HUD/transicao_onda.tscn") # (Confirme o caminho!)
+
 var ONDAS = [
-	[10, 0.005], # Onda 1: Matar 10, chance de 5%
-	[15, 0.008], # Onda 2: Matar 20, chance de 8%
-	[20, 0.01]  # Onda 3: Matar 40, chance de 12%
+	[3, 0.005], # Onda 1
+	[6, 0.008], # Onda 2
+	[9, 0.01]  # Onda 3
 ]
 
-# --- DADOS PERSISTENTES (O que o jogo "lembra") ---
 var onda_atual_index: int = 0
 var inimigos_mortos: int = 0
 var inimigos_total_na_onda: int = 10
 var player_ref: Node2D = null
+var tempo_inicio_onda: float = 0.0
 
-# (Futuro) Aqui é onde as "cartinhas" vão ficar:
-# var bonus_velocidade: float = 0.0
-# var bonus_cargas_cura: int = 0
+# --- O NOSSO TIMER DE "RESPIRO"! ---
+var timer_vitoria_onda: Timer
+
+func _ready():
+	# --- CRIA O TIMER EM TEMPO REAL ---
+	# (Já que o GameManager é um Autoload só de script)
+	timer_vitoria_onda = Timer.new()
+	add_child(timer_vitoria_onda) # Adiciona o timer a si mesmo
+	timer_vitoria_onda.one_shot = true # Garante que ele só toque uma vez
+	# --- FIM DA CRIAÇÃO DO TIMER ---
+
+	if SaveManager.dados_atuais != null:
+		onda_atual_index = SaveManager.dados_atuais.onda_mais_alta_salva - 1
+		if onda_atual_index >= ONDAS.size() or onda_atual_index < 0:
+			onda_atual_index = 0 
+			SaveManager.dados_atuais.onda_mais_alta_salva = 1
+			SaveManager.salvar_dados()
+			
+	Logger.log("GameManager iniciando na Onda: %s" % (onda_atual_index + 1))
 
 func set_player_reference(player: Node2D):
 	player_ref = player
-# Chamado pelo GerenciadorDeTerreno quando o jogo começa
+
 func iniciar_onda() -> float:
 	inimigos_mortos = 0
-	var dados_onda = ONDAS[onda_atual_index]
+	
+	if onda_atual_index < 0 or onda_atual_index >= ONDAS.size():
+		onda_atual_index = 0 
+		
+	# --- A SUA NOVA ARQUITETURA DE GARANTIA! ---
+	if onda_atual_index == 0: # Se esta é a Onda 1...
+		if SaveManager.dados_atuais != null:
+			# ...ZERA o tempo total gasto!
+			SaveManager.dados_atuais.tempo_total_gasto = 0.0
+			Logger.log("Iniciando Onda 1, cronômetro de partida zerado!")
+	# --- FIM DA NOVA ARQUITETURA ---
 
+	var dados_onda = ONDAS[onda_atual_index]
 	inimigos_total_na_onda = dados_onda[0]
 	var chance_spawn = dados_onda[1]
 
-	# Avisa o HUD para atualizar (ex: "0 / 10")
+	# (O cronômetro da *onda* começa aqui)
+	tempo_inicio_onda = Time.get_ticks_msec() / 1000.0
 	emit_signal.call_deferred("stats_atualizadas", inimigos_mortos, inimigos_total_na_onda, onda_atual_index + 1)
-
-	# Retorna a "densidade" (chance) para o GerenciadorDeTerreno
 	return chance_spawn
 
 func registrar_morte_inimigo():
 	inimigos_mortos += 1
-
-	# 1. Avisa o HUD para atualizar (ex: "1 / 10")
 	emit_signal("stats_atualizadas", inimigos_mortos, inimigos_total_na_onda, onda_atual_index + 1)
 
-	Logger.log("Inimigo derrotado! (%s / %s)" % [inimigos_mortos, inimigos_total_na_onda])
-
-	# 2. Agora o Cérebro Mestre também dá a energia! (A LÓGICA QUE FALTAVA)
 	if player_ref != null:
-		player_ref.ganhar_energia(25.0) # (Usamos 25.0, o valor antigo)
+		player_ref.ganhar_energia(25.0) 
 	
-	# 3. A LÓGICA DE VITÓRIA DA ONDA (O BLOCO QUE FALTAVA)
-	if inimigos_mortos >= inimigos_total_na_onda:
-		Logger.log("Onda %s completa!" % (onda_atual_index + 1))
+	# Checa se a onda acabou E se o timer NÃO está rodando
+	if inimigos_mortos >= inimigos_total_na_onda and timer_vitoria_onda.is_stopped():
+		
+		var tempo_gasto = (Time.get_ticks_msec() / 1000.0) - tempo_inicio_onda
+		var onda_que_terminou = onda_atual_index + 1
+		
+		var tempo_str = _formatar_tempo(tempo_gasto)
+		var log_msg = "Onda %s completa em %s segundos!" % [onda_que_terminou, tempo_str]
+		Logger.log(log_msg)
 
-		# Avança para a próxima onda
 		onda_atual_index += 1
 
-		# Checa se o jogo acabou
 		if onda_atual_index >= ONDAS.size():
 			Logger.log("VOCÊ VENCEU A DEMO!")
-			onda_atual_index = 0 # Recomeça do zero
+			onda_atual_index = 0 
+		
+		# --- A LÓGICA DO DELAY! ---
+		# 1. Prepara os dados que vamos enviar
+		var dados_para_transicao = {
+			"onda": onda_que_terminou,
+			"tempo": tempo_gasto
+		}
+		
+		# 2. Conecta o sinal 'timeout' do timer à nossa função,
+		#    passando os dados para ela. (CONNECT_ONE_SHOT se autodestrói)
+		timer_vitoria_onda.timeout.connect(
+			_on_timer_vitoria_onda_timeout.bind(dados_para_transicao), 
+			CONNECT_ONE_SHOT
+		)
+		
+		# 3. INICIA O TIMER DE 1 SEGUNDO!
+		timer_vitoria_onda.start(1.0)
+		# --- FIM DA LÓGICA ---
+		
+		# (As linhas que instanciam a cena foram MOVIDAS
+		#  para a função do timer abaixo)
 
-		# "dar refresh no game level"
-		get_tree().call_deferred("change_scene_to_file", get_tree().current_scene.scene_file_path)
+# --- FUNÇÃO TOTALMENTE NOVA ---
+# (Esta função só roda 1 segundo DEPOIS da vitória)
+func _on_timer_vitoria_onda_timeout(dados: Dictionary):
+	if CENA_TRANSICAO != null:
+		var transicao = CENA_TRANSICAO.instantiate()
+		get_tree().current_scene.add_child(transicao)
+		
+		# Pega os dados que o timer "segurou" para nós
+		transicao.setup(dados["onda"], dados["tempo"])
+
+func avancar_para_proxima_onda():
+	get_tree().call_deferred("change_scene_to_file", get_tree().current_scene.scene_file_path)
+
+func _formatar_tempo(tempo_em_segundos: float) -> String:
+	var tempo_float: float = tempo_em_segundos
+	var minutos = int(floor(tempo_float / 60.0))
+	var segundos = int(fmod(tempo_float, 60.0))
+	return "%02d:%02d" % [minutos, segundos]

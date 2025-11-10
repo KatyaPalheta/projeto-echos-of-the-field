@@ -1,0 +1,226 @@
+[gd_scene load_steps=8 format=3 uid="uid://rkhutb0mw62o"]
+
+[ext_resource type="Script" uid="uid://c2d153mxrycf" path="res://HUD/transicao_onda.gd" id="1_gh2km"]
+[ext_resource type="Texture2D" uid="uid://x0rdr7moyhbt" path="res://HUD/botton1.png" id="1_yvg2p"]
+[ext_resource type="Texture2D" uid="uid://bh1jn1iracu3n" path="res://HUD/botton2.png" id="2_gh2km"]
+[ext_resource type="Texture2D" uid="uid://ckipaw06ylrul" path="res://HUD/seletor.png" id="4_ybyr4"]
+
+[sub_resource type="Animation" id="Animation_gh2km"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("VBoxContainer/AnimationPlayer/LabelOndaNum:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [-0.164061]
+}
+
+[sub_resource type="Animation" id="Animation_yvg2p"]
+resource_name = "pulsar"
+length = 2.0
+loop_mode = 1
+step = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("VBoxContainer/AnimationPlayer/LabelOndaNum:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 1, 1.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [0.0174533, -0.0174533, 0.0174533, -0.0174533]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_gh2km"]
+_data = {
+&"RESET": SubResource("Animation_gh2km"),
+&"pulsar": SubResource("Animation_yvg2p")
+}
+
+[node name="TransicaoOnda" type="CanvasLayer"]
+process_mode = 2
+script = ExtResource("1_gh2km")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0.466667)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_direction = 2
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -335.0
+offset_top = 78.0
+offset_right = -199.0
+offset_bottom = 224.0
+grow_horizontal = 2
+scale = Vector2(5, 5)
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_constants/separation = 3
+alignment = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="VBoxContainer"]
+root_node = NodePath("../..")
+libraries = {
+&"": SubResource("AnimationLibrary_gh2km")
+}
+autoplay = "pulsar"
+
+[node name="LabelOndaNum" type="Label" parent="VBoxContainer/AnimationPlayer"]
+offset_left = 588.0
+offset_top = 68.0
+offset_right = 724.0
+offset_bottom = 91.0
+rotation = -0.164061
+scale = Vector2(5, 5)
+pivot_offset = Vector2(68, 11)
+theme_override_colors/font_color = Color(0.894118, 0.807843, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 16
+text = "Onda 1 Concluída"
+horizontal_alignment = 1
+
+[node name="LabelTempoTitulo" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0627451, 0.0588235, 0.505882, 1)
+theme_override_font_sizes/font_size = 10
+text = "Tempo"
+horizontal_alignment = 1
+
+[node name="LabelTempoOnda" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Onda: 00:00"
+horizontal_alignment = 1
+
+[node name="LabelTempoTotal" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Partida: 00:00"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="BotaoContinuar" type="TextureButton" parent="VBoxContainer"]
+layout_mode = 2
+texture_normal = ExtResource("1_yvg2p")
+texture_pressed = ExtResource("2_gh2km")
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="VBoxContainer/BotaoContinuar"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 0.2
+offset_top = -8.0
+offset_right = 0.199997
+offset_bottom = 5.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 9
+text = "Continua"
+horizontal_alignment = 1
+
+[node name="Seletor" type="NinePatchRect" parent="VBoxContainer/BotaoContinuar"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("4_ybyr4")
+region_rect = Rect2(11.0501, 11.3201, 25.8997, 25.7198)
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
+
+[node name="BotaoReiniciar" type="TextureButton" parent="VBoxContainer"]
+layout_mode = 2
+texture_normal = ExtResource("1_yvg2p")
+texture_pressed = ExtResource("2_gh2km")
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="VBoxContainer/BotaoReiniciar"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -8.4
+offset_bottom = 4.6
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 9
+text = "Reiniciar"
+horizontal_alignment = 1
+
+[node name="Seletor" type="NinePatchRect" parent="VBoxContainer/BotaoReiniciar"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("4_ybyr4")
+region_rect = Rect2(11.23, 10.9604, 25.1802, 25.5399)
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
+
+[node name="BotaoSair" type="TextureButton" parent="VBoxContainer"]
+layout_mode = 2
+texture_normal = ExtResource("1_yvg2p")
+texture_pressed = ExtResource("2_gh2km")
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="VBoxContainer/BotaoSair"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 0.4
+offset_top = -8.0
+offset_right = 0.399994
+offset_bottom = 5.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 9
+text = "Sair"
+horizontal_alignment = 1
+
+[node name="Seletor" type="NinePatchRect" parent="VBoxContainer/BotaoSair"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("4_ybyr4")
+region_rect = Rect2(11.23, 11.1402, 25.3601, 25.5399)
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8

@@ -39,11 +39,11 @@ texture_pressed = ExtResource("2_rlg28")
 
 [node name="Label" type="Label" parent="VBoxContainer/TextureButton"]
 layout_mode = 0
-offset_left = 3.66667
-offset_top = 1.66667
-offset_right = 47.6667
-offset_bottom = 24.6667
-theme_override_font_sizes/font_size = 10
+offset_left = 5.4
+offset_top = 2.2
+offset_right = 49.4
+offset_bottom = 25.2
+theme_override_font_sizes/font_size = 9
 text = "Continua"
 
 [connection signal="pressed" from="VBoxContainer/TextureButton" to="." method="_on_continue_button_pressed"]
