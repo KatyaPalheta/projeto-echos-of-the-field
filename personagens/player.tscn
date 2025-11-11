@@ -1,4 +1,4 @@
-[gd_scene load_steps=73 format=3 uid="uid://cnhkqju6duija"]
+[gd_scene load_steps=77 format=3 uid="uid://cnhkqju6duija"]
 
 [ext_resource type="PackedScene" uid="uid://wfv6d3q4n54l" path="res://personagens/personagem_base.tscn" id="1_g6smn"]
 [ext_resource type="Script" uid="uid://dremfquadjvsr" path="res://personagens/player.gd" id="2_e213c"]
@@ -11,10 +11,14 @@
 [ext_resource type="Texture2D" uid="uid://dwpw87gc7rxoi" path="res://personagens/armas/mira.png" id="5_6idsq"]
 [ext_resource type="Script" uid="uid://poeui62rhe38" path="res://personagens/health_component.gd" id="6_jeibu"]
 [ext_resource type="Script" uid="uid://bnga6hjjkm0gc" path="res://personagens/player_states/PlayerMove.gd" id="6_whkjt"]
+[ext_resource type="Script" uid="uid://ccg06midapay3" path="res://personagens/player_states/PlayerAttackSword.gd" id="7_bq0g6"]
 [ext_resource type="PackedScene" uid="uid://bklkio2ubbtxr" path="res://personagens/dano_flutuante.tscn" id="7_pb42p"]
 [ext_resource type="AudioStream" uid="uid://1bvtwrbrhi5k" path="res://assets/terrain/audios/espada.MP3" id="8_erscc"]
+[ext_resource type="Script" uid="uid://bda3sfu1okgyu" path="res://personagens/player_states/PlayerCure.gd" id="8_fqyqi"]
+[ext_resource type="Script" uid="uid://doqhm4yrmxs3n" path="res://personagens/player_states/PlayerAim.gd" id="8_poyi5"]
 [ext_resource type="AudioStream" uid="uid://41vnsiqmmdwe" path="res://assets/terrain/audios/cura.MP3" id="9_20r4p"]
 [ext_resource type="AudioStream" uid="uid://cvw1nbps5nxqw" path="res://assets/terrain/audios/morte_player.MP3" id="10_20r4p"]
+[ext_resource type="Script" uid="uid://b6fgdx0kafcs6" path="res://personagens/player_states/PlayerHurt.gd" id="10_32m0d"]
 [ext_resource type="AudioStream" uid="uid://cv783c3648n4i" path="res://assets/terrain/audios/dor.MP3" id="11_s3o5a"]
 [ext_resource type="AudioStream" uid="uid://cca3paaurvh1o" path="res://personagens/armas/tencionando.MP3" id="12_8xnse"]
 [ext_resource type="AudioStream" uid="uid://bd0xuxhulvmgc" path="res://personagens/armas/thwackbow.MP3" id="13_2u5g0"]
@@ -1478,6 +1482,18 @@ script = ExtResource("5_0du2f")
 
 [node name="Move" type="Node" parent="StateMachine" index="1"]
 script = ExtResource("6_whkjt")
+
+[node name="AttackSword" type="Node" parent="StateMachine" index="2"]
+script = ExtResource("7_bq0g6")
+
+[node name="Aim" type="Node" parent="StateMachine" index="3"]
+script = ExtResource("8_poyi5")
+
+[node name="Cure" type="Node" parent="StateMachine" index="4"]
+script = ExtResource("8_fqyqi")
+
+[node name="Hurt" type="Node" parent="StateMachine" index="5"]
+script = ExtResource("10_32m0d")
 
 [node name="colisao" parent="." index="1"]
 show_behind_parent = true

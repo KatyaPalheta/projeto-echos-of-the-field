@@ -98,37 +98,37 @@ func _on_morte():
 	add_child(game_over_instance)
 	
 	Logger.log("O PLAYER MORREU!")
-
+# [Em: player.gd]
+# (Substitua esta função)
 
 func receber_dano_do_inimigo(dano: float, direcao_do_ataque: Vector2):
-	# (A checagem de 'is_in_action' foi REMOVIDA,
-	#  vamos colocar uma checagem melhor no estado HURT)
-	if health_component.vida_atual == 0.0:
+	# 1. Checa se podemos tomar dano
+	var estado_atual_str = state_machine.current_state.name
+	if is_dead or estado_atual_str == "Hurt":
 		return 
 
+	# --- NOSSO NOVO LOG ---
+	Logger.log(">>> DANO RECEBIDO! Posição atual: %s" % global_position)
+	# --- FIM DO LOG ---
+
+	# 2. Aplica o dano
 	health_component.sofrer_dano(dano)
 	
+	# 3. SE NÃO MORREU, muda para o estado HURT
 	if health_component.vida_atual > 0.0:
-		# (is_in_action = true) -> REMOVIDO
 		
-		# (NO FUTURO: state_machine._change_state("Hurt") )
+		# 1. Pega o nó do estado "Hurt"
+		var hurt_state = state_machine.get_node("Hurt")
 		
-		var anim_sufixo = "_f" 
-		if direcao_do_ataque.y < -0.5: 
-			anim_sufixo = "_c"
-		elif abs(direcao_do_ataque.x) > 0.5: 
-			anim_sufixo = "_p"
+		# 2. "Ensina" a ele a direção do knockback
+		hurt_state.setup_knockback(direcao_do_ataque)
+		
+		# 3. MUDA o estado
+		state_machine._change_state(hurt_state)
 
-		_animation.play("hurt" + anim_sufixo) 
-		velocity = direcao_do_ataque * 300.0
-		
-	
 func _on_animation_finished(anim_name: String):
-	# (A lógica 'is_in_action = false' foi REMOVIDA)
-	# (No futuro, o *próprio estado* vai ouvir esse sinal
-	#  para saber quando ele deve transicionar de volta ao Idle)
-	pass
 
+	pass
 
 # --- FUNÇÕES DE HITBOX E SINAIS (Isso não muda) ---
 

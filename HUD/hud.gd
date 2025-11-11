@@ -75,3 +75,16 @@ func atualizar_contador_inimigos(mortos: int, total: int, _onda: int):
 func _on_onda_timer_timeout() -> void:
 	# Esconde o label "Onda X"
 	onda_label.visible = false
+
+
+func _on_player_vida_atualizada(vida_atual: float, vida_maxima: float) -> void:
+	# Agora sim, chamamos a função que atualiza a barra!
+	atualizar_vida(vida_atual, vida_maxima) #[cite: 1]
+
+func _on_player_energia_mudou(energia_atual: float, energia_maxima: float) -> void:
+	# E aqui também!
+	atualizar_energia(energia_atual, energia_maxima)# [cite: 2]
+
+func _on_player_cargas_cura_mudou(cargas_restantes: int) -> void:
+	# E aqui!
+	atualizar_cargas_cura(cargas_restantes) #[cite: 3]

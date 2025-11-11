@@ -22,3 +22,7 @@ cor_spawn = Color(0.878431, 0.0941176, 0.0941176, 1)
 chance_decoracao = 0.08
 
 [node name="HUD" parent="." instance=ExtResource("5_hwfjb")]
+
+[connection signal="cargas_cura_mudou" from="Player" to="HUD" method="_on_player_cargas_cura_mudou"]
+[connection signal="energia_mudou" from="Player" to="HUD" method="_on_player_energia_mudou"]
+[connection signal="vida_atualizada" from="Player" to="HUD" method="_on_player_vida_atualizada"]

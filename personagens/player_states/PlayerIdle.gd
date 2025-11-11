@@ -1,20 +1,59 @@
 # [Script: PlayerIdle.gd]
 extends EstadoPlayer
-
-# (Vamos deixar o 'enter' e 'exit' vazios por enquanto)
-
+# [Em: PlayerIdle.gd]
+# (Substitua esta função)
 func process_input(event: InputEvent):
-	# Se qualquer ação de movimento for pressionada, muda para o estado "Move"
+	
+	# --- 1. AÇÕES DE AÇÃO (Prioridade) ---
+	if Input.is_action_just_pressed("ataque_primario"): # X
+		player.current_attack_damage = 25.0
+		Logger.log("Player usou ATAQUE SIMPLES!")
+		state_machine._change_state(state_machine.get_node("AttackSword"))
+		return
+
+	if Input.is_action_just_pressed("ataque_especial"): # Y
+		if round(player.energia_atual) >= player.custo_golpe_duplo:
+			player.energia_atual -= player.custo_golpe_duplo
+			player.emit_signal("energia_mudou", player.energia_atual, player.energia_maxima)
+			player.current_attack_damage = 50.0 # Prepara o dano
+			Logger.log("Golpe Duplo usado!")
+			state_machine._change_state(state_machine.get_node("AttackSword"))
+		else:
+			Logger.log("Sem energia para o Golpe Duplo!")
+		return
+		
+	if Input.is_action_just_pressed("curar"): # B
+		if player.cargas_de_cura > 0:
+			player.cargas_de_cura -= 1
+			player.emit_signal("cargas_cura_mudou", player.cargas_de_cura)
+			player.health_component.curar(25.0)
+			Logger.log("Cura usada! Restam: %s" % player.cargas_de_cura)
+			state_machine._change_state(state_machine.get_node("Cure"))
+		else:
+			Logger.log("Sem cargas de cura!")
+		return
+
+	# --- 2. AÇÕES DE MIRA (Modificadores) ---
+	if Input.is_action_pressed("equip_arco"): # LT
+		var aim_state = state_machine.get_node("Aim")
+		aim_state.setup_mira("arco") # Configura o estado ANTES
+		state_machine._change_state(aim_state)
+		return
+		
+	if Input.is_action_pressed("equip_magia"): # RT
+		var aim_state = state_machine.get_node("Aim")
+		aim_state.setup_mira("magia") # Configura o estado ANTES
+		state_machine._change_state(aim_state)
+		return
+
+	# --- 3. AÇÃO DE MOVIMENTO (Menor Prioridade) ---
 	if Input.is_action_pressed("move_esquerda") or \
 	   Input.is_action_pressed("move_direita") or \
 	   Input.is_action_pressed("move_cima") or \
 	   Input.is_action_pressed("move_baixo"):
 		
-		# Pede ao StateMachine para mudar o estado (passando o NOME do nó)
 		state_machine._change_state(state_machine.get_node("Move"))
-		return # (Importante: para de processar aqui)
-# [Em: PlayerIdle.gd]
-# (Substitua esta função)
+		return
 func process_physics(delta: float):
 	# A lógica de "ficar parado"
 	
