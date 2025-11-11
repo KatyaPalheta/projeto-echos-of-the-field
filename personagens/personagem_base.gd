@@ -33,10 +33,13 @@ func set_tilemap_refs(land_map: TileMapLayer, sand_map: TileMapLayer) -> void:
 	land_layer_ref = land_map
 	sand_layer_ref = sand_map
 
-# [Em: personagem_base.gd]
-# (Substitua esta função inteira)
 func _physics_process(_delta: float) -> void:
+	# Esta função agora fica (propositalmente) vazia.
+	# Os estados do player (Idle, Move) agora são
+	# responsáveis por chamar a lógica de áudio.
+	pass
 	
+func execute_movement_logic(delta: float) -> Vector2:
 	var _direcao: Vector2 = Input.get_vector(
 		"move_esquerda", "move_direita", "move_cima", "move_baixo"
 	)
@@ -61,25 +64,10 @@ func _physics_process(_delta: float) -> void:
 		elif land_layer_ref.get_cell_source_id(map_coords) != -1:
 			terreno_atual = "grama"
 	
-	var esta_se_movendo_agora: bool = velocity.length_squared() > 0.01
-	var mudou_de_terreno: bool = (terreno_atual != _ultimo_terreno)
+	# --- A LINHA ABAIXO FOI REMOVIDA DAQUI! ---
+	# _is_moving = velocity.length_squared() > 0.01 
 	
-	if esta_se_movendo_agora and not _is_moving:
-		_tocar_som_loop(terreno_atual)
-	
-	if not esta_se_movendo_agora and _is_moving:
-		audio_passos_grama.stop()
-		audio_passos_areia.stop()
-	
-	if esta_se_movendo_agora and mudou_de_terreno:
-		audio_passos_grama.stop() 
-		audio_passos_areia.stop()
-		_tocar_som_loop(terreno_atual)
-		
-	_is_moving = esta_se_movendo_agora
-	_ultimo_terreno = terreno_atual
-	
-	if _is_moving:
+	if velocity.length_squared() > 0.01: # (Usamos a checagem direta)
 		var _abs_vel_x = abs(velocity.x)
 		var _abs_vel_y = abs(velocity.y)
 		
@@ -107,7 +95,7 @@ func _physics_process(_delta: float) -> void:
 					
 	var _target_anim_name: String = ""
 	
-	if _is_moving:
+	if velocity.length_squared() > 0.01: # (Usamos a checagem direta)
 		_target_anim_name = "run"
 	else:
 		_target_anim_name = "idle"
@@ -130,6 +118,29 @@ func _physics_process(_delta: float) -> void:
 	   not _animation.current_animation.begins_with("magia_fogo_"):
 		
 		_animation.play(_target_anim_name)
+	
+	return _direcao
+
+func _update_footstep_audio():
+	# Esta lógica precisa rodar independente do movimento
+	var esta_se_movendo_agora: bool = velocity.length_squared() > 0.01
+	var mudou_de_terreno: bool = (terreno_atual != _ultimo_terreno)
+	
+	if esta_se_movendo_agora and not _is_moving:
+		_tocar_som_loop(terreno_atual)
+	
+	if not esta_se_movendo_agora and _is_moving:
+		audio_passos_grama.stop()
+		audio_passos_areia.stop()
+	
+	if esta_se_movendo_agora and mudou_de_terreno:
+		audio_passos_grama.stop() 
+		audio_passos_areia.stop()
+		_tocar_som_loop(terreno_atual)
+		
+	#_is_moving = esta_se_movendo_agora (movido para execute_movement_logic)
+	_is_moving = esta_se_movendo_agora
+	_ultimo_terreno = terreno_atual
 
 func _tocar_som_loop(tipo_terreno: String) -> void:
 	if tipo_terreno == "grama":
