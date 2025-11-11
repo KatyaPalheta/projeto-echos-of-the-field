@@ -10,6 +10,9 @@
 [node name="GameLevel" type="Node2D"]
 y_sort_enabled = true
 
+[node name="Player" parent="." instance=ExtResource("2_7cgj1")]
+cena_missil_de_fogo = ExtResource("5_4jypp")
+
 [node name="GerenciadorDeTerreno" parent="." node_paths=PackedStringArray("player_node") instance=ExtResource("1_b5r0v")]
 y_sort_enabled = true
 cena_decoracao = ExtResource("2_y68d4")
@@ -18,12 +21,8 @@ cena_slime = ExtResource("4_y68d4")
 cor_spawn = Color(0.878431, 0.0941176, 0.0941176, 1)
 chance_decoracao = 0.08
 
-[node name="Player" parent="." instance=ExtResource("2_7cgj1")]
-y_sort_enabled = true
-cena_missil_de_fogo = ExtResource("5_4jypp")
-
 [node name="HUD" parent="." instance=ExtResource("5_hwfjb")]
 
-[connection signal="cargas_cura_mudou" from="Player" to="HUD" method="atualizar_cargas_cura"]
-[connection signal="energia_mudou" from="Player" to="HUD" method="atualizar_energia"]
-[connection signal="vida_atualizada" from="Player" to="HUD" method="atualizar_vida"]
+[connection signal="cargas_cura_mudou" from="Player" to="HUD" method="_on_player_cargas_cura_mudou"]
+[connection signal="energia_mudou" from="Player" to="HUD" method="_on_player_energia_mudou"]
+[connection signal="vida_atualizada" from="Player" to="HUD" method="_on_player_vida_atualizada"]
