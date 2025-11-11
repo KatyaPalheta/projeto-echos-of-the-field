@@ -1,4 +1,4 @@
-[gd_scene load_steps=70 format=3 uid="uid://cnhkqju6duija"]
+[gd_scene load_steps=73 format=3 uid="uid://cnhkqju6duija"]
 
 [ext_resource type="PackedScene" uid="uid://wfv6d3q4n54l" path="res://personagens/personagem_base.tscn" id="1_g6smn"]
 [ext_resource type="Script" uid="uid://dremfquadjvsr" path="res://personagens/player.gd" id="2_e213c"]
@@ -6,8 +6,11 @@
 [ext_resource type="PackedScene" uid="uid://f21j78uq7ea1" path="res://personagens/armas/flecha.tscn" id="3_j7ync"]
 [ext_resource type="AudioStream" uid="uid://dtnbhhfn0x1gh" path="res://assets/terrain/audios/passos.MP3" id="3_wfqsr"]
 [ext_resource type="AudioStream" uid="uid://d3hoouw3hpf7q" path="res://assets/terrain/audios/sand.MP3" id="4_of8di"]
+[ext_resource type="Script" uid="uid://brix2vvn8ajax" path="res://personagens/player_states/StateMachine.gd" id="4_q3yxu"]
+[ext_resource type="Script" uid="uid://nsjxkub3o0qp" path="res://personagens/player_states/PlayerIdle.gd" id="5_0du2f"]
 [ext_resource type="Texture2D" uid="uid://dwpw87gc7rxoi" path="res://personagens/armas/mira.png" id="5_6idsq"]
 [ext_resource type="Script" uid="uid://poeui62rhe38" path="res://personagens/health_component.gd" id="6_jeibu"]
+[ext_resource type="Script" uid="uid://bnga6hjjkm0gc" path="res://personagens/player_states/PlayerMove.gd" id="6_whkjt"]
 [ext_resource type="PackedScene" uid="uid://bklkio2ubbtxr" path="res://personagens/dano_flutuante.tscn" id="7_pb42p"]
 [ext_resource type="AudioStream" uid="uid://1bvtwrbrhi5k" path="res://assets/terrain/audios/espada.MP3" id="8_erscc"]
 [ext_resource type="AudioStream" uid="uid://41vnsiqmmdwe" path="res://assets/terrain/audios/cura.MP3" id="9_20r4p"]
@@ -1466,13 +1469,23 @@ cena_flecha = ExtResource("3_j7ync")
 cena_missil_de_fogo = null
 _animation = NodePath("animacao")
 
-[node name="colisao" parent="." index="0"]
+[node name="StateMachine" type="Node" parent="." index="0"]
+script = ExtResource("4_q3yxu")
+initial_state = NodePath("Idle")
+
+[node name="Idle" type="Node" parent="StateMachine" index="0"]
+script = ExtResource("5_0du2f")
+
+[node name="Move" type="Node" parent="StateMachine" index="1"]
+script = ExtResource("6_whkjt")
+
+[node name="colisao" parent="." index="1"]
 show_behind_parent = true
 position = Vector2(-1.90735e-06, 0)
 rotation = 1.5708
 shape = SubResource("CapsuleShape2D_e213c")
 
-[node name="textura" parent="." index="1"]
+[node name="textura" parent="." index="2"]
 texture = ExtResource("2_hkm7i")
 centered = false
 offset = Vector2(-16, -24)
@@ -1493,58 +1506,58 @@ visible = false
 z_index = 10
 texture = ExtResource("5_6idsq")
 
-[node name="animacao" parent="." index="2"]
+[node name="animacao" parent="." index="3"]
 libraries = {
 &"": SubResource("AnimationLibrary_erscc")
 }
 
-[node name="Camera2D" parent="." index="3"]
+[node name="Camera2D" parent="." index="4"]
 zoom = Vector2(3, 3)
 
-[node name="AudioPassosGrama" type="AudioStreamPlayer2D" parent="." index="4"]
+[node name="AudioPassosGrama" type="AudioStreamPlayer2D" parent="." index="5"]
 stream = ExtResource("3_wfqsr")
 volume_db = -9.751
 pitch_scale = 1.32
 
-[node name="AudioPassosAreia" type="AudioStreamPlayer2D" parent="." index="5"]
+[node name="AudioPassosAreia" type="AudioStreamPlayer2D" parent="." index="6"]
 stream = ExtResource("4_of8di")
 pitch_scale = 1.14
 
-[node name="HealthComponent" type="Node" parent="." index="6"]
+[node name="HealthComponent" type="Node" parent="." index="7"]
 script = ExtResource("6_jeibu")
 cena_dano_flutuante = ExtResource("7_pb42p")
 cor_dano_tomado = Color(1, 0.133333, 0.0901961, 1)
 cor_cura = Color(0.133333, 1, 0.184314, 1)
 metadata/_custom_type_script = "uid://poeui62rhe38"
 
-[node name="AudioEspada" type="AudioStreamPlayer2D" parent="." index="7"]
+[node name="AudioEspada" type="AudioStreamPlayer2D" parent="." index="8"]
 stream = ExtResource("8_erscc")
 
-[node name="AudioCura" type="AudioStreamPlayer2D" parent="." index="8"]
+[node name="AudioCura" type="AudioStreamPlayer2D" parent="." index="9"]
 stream = ExtResource("9_20r4p")
 
-[node name="AudioHurt" type="AudioStreamPlayer2D" parent="." index="9"]
+[node name="AudioHurt" type="AudioStreamPlayer2D" parent="." index="10"]
 stream = ExtResource("10_20r4p")
 
-[node name="AudioDead" type="AudioStreamPlayer2D" parent="." index="10"]
+[node name="AudioDead" type="AudioStreamPlayer2D" parent="." index="11"]
 stream = ExtResource("11_s3o5a")
 pitch_scale = 0.5
 
-[node name="AudioArcoPuxar" type="AudioStreamPlayer2D" parent="." index="11"]
+[node name="AudioArcoPuxar" type="AudioStreamPlayer2D" parent="." index="12"]
 stream = ExtResource("12_8xnse")
 volume_db = 3.759
 
-[node name="Audiothwack" type="AudioStreamPlayer2D" parent="." index="12"]
+[node name="Audiothwack" type="AudioStreamPlayer2D" parent="." index="13"]
 stream = ExtResource("13_2u5g0")
 pitch_scale = 0.8
 
-[node name="ConeDeMira" type="Area2D" parent="." index="13"]
+[node name="ConeDeMira" type="Area2D" parent="." index="14"]
 collision_layer = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ConeDeMira" index="0"]
 shape = SubResource("ConvexPolygonShape2D_6idsq")
 
-[node name="AudioCastMagia" type="AudioStreamPlayer2D" parent="." index="14"]
+[node name="AudioCastMagia" type="AudioStreamPlayer2D" parent="." index="15"]
 stream = ExtResource("16_5s2va")
 
 [connection signal="body_entered" from="textura/HitBoxEspada" to="." method="_on_hit_box_espada_body_entered"]
