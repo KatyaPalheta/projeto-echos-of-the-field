@@ -30,6 +30,14 @@ func exit():
 	player.mira_sprite.visible = false
 	player.alvo_travado = null
 
+# [Em: PlayerAim.gd]
+# (Substitua esta função inteira)
+
+@warning_ignore("unused_parameter")
+
+# [Em: PlayerAim.gd]
+# (Substitua esta função inteira)
+
 func process_input(event: InputEvent):
 	# Esta é a lógica de DISPARO
 	
@@ -40,11 +48,21 @@ func process_input(event: InputEvent):
 	
 	if _tipo_mira == "arco":
 		# --- AÇÕES DE ARCO (LT + X / Y) ---
+		
 		if Input.is_action_just_pressed("ataque_primario"): # LT + X
-			player._animation.play("arco_disparo" + anim_sufixo) 
-			player._disparar_flecha(anim_sufixo) 
-			Logger.log("Player usou ARCO SIMPLES!")
-			# (Não saímos do estado; continuamos mirando)
+			
+			# SÓ dispara SE o timer estiver PARADO
+			if player.arco_cooldown_timer.is_stopped():
+				
+				# --- MUDANÇA AQUI ---
+				# 1. Inicia o cooldown (LENDO A VARIÁVEL DO PLAYER)
+				player.arco_cooldown_timer.start(player.cadencia_arco_base) 
+				# --- FIM DA MUDANÇA ---
+				
+				# 2. Faz o disparo (como antes)
+				player._animation.play("arco_disparo" + anim_sufixo) 
+				player._disparar_flecha(anim_sufixo) 
+				Logger.log("Player usou ARCO SIMPLES!")
 			
 		elif Input.is_action_just_pressed("ataque_especial"): # LT + Y
 			if round(player.energia_atual) >= player.custo_golpe_duplo:
@@ -58,10 +76,23 @@ func process_input(event: InputEvent):
 	
 	else: # "magia"
 		# --- AÇÕES DE MAGIA (RT + X / Y) ---
+		
+		# --- GRANDE MUDANÇA AQUI ---
 		if Input.is_action_just_pressed("ataque_primario"): # RT + X
-			player._animation.play("magia_fogo" + anim_sufixo)
-			player._disparar_missil(anim_sufixo) 
-			Logger.log("Player usou MÍSSIL DE FOGO!")
+			
+			# SÓ dispara SE o timer NOVO estiver PARADO
+			if player.magia_cooldown_timer.is_stopped():
+				
+				# 1. Inicia o cooldown (usando a nova variável)
+				player.magia_cooldown_timer.start(player.cadencia_magia_base)
+				
+				# 2. Faz o disparo (como antes)
+				player._animation.play("magia_fogo" + anim_sufixo)
+				player._disparar_missil(anim_sufixo) 
+				Logger.log("Player usou MÍSSIL DE FOGO!")
+			
+			# (Se o timer não estiver parado, não faz nada)
+		# --- FIM DA GRANDE MUDANÇA ---
 			
 		elif Input.is_action_just_pressed("ataque_especial"): # RT + Y
 			if round(player.energia_atual) >= player.custo_golpe_duplo:
@@ -73,6 +104,7 @@ func process_input(event: InputEvent):
 			else:
 				Logger.log("Sem energia para o Leque de Fogo!")
 
+@warning_ignore("unused_parameter")
 func process_physics(delta: float):
 	# 1. Checa se o player SOLTOU o botão de mira
 	var mira_pressionada = Input.is_action_pressed("equip_arco") if _tipo_mira == "arco" else Input.is_action_pressed("equip_magia")

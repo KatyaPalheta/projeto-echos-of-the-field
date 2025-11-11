@@ -12,9 +12,14 @@ signal energia_mudou(energia_atual, energia_maxima)
 @onready var health_component: HealthComponent = $HealthComponent
 @onready var audio_arco_puxar: AudioStreamPlayer2D = $AudioArcoPuxar
 @onready var audio_cast_magia: AudioStreamPlayer2D = $AudioCastMagia
+@onready var arco_cooldown_timer: Timer = $ArcoCooldownTimer
+@onready var magia_cooldown_timer: Timer = $MagiaCooldownTimer
 
 # --- Referência da Máquina de Estados ---
 @onready var state_machine = $StateMachine
+@export_category("Stats de Combate")
+@export var cadencia_arco_base: float = 0.8
+@export var cadencia_magia_base: float = 1.0 # (1 segundo, ou o valor que você quiser)
 
 # --- Cenas de Ataque ---
 @export var cena_flecha: PackedScene 
