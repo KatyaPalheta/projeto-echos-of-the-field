@@ -55,7 +55,7 @@ func exit():
 # [Em: PlayerAim.gd]
 # (Substitua esta função)
 
-func process_input(event: InputEvent):
+func process_input(_event: InputEvent):
 	# Esta é a lógica de DISPARO
 	
 	var anim_sufixo = "_f"
@@ -106,7 +106,7 @@ func process_input(event: InputEvent):
 			else:
 				Logger.log("Sem energia para o Leque de Fogo!")
 @warning_ignore("unused_parameter")
-func process_physics(delta: float):
+func process_physics(_delta: float):
 	# 1. Checa se o player SOLTOU o botão de mira
 	var mira_pressionada = Input.is_action_pressed("equip_arco") if _tipo_mira == "arco" else Input.is_action_pressed("equip_magia")
 	

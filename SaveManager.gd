@@ -14,10 +14,10 @@ func _ready():
 	carregar_dados()
 	Logger.log("SaveManager pronto. Tempo total já gasto: %s" % get_tempo_total_formatado())
 
-func _process(delta: float):
+func _process(_delta: float):
 	# O cronômetro global
 	if dados_atuais != null:
-		dados_atuais.tempo_total_gasto += delta
+		dados_atuais.tempo_total_gasto += _delta
 
 # --- NOSSAS FUNÇÕES PÚBLICAS ---
 

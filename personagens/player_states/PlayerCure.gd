@@ -19,7 +19,7 @@ func enter():
 		CONNECT_ONE_SHOT
 	)
 
-func process_physics(delta: float):
+func process_physics(_delta: float):
 	# 1. Enquanto cura, o player não se move
 	player.velocity = Vector2.ZERO
 	player.move_and_slide()

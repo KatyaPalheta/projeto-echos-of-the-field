@@ -1,7 +1,7 @@
 # [Script: Chase.gd]
 extends EstadoInimigo
 
-func process_physics(delta: float):
+func process_physics(_delta: float):
 	# 1. Checa se o player sumiu
 	if inimigo.player_target == null:
 		state_machine._change_state(state_machine.get_node("Idle"))
@@ -28,11 +28,11 @@ func process_physics(delta: float):
 	# 4. Decide se pula ou se "arrasta" (baseado na sua lógica original)
 	if distance_to_player < cerebro.min_jump_distance:
 		# Perto demais, "arrasta" devagar (idle anim)
-		inimigo.velocity = inimigo.velocity.move_toward(cardinal_direction * (inimigo.move_speed * 0.5), 100 * delta)
+		inimigo.velocity = inimigo.velocity.move_toward(cardinal_direction * (inimigo.move_speed * 0.5), 100 * _delta)
 		inimigo.animacao.play("idle" + anim_sufixo)
 	else:
 		# Longe, pula rápido (jump anim)
-		inimigo.velocity = inimigo.velocity.move_toward(cardinal_direction * inimigo.move_speed, 100 * delta) 
+		inimigo.velocity = inimigo.velocity.move_toward(cardinal_direction * inimigo.move_speed, 100 * _delta) 
 		inimigo.animacao.play("jump" + anim_sufixo)
 
 	inimigo.move_and_slide()

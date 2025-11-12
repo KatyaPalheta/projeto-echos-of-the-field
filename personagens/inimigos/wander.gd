@@ -20,10 +20,10 @@ func exit():
 	if inimigo.jump_timer.is_connected("timeout", _on_jump_timer_timeout):
 		inimigo.jump_timer.timeout.disconnect(_on_jump_timer_timeout)
 
-func process_physics(delta: float):
+func process_physics(_delta: float):
 	# 1. Lógica de pular
 	var target_velocity = cerebro.chosen_jump_direction * inimigo.move_speed
-	inimigo.velocity = inimigo.velocity.move_toward(target_velocity, 100 * delta)
+	inimigo.velocity = inimigo.velocity.move_toward(target_velocity, 100 * _delta)
 	inimigo.move_and_slide()
 	
 	# 2. Animação de pulo

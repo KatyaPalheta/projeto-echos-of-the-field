@@ -3,7 +3,7 @@ extends EstadoPlayer
 # [Em: PlayerIdle.gd]
 # (Substitua esta função)
 
-func process_input(event: InputEvent):
+func process_input(_event: InputEvent):
 	
 	# --- 1. AÇÕES DE AÇÃO (Prioridade) ---
 	if Input.is_action_just_pressed("ataque_primario"): # X
@@ -64,11 +64,11 @@ func process_input(event: InputEvent):
 		
 		state_machine._change_state(state_machine.get_node("Move"))
 		return
-func process_physics(delta: float):
+func process_physics(_delta: float):
 	# A lógica de "ficar parado"
 	
 	# 1. Zera a velocidade
-	player.velocity = player.velocity.move_toward(Vector2.ZERO, 100 * delta)
+	player.velocity = player.velocity.move_toward(Vector2.ZERO, 100 * _delta)
 	player.move_and_slide()
 	
 	# --- CORREÇÃO AQUI ---

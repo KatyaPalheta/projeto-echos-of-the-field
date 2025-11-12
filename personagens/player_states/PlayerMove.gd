@@ -3,7 +3,7 @@ extends EstadoPlayer
 # [Em: PlayerMove.gd]
 # (Substitua esta função)
 
-func process_input(event: InputEvent):
+func process_input(_event: InputEvent):
 	
 	# --- 1. AÇÕES DE AÇÃO (Prioridade) ---
 	if Input.is_action_just_pressed("ataque_primario"): # X
@@ -36,7 +36,7 @@ func process_input(event: InputEvent):
 			# --- MUDANÇA AQUI (CURA) ---
 			player.health_component.curar(player.potencia_cura_base)
 			# --- FIM DA MUDANÇA ---
-			Logger.log("Cura usada! Restam: %s" % player.cargas_de_cura) #[cite: 102, 103]
+			Logger.log("Cura usada! Restam: %s" % player.cargas_de_cura) 
 			state_machine._change_state(state_machine.get_node("Cure"))
 		else:
 			Logger.log("Sem cargas de cura!")
@@ -55,10 +55,10 @@ func process_input(event: InputEvent):
 		aim_state.setup_mira("magia") # Configura o estado ANTES
 		state_machine._change_state(aim_state)
 		return
-func process_physics(delta: float):
+func process_physics(_delta: float):
 	
 	# 1. Chama a lógica de movimento (que agora é pública)
-	var direcao_movimento = player.execute_movement_logic(delta)
+	var direcao_movimento = player.execute_movement_logic(_delta)
 	
 	# --- CORREÇÃO AQUI ---
 	# 2. Chama a lógica de áudio DEPOIS de atualizar a velocidade

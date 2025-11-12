@@ -16,7 +16,7 @@ func enter():
 		CONNECT_ONE_SHOT
 	)
 
-func process_physics(delta: float):
+func process_physics(_delta: float):
 	# Morto não se mexe
 	inimigo.velocity = Vector2.ZERO
 	inimigo.move_and_slide()

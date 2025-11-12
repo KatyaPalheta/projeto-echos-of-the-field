@@ -25,7 +25,7 @@ func exit():
 	if inimigo.animacao.is_connected("animation_finished", _on_animation_finished):
 		inimigo.animacao.animation_finished.disconnect(_on_animation_finished)
 
-func process_physics(delta: float):
+func process_physics(_delta: float):
 	# 1. Garante que está parado
 	inimigo.velocity = Vector2.ZERO
 	inimigo.move_and_slide()

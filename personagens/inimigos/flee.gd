@@ -8,9 +8,9 @@ func setup_flee(posicao_do_player: Vector2):
 	var flee_direction = (inimigo.global_position - posicao_do_player).normalized()
 	inimigo.velocity = flee_direction * (inimigo.move_speed * 1.5)
 
-func process_physics(delta: float):
+func process_physics(_delta: float):
 	# Mantém a velocidade de fuga
-	inimigo.velocity = inimigo.velocity.move_toward(inimigo.velocity, 10 * delta)
+	inimigo.velocity = inimigo.velocity.move_toward(inimigo.velocity, 10 * _delta)
 	inimigo.move_and_slide()
 	
 	# Animação

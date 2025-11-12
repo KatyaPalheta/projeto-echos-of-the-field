@@ -18,9 +18,9 @@ func exit():
 	pass
 
 # Esta função roda a cada frame (equivalente ao _input)
-func process_input(event: InputEvent):
+func process_input(_event: InputEvent):
 	pass
 
 # Esta função roda a cada frame de física (equivalente ao _physics_process)
-func process_physics(delta: float):
+func process_physics(_delta: float):
 	pass

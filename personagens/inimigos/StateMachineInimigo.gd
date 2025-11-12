@@ -41,13 +41,13 @@ func _ready():
 	
 	# Nós "agendamos" o início para o *próximo* frame
 	_change_state.call_deferred(initial_state_node) #[cite: 78]
-func _input(event):
+func _input(_event):
 	if current_state != null:
-		current_state.process_input(event)
+		current_state.process_input(_event)
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	if current_state != null:
-		current_state.process_physics(delta)
+		current_state.process_physics(_delta)
 
 # A função "mágica" que faz a troca de estados
 func _change_state(new_state_node):

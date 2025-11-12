@@ -47,9 +47,9 @@ func _on_animation_finished(anim_name: String):
 	if anim_name.begins_with("hurt_"):
 		_hurt_terminou = true
 
-func process_physics(delta: float):
+func process_physics(_delta: float):
 	# --- ESTE É O "FREIO" (ATRITO) ---
-	player.velocity = player.velocity.move_toward(Vector2.ZERO, 2500 * delta)
+	player.velocity = player.velocity.move_toward(Vector2.ZERO, 2500 * _delta)
 	player.move_and_slide()
 	player._update_footstep_audio() 
 	
@@ -68,5 +68,5 @@ func process_physics(delta: float):
 
 # Vamos adicionar esta função para termos 100% de certeza
 # que o input não está "vazando"
-func process_input(event: InputEvent):
+func process_input(_event: InputEvent):
 	pass # Intencionalmente não faz NADA com o input

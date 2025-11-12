@@ -47,19 +47,18 @@ func _ready():
 	health_component.morreu.connect(_on_morte)
 	health_component.vida_mudou.connect(_on_health_component_vida_mudou)
 	_animation.animation_finished.connect(_on_animation_finished)
-	
-	# Avisa a HUD sobre a vida e as curas (após um frame)
 	emit_signal.call_deferred("vida_atualizada", health_component.vida_atual, health_component.vida_maxima)
 	emit_signal.call_deferred("cargas_cura_mudou", cargas_de_cura)
 	resetar_para_proxima_onda.call_deferred()
-	# --- FIM DA CORREÇÃO ---
-func _physics_process(delta):
+
+
+func _physics_process(_delta):
 	# 1. Checagem de Pausa (Isso fica aqui, é global)
 	if Input.is_action_just_pressed("ui_pausar"):
 		var pause_menu_scene = load("res://HUD/pause_menu.tscn")
 		var pause_instance = pause_menu_scene.instantiate()
 		add_child(pause_instance)
-		get_tree().paused = true
+		# get_tree().paused = true (O pause_menu.gd já faz isso [cite: 77])
 		return
 
 	# 2. Se estamos mortos, nenhum estado importa
@@ -69,13 +68,8 @@ func _physics_process(delta):
 		return
 		
 	# 3. DELEGA o processamento para o estado atual
-	# (O 'super(delta)' foi MOVIDO para o PlayerMove.gd)
-	# (Toda a lógica de if/elif de ações foi REMOVIDA)
 	pass # O StateMachine (que é nosso filho) já roda seu _physics_process
-
-
-# --- O NOVO INPUT PROCESS (AGORA DELEGA) ---
-func _input(event):
+func _input(_event):
 	# DELEGA o input para o estado atual
 	pass # O StateMachine (que é nosso filho) já roda seu _input
 
@@ -136,7 +130,7 @@ func receber_dano_do_inimigo(dano: float, direcao_do_ataque: Vector2):
 		# 3. MUDA o estado
 		state_machine._change_state(hurt_state)
 
-func _on_animation_finished(anim_name: String):
+func _on_animation_finished(_anim_name: String):
 
 	pass
 

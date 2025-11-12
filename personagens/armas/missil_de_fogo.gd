@@ -26,9 +26,9 @@ func _ready():
 	body_entered.connect(_on_body_entered)
 	notifier.screen_exited.connect(queue_free) 
 
-func _physics_process(delta: float):
+func _physics_process(_delta: float):
 	# Move o projétil 
-	global_position += direcao * velocidade * delta
+	global_position += direcao * velocidade * _delta
 func _on_body_entered(body: Node2D):
 	
 	# 1. Checa se acertou um inimigo

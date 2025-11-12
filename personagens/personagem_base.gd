@@ -39,7 +39,7 @@ func _physics_process(_delta: float) -> void:
 	# responsáveis por chamar a lógica de áudio.
 	pass
 	
-func execute_movement_logic(delta: float) -> Vector2:
+func execute_movement_logic(_delta: float) -> Vector2:
 	var _direcao: Vector2 = Input.get_vector(
 		"move_esquerda", "move_direita", "move_cima", "move_baixo"
 	)

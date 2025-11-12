@@ -33,7 +33,7 @@ func exit():
 	# Garante que o dano volte ao padrão
 	player.current_attack_damage = 25.0
 
-func process_physics(delta: float):
+func process_physics(_delta: float):
 	# 1. Enquanto ataca, o player não se move
 	player.velocity = Vector2.ZERO
 	player.move_and_slide()
