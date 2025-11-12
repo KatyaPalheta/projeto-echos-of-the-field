@@ -17,6 +17,8 @@ extends CanvasLayer
 @onready var seletor_continuar: NinePatchRect = $VBoxContainer/BotaoContinuar/Seletor
 @onready var seletor_reiniciar: NinePatchRect = $VBoxContainer/BotaoReiniciar/Seletor
 @onready var seletor_sair: NinePatchRect = $VBoxContainer/BotaoSair/Seletor
+
+const CENA_RECOMPENSA = preload("res://HUD/tela_recompensa.tscn")
 # --- FIM DAS NOVAS ---
 
 func _ready():
@@ -54,11 +56,26 @@ func setup(numero_onda_atual: int, tempo_gasto_na_onda: float):
 	)
 	SaveManager.salvar_dados()
 
-# (Funções dos botões [pressed] continuam iguais...)
+
+# [Em: transicao_onda.gd]
+# (SUBSTITUA ESTA FUNÇÃO INTEIRA)
+
 func _on_botao_continuar_pressed():
-	get_tree().paused = false
-	GameManager.avancar_para_proxima_onda()
-	queue_free() 
+	# NÃO despausa o jogo aqui
+	# NÃO chama o GameManager aqui
+	
+	# 1. Instancia a nova tela de recompensa
+	if CENA_RECOMPENSA != null:
+		var tela_recompensa = CENA_RECOMPENSA.instantiate()
+		get_tree().current_scene.add_child(tela_recompensa)
+	else:
+		# (Plano B: Se a cena de recompensa falhar, apenas avança)
+		push_error("Cena de Recompensa não carregada!")
+		get_tree().paused = false
+		GameManager.avancar_para_proxima_onda()
+
+	# 2. Destrói a si mesmo (a tela de transição)
+	queue_free()
 
 func _on_botao_reiniciar_pressed():
 	get_tree().paused = false

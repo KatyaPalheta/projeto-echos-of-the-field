@@ -41,6 +41,7 @@ func _ready():
 
 func set_player_reference(player: Node2D):
 	player_ref = player
+# [Em: GameManager.gd]
 
 func iniciar_onda() -> float:
 	inimigos_mortos = 0
@@ -48,19 +49,41 @@ func iniciar_onda() -> float:
 	if onda_atual_index < 0 or onda_atual_index >= ONDAS.size():
 		onda_atual_index = 0 
 		
-	# --- A SUA NOVA ARQUITETURA DE GARANTIA! ---
+	# --- A NOSSA ARQUITETURA DE GARANTIA (ATUALIZADA!) ---
 	if onda_atual_index == 0: # Se esta é a Onda 1... 
 		if SaveManager.dados_atuais != null:
-			# ...ZERA o tempo total gasto!
-			SaveManager.dados_atuais.tempo_total_gasto = 0.0 #[cite: 12]
-
-			# --- ADICIONE ESTA LINHA AQUI ---
-			# ...E ZERA todos os upgrades da partida!
-			SaveManager.dados_atuais.conserva_energia_entre_ondas = false
-			# (No futuro, resetamos os outros bônus aqui também)
-			# --- FIM DA ADIÇÃO ---
-
+			
+			var save_data = SaveManager.dados_atuais
+			
+			# 1. ZERA o tempo total gasto!
+			save_data.tempo_total_gasto = 0.0 #[cite: 12]
 			Logger.log("Iniciando Onda 1, cronômetro de partida zerado!")
+
+			# 2. ZERA todos os upgrades da partida!
+			#    (Limpando as "gavetas" que criamos no Passo 2)
+			
+			# Táticos e Habilidades
+			save_data.conserva_energia_entre_ondas = false
+			save_data.tem_upgrade_rajada_flechas = false
+			save_data.tem_upgrade_leque_misseis = false
+			
+			# Bônus Acumulativos (Stats)
+			save_data.bonus_vida_maxima = 0.0
+			save_data.bonus_energia_maxima = 0.0
+			save_data.bonus_velocidade_movimento = 0.0
+			
+			# Bônus Acumulativos (Cura)
+			save_data.bonus_potencia_cura = 0.0
+			save_data.bonus_cura_por_morte = 0.0
+			save_data.bonus_cargas_cura = 0
+			
+			# Bônus Acumulativos (Dano)
+			save_data.bonus_dano_espada = 0.0
+			save_data.bonus_dano_espada_especial = 0.0
+			save_data.bonus_cadencia_arco = 0.0
+			save_data.bonus_cadencia_magia = 0.0
+
+			Logger.log("SaveData resetado para início de partida.")
 	# --- FIM DA NOVA ARQUITETURA ---
 
 	var dados_onda = ONDAS[onda_atual_index]
@@ -71,7 +94,6 @@ func iniciar_onda() -> float:
 	tempo_inicio_onda = Time.get_ticks_msec() / 1000.0
 	emit_signal.call_deferred("stats_atualizadas", inimigos_mortos, inimigos_total_na_onda, onda_atual_index + 1)
 	return chance_spawn
-
 func registrar_morte_inimigo():
 	inimigos_mortos += 1
 	emit_signal("stats_atualizadas", inimigos_mortos, inimigos_total_na_onda, onda_atual_index + 1)
