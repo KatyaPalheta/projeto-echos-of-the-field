@@ -2,20 +2,27 @@
 extends EstadoPlayer
 # [Em: PlayerIdle.gd]
 # (Substitua esta função)
+
 func process_input(event: InputEvent):
 	
 	# --- 1. AÇÕES DE AÇÃO (Prioridade) ---
 	if Input.is_action_just_pressed("ataque_primario"): # X
-		player.current_attack_damage = 25.0
+		# --- MUDANÇA AQUI ---
+		player.current_attack_damage = player.dano_espada_base
+		# --- FIM DA MUDANÇA ---
 		Logger.log("Player usou ATAQUE SIMPLES!")
 		state_machine._change_state(state_machine.get_node("AttackSword"))
 		return
 
 	if Input.is_action_just_pressed("ataque_especial"): # Y
-		if round(player.energia_atual) >= player.custo_golpe_duplo:
-			player.energia_atual -= player.custo_golpe_duplo
+		# --- MUDANÇA AQUI (CUSTO) ---
+		if round(player.energia_atual) >= player.custo_ataque_especial:
+			player.energia_atual -= player.custo_ataque_especial
+			# --- FIM DA MUDANÇA ---
 			player.emit_signal("energia_mudou", player.energia_atual, player.energia_maxima)
-			player.current_attack_damage = 50.0 # Prepara o dano
+			# --- MUDANÇA AQUI (DANO) ---
+			player.current_attack_damage = player.dano_espada_especial # Prepara o dano
+			# --- FIM DA MUDANÇA ---
 			Logger.log("Golpe Duplo usado!")
 			state_machine._change_state(state_machine.get_node("AttackSword"))
 		else:
@@ -26,14 +33,17 @@ func process_input(event: InputEvent):
 		if player.cargas_de_cura > 0:
 			player.cargas_de_cura -= 1
 			player.emit_signal("cargas_cura_mudou", player.cargas_de_cura)
-			player.health_component.curar(25.0)
-			Logger.log("Cura usada! Restam: %s" % player.cargas_de_cura)
+			# --- MUDANÇA AQUI (CURA) ---
+			player.health_component.curar(player.potencia_cura_base)
+			# --- FIM DA MUDANÇA ---
+			Logger.log("Cura usada! Restam: %s" % player.cargas_de_cura) #[cite: 61, 62]
 			state_machine._change_state(state_machine.get_node("Cure"))
 		else:
 			Logger.log("Sem cargas de cura!")
 		return
 
 	# --- 2. AÇÕES DE MIRA (Modificadores) ---
+	# (O resto da função continua igual...)
 	if Input.is_action_pressed("equip_arco"): # LT
 		var aim_state = state_machine.get_node("Aim")
 		aim_state.setup_mira("arco") # Configura o estado ANTES

@@ -11,6 +11,9 @@
 y_sort_enabled = true
 
 [node name="Player" parent="." instance=ExtResource("2_7cgj1")]
+dano_espada_base = 25.0
+dano_espada_especial = 50.0
+potencia_cura_base = 25.0
 cena_missil_de_fogo = ExtResource("5_4jypp")
 
 [node name="GerenciadorDeTerreno" parent="." node_paths=PackedStringArray("player_node") instance=ExtResource("1_b5r0v")]

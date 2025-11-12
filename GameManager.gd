@@ -49,10 +49,17 @@ func iniciar_onda() -> float:
 		onda_atual_index = 0 
 		
 	# --- A SUA NOVA ARQUITETURA DE GARANTIA! ---
-	if onda_atual_index == 0: # Se esta é a Onda 1...
+	if onda_atual_index == 0: # Se esta é a Onda 1... 
 		if SaveManager.dados_atuais != null:
 			# ...ZERA o tempo total gasto!
-			SaveManager.dados_atuais.tempo_total_gasto = 0.0
+			SaveManager.dados_atuais.tempo_total_gasto = 0.0 #[cite: 12]
+
+			# --- ADICIONE ESTA LINHA AQUI ---
+			# ...E ZERA todos os upgrades da partida!
+			SaveManager.dados_atuais.conserva_energia_entre_ondas = false
+			# (No futuro, resetamos os outros bônus aqui também)
+			# --- FIM DA ADIÇÃO ---
+
 			Logger.log("Iniciando Onda 1, cronômetro de partida zerado!")
 	# --- FIM DA NOVA ARQUITETURA ---
 

@@ -15,7 +15,7 @@ class_name SaveGame # <-- Isso "ensina" o Godot a reconhecer o "tipo" SaveGame
 
 # --- FUTURAS "GAVETAS" (Upgrades) ---
 # (A gente pode adicionar isso depois, quando for fazer os upgrades)
-
+@export var conserva_energia_entre_ondas: bool = false
 # @export var bonus_vida_maxima: float = 0.0
 # @export var bonus_energia_maxima: float = 0.0
 # @export var bonus_cargas_cura: int = 0

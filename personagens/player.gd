@@ -19,35 +19,40 @@ signal energia_mudou(energia_atual, energia_maxima)
 @onready var state_machine = $StateMachine
 @export_category("Stats de Combate")
 @export var cadencia_arco_base: float = 0.8
-@export var cadencia_magia_base: float = 1.0 # (1 segundo, ou o valor que você quiser)
+@export var cadencia_magia_base: float = 1.0 
+@export var dano_espada_base: float = 25.0
+@export var dano_espada_especial: float = 50.0
+@export var potencia_cura_base: float = 25.0
 
 # --- Cenas de Ataque ---
 @export var cena_flecha: PackedScene 
 @export var cena_missil_de_fogo: PackedScene
 
+
 # --- Variáveis de Estado do Player ---
-var is_dead: bool = false # (is_in_action e is_aiming não são mais necessárias aqui!)
+
+var is_dead: bool = false 
 var cargas_de_cura: int = 3
 var energia_maxima: float = 100.0
 var energia_atual: float = 0.0
-var custo_golpe_duplo: float = 50.0 
+var custo_ataque_especial: float = 50.00 
 var current_attack_damage = 25.0
 var alvo_travado: Node2D = null
 
+
+# [Em: player.gd]
+# (Substitua esta função)
 
 func _ready():
 	health_component.morreu.connect(_on_morte)
 	health_component.vida_mudou.connect(_on_health_component_vida_mudou)
 	_animation.animation_finished.connect(_on_animation_finished)
 	
+	# Avisa a HUD sobre a vida e as curas (após um frame)
 	emit_signal.call_deferred("vida_atualizada", health_component.vida_atual, health_component.vida_maxima)
 	emit_signal.call_deferred("cargas_cura_mudou", cargas_de_cura)
-	emit_signal.call_deferred("energia_mudou", energia_atual, energia_maxima)
-	
-	# (A lógica do _ready do StateMachine vai cuidar de iniciar os estados)
-
-
-# --- O NOVO PHYSICS PROCESS (AGORA DELEGA) ---
+	resetar_para_proxima_onda.call_deferred()
+	# --- FIM DA CORREÇÃO ---
 func _physics_process(delta):
 	# 1. Checagem de Pausa (Isso fica aqui, é global)
 	if Input.is_action_just_pressed("ui_pausar"):
@@ -152,8 +157,15 @@ func ganhar_energia(quantidade: float):
 	Logger.log("Energia ganha! Total: %s" % int(energia_atual))
 
 
-# --- FUNÇÕES "HELPER" DE DISPARO ---
-# (Elas ficam aqui! Os estados de ataque vão chamar estas funções)
+func resetar_para_proxima_onda():
+	
+	# 1. Lógica do novo Upgrade:
+	# LÊ o "interruptor" direto do SaveManager!
+	if not SaveManager.dados_atuais.conserva_energia_entre_ondas:
+		energia_atual = 0.0
+	
+	# 2. Avisa a HUD para atualizar a barra de energia
+	emit_signal("energia_mudou", energia_atual, energia_maxima)
 
 func _disparar_flecha(sufixo_anim: String):
 	if cena_flecha == null:

@@ -23,25 +23,41 @@ func enter():
 	player.alvo_travado = null
 	player.mira_sprite.visible = false
 
+
+# [Em: PlayerAim.gd]
+# (Substitua esta função)
+
 func exit():
-	# 1. Limpa tudo ao sair da mira
+	# 1. Limpa tudo ao sair da mira (como antes)
 	player.audio_arco_puxar.stop()
 	player.audio_cast_magia.stop()
 	player.mira_sprite.visible = false
 	player.alvo_travado = null
 
-# [Em: PlayerAim.gd]
-# (Substitua esta função inteira)
+	# --- NOSSA CORREÇÃO ---
+	# 2. Força a volta para a animação "idle".
+	#    Isso "libera" a trava de animação, impedindo
+	#    que a animação "magia_fogo" ou "arco_mira"
+	#    fique presa na tela.
+	var _target_anim_name: String = "idle"
+	match player._face_direction:
+		0: _target_anim_name += "_f"
+		1: _target_anim_name += "_c"
+		2: _target_anim_name += "_p"
+	
+	# (Não precisamos checar 'begins_with' aqui, 
+	#  porque *queremos* sobrescrever a animação de mira)
+	player._animation.play(_target_anim_name)
+	# --- FIM DA CORREÇÃO ---
 
 @warning_ignore("unused_parameter")
 
 # [Em: PlayerAim.gd]
-# (Substitua esta função inteira)
+# (Substitua esta função)
 
 func process_input(event: InputEvent):
 	# Esta é a lógica de DISPARO
 	
-	# Pega a direção (só para o nome da animação)
 	var anim_sufixo = "_f"
 	if player._face_direction == 1: anim_sufixo = "_c"
 	elif player._face_direction == 2: anim_sufixo = "_p"
@@ -50,23 +66,17 @@ func process_input(event: InputEvent):
 		# --- AÇÕES DE ARCO (LT + X / Y) ---
 		
 		if Input.is_action_just_pressed("ataque_primario"): # LT + X
-			
-			# SÓ dispara SE o timer estiver PARADO
 			if player.arco_cooldown_timer.is_stopped():
-				
-				# --- MUDANÇA AQUI ---
-				# 1. Inicia o cooldown (LENDO A VARIÁVEL DO PLAYER)
 				player.arco_cooldown_timer.start(player.cadencia_arco_base) 
-				# --- FIM DA MUDANÇA ---
-				
-				# 2. Faz o disparo (como antes)
 				player._animation.play("arco_disparo" + anim_sufixo) 
 				player._disparar_flecha(anim_sufixo) 
 				Logger.log("Player usou ARCO SIMPLES!")
 			
 		elif Input.is_action_just_pressed("ataque_especial"): # LT + Y
-			if round(player.energia_atual) >= player.custo_golpe_duplo:
-				player.energia_atual -= player.custo_golpe_duplo
+			# --- MUDANÇA AQUI ---
+			if round(player.energia_atual) >= player.custo_ataque_especial:
+				player.energia_atual -= player.custo_ataque_especial
+			# --- FIM DA MUDANÇA ---
 				player.emit_signal("energia_mudou", player.energia_atual, player.energia_maxima)
 				player._animation.play("arco_disparo" + anim_sufixo)
 				player._disparar_rajada_de_flechas(anim_sufixo)
@@ -77,33 +87,24 @@ func process_input(event: InputEvent):
 	else: # "magia"
 		# --- AÇÕES DE MAGIA (RT + X / Y) ---
 		
-		# --- GRANDE MUDANÇA AQUI ---
 		if Input.is_action_just_pressed("ataque_primario"): # RT + X
-			
-			# SÓ dispara SE o timer NOVO estiver PARADO
 			if player.magia_cooldown_timer.is_stopped():
-				
-				# 1. Inicia o cooldown (usando a nova variável)
 				player.magia_cooldown_timer.start(player.cadencia_magia_base)
-				
-				# 2. Faz o disparo (como antes)
 				player._animation.play("magia_fogo" + anim_sufixo)
 				player._disparar_missil(anim_sufixo) 
 				Logger.log("Player usou MÍSSIL DE FOGO!")
 			
-			# (Se o timer não estiver parado, não faz nada)
-		# --- FIM DA GRANDE MUDANÇA ---
-			
 		elif Input.is_action_just_pressed("ataque_especial"): # RT + Y
-			if round(player.energia_atual) >= player.custo_golpe_duplo:
-				player.energia_atual -= player.custo_golpe_duplo
+			# --- MUDANÇA AQUI ---
+			if round(player.energia_atual) >= player.custo_ataque_especial:
+				player.energia_atual -= player.custo_ataque_especial
+			# --- FIM DA MUDANÇA ---
 				player.emit_signal("energia_mudou", player.energia_atual, player.energia_maxima)
 				player._animation.play("magia_fogo" + anim_sufixo)
 				player._disparar_leque_de_misseis(anim_sufixo)
 				Logger.log("Player usou LEQUE DE FOGO!")
 			else:
 				Logger.log("Sem energia para o Leque de Fogo!")
-
 @warning_ignore("unused_parameter")
 func process_physics(delta: float):
 	# 1. Checa se o player SOLTOU o botão de mira
