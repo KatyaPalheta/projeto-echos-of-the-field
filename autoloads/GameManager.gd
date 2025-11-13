@@ -46,7 +46,9 @@ func _ready():
 func set_player_reference(player: Node2D):
 	player_ref = player
 
+# [Em: GameManager.gd]
 # (SUBSTITUA ESTA FUNÇÃO INTEIRA)
+
 func iniciar_onda() -> float:
 	inimigos_mortos = 0
 	
@@ -62,7 +64,7 @@ func iniciar_onda() -> float:
 
 			# ZERA todos os upgrades da partida!
 			save_data.conserva_energia_entre_ondas = false
-			save_data.energia_atual_salva = 0.0 # <-- ADICIONADO
+			save_data.energia_atual_salva = 0.0 
 			
 			save_data.bonus_rajada_flechas = 0
 			save_data.bonus_leque_misseis = 0
@@ -70,7 +72,7 @@ func iniciar_onda() -> float:
 			save_data.bonus_vida_maxima = 0.0
 			save_data.bonus_energia_maxima = 0.0
 			save_data.bonus_velocidade_movimento = 0.0
-			save_data.bonus_reducao_dano = 0.0 # <-- ADICIONADO
+			save_data.bonus_reducao_dano = 0.0 
 			
 			save_data.bonus_potencia_cura = 0.0
 			save_data.bonus_cura_por_morte = 0.0
@@ -81,6 +83,10 @@ func iniciar_onda() -> float:
 			save_data.bonus_cadencia_arco = 0.0
 			save_data.bonus_cadencia_magia = 0.0
 			save_data.bonus_eficiencia_energia = 0.0
+			
+			# --- ADIÇÃO DO RESET ---
+			save_data.bonus_foco_leque = 0.0
+			# --- FIM DA ADIÇÃO ---
 
 			Logger.log("SaveData resetado para início de partida.")
 
@@ -90,10 +96,7 @@ func iniciar_onda() -> float:
 
 	tempo_inicio_onda = Time.get_ticks_msec() / 1000.0
 	emit_signal.call_deferred("stats_atualizadas", inimigos_mortos, inimigos_total_na_onda, onda_atual_index + 1)
-	
-	# AVISA O PLAYER (Bug #11)
-	emit_signal("onda_iniciada") # <-- ADICIONADO
-	
+	emit_signal("onda_iniciada") 
 	return chance_spawn
 
 func registrar_morte_inimigo():

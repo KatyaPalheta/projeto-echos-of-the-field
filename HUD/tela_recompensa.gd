@@ -110,6 +110,7 @@ func _on_nicho_focus_exited(index: int):
 		0: seletor1.visible = false
 		1: seletor2.visible = false
 		2: seletor3.visible = false
+
 # [Em: tela_recompensa.gd]
 # (SUBSTITUA ESTA FUNÇÃO INTEIRA)
 
@@ -133,26 +134,24 @@ func _on_nicho_pressed(index: int):
 		
 		"upgrade_cargas_cura":
 			save_data.bonus_cargas_cura += 1
+			
 		"upgrade_potencia_cura":
-			save_data.bonus_potencia_cura += 10.0 
+			save_data.bonus_potencia_cura += 3.0 # (Era 10.0)
+			
 		"upgrade_cura_por_morte":
 			save_data.bonus_cura_por_morte += 1.0 
 		
-		# --- CORREÇÃO (Bug #8) ---
 		"upgrade_reducao_dano":
-			save_data.bonus_reducao_dano += 2.0 # (Cada upgrade dá 2 pontos de redução)
-		# --- FIM DA CORREÇÃO ---
+			save_data.bonus_reducao_dano += 2.0 
 			
-		# --- CORREÇÃO (Bug #3) ---
 		"upgrade_dano_espada":
-			save_data.bonus_dano_espada += 3.0 # (Baixamos de 5.0 para 3.0)
-		# --- FIM DA CORREÇÃO ---
-			
+			save_data.bonus_dano_espada += 3.0 
 		"upgrade_dano_espada_especial":
 			save_data.bonus_dano_espada_especial += 10.0
 			
 		"upgrade_cadencia_arco":
-			save_data.bonus_cadencia_arco += 0.05 
+			save_data.bonus_cadencia_arco += 0.1 # (Era 0.05)
+			
 		"upgrade_rajada_flechas":
 			save_data.bonus_rajada_flechas += 1
 			
@@ -167,11 +166,17 @@ func _on_nicho_pressed(index: int):
 		"upgrade_eficiencia_energia":
 			save_data.bonus_eficiencia_energia += 5.0 
 		
+		"upgrade_foco_leque":
+			save_data.bonus_foco_leque += 2.0 # (Reduz 2 graus por nível)
+		
 		_:
+			# --- A CORREÇÃO ESTÁ AQUI ---
 			push_warning("Upgrade '%s' (Titulo: %s) foi escolhido, mas não há lógica de aplicação!" % [id_escolhido, data.titulo])
+			# --- FIM DA CORREÇÃO ---
 
 	Logger.log("Upgrade adquirido: %s" % data.titulo)
 	_avancar_e_fechar()
+
 func _avancar_e_fechar():
 	get_tree().paused = false
 	GameManager.avancar_para_proxima_onda() # Diz ao GM para recarregar a cena

@@ -221,19 +221,30 @@ func _atualizar_alvo_com_cone(sufixo_anim: String):
 				inimigo_mais_proximo = corpo
 	alvo_travado = inimigo_mais_proximo
 
+# [Em: player.gd]
+# (SUBSTITUA ESTA FUNÇÃO INTEIRA)
+
 func _disparar_rajada_de_flechas(sufixo_anim: String):
 	if cena_flecha == null:
 		push_warning("Cena da Flecha não configurada no Player!")
 		return
+	
 	var flechas_base = 2 
 	var bonus_flechas = 0
 	if SaveManager.dados_atuais != null:
 		bonus_flechas = SaveManager.dados_atuais.bonus_rajada_flechas
+	
 	var total_flechas = flechas_base + bonus_flechas
-	var delay_entre_flechas = 0.2 
+	
+	# --- CORREÇÃO DO BUG DA RAJADA (#2, #3) ---
+	var delay_entre_flechas = 0.35 # (Era 0.2)
+	# --- FIM DA CORREÇÃO ---
+	
 	for i in range(total_flechas):
 		if is_dead: return
+		
 		_disparar_flecha(sufixo_anim)
+		
 		if i < (total_flechas - 1): 
 			await get_tree().create_timer(delay_entre_flechas).timeout
 
@@ -255,17 +266,30 @@ func _disparar_missil(sufixo_anim: String):
 	missil.direcao = direcao_disparo
 	missil.global_position = global_position 
 	get_parent().add_child(missil)
+# [Em: player.gd]
+# (SUBSTITUA ESTA FUNÇÃO INTEIRA)
 
 func _disparar_leque_de_misseis(sufixo_anim: String):
 	if cena_missil_de_fogo == null:
 		push_warning("Cena do Míssil de Fogo não configurada no Player!")
 		return
+
 	var misseis_base = 2 
 	var bonus_misseis = 0
+	var bonus_foco_graus = 0.0
+	
 	if SaveManager.dados_atuais != null:
 		bonus_misseis = SaveManager.dados_atuais.bonus_leque_misseis
+		bonus_foco_graus = SaveManager.dados_atuais.bonus_foco_leque
+		
 	var quantidade_misseis = misseis_base + bonus_misseis
-	var angulo_passo: float = deg_to_rad(10) 
+	
+	# --- LÓGICA DO "FOGO CONCENTRADO" ---
+	var angulo_passo_base_graus = 10.0
+	var angulo_passo_final_graus = max(1.0, angulo_passo_base_graus - bonus_foco_graus)
+	var angulo_passo_rad = deg_to_rad(angulo_passo_final_graus)
+	# --- FIM DA LÓGICA ---
+	
 	var direcao_base: Vector2
 	if sufixo_anim == "_c":
 		direcao_base = Vector2.UP
@@ -273,10 +297,13 @@ func _disparar_leque_de_misseis(sufixo_anim: String):
 		direcao_base = Vector2.RIGHT if not _sprite.flip_h else Vector2.LEFT
 	else: 
 		direcao_base = Vector2.DOWN
-	var angulo_inicial: float = -(float(quantidade_misseis - 1) / 2.0) * angulo_passo
+	
+	var angulo_inicial: float = -(float(quantidade_misseis - 1) / 2.0) * angulo_passo_rad
+	
 	for i in range(quantidade_misseis):
-		var angulo_offset = angulo_inicial + (i * angulo_passo)
+		var angulo_offset = angulo_inicial + (i * angulo_passo_rad)
 		var direcao_atual = direcao_base.rotated(angulo_offset)
+		
 		var missil = cena_missil_de_fogo.instantiate()
 		missil.direcao = direcao_atual
 		missil.global_position = global_position
