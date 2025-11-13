@@ -51,9 +51,8 @@ func exit():
 	# --- FIM DA CORREÇÃO ---
 
 @warning_ignore("unused_parameter")
-
 # [Em: PlayerAim.gd]
-# (Substitua esta função)
+# (SUBSTITUA ESTA FUNÇÃO INTEIRA)
 
 func process_input(_event: InputEvent):
 	# Esta é a lógica de DISPARO
@@ -62,50 +61,67 @@ func process_input(_event: InputEvent):
 	if player._face_direction == 1: anim_sufixo = "_c"
 	elif player._face_direction == 2: anim_sufixo = "_p"
 	
+	# --- LÓGICA DE CUSTO CORRIGIDA (Calcula 1 vez) ---
+	var bonus_reducao = 0.0
+	if SaveManager.dados_atuais != null:
+		bonus_reducao = SaveManager.dados_atuais.bonus_eficiencia_energia
+	
+	var custo_final = max(0.0, player.custo_ataque_especial - bonus_reducao)
+	# --- FIM DA LÓGICA ---
+	
 	if _tipo_mira == "arco":
 		# --- AÇÕES DE ARCO (LT + X / Y) ---
 		
 		if Input.is_action_just_pressed("ataque_primario"): # LT + X
 			if player.arco_cooldown_timer.is_stopped():
-				player.arco_cooldown_timer.start(player.cadencia_arco_base) 
+				player.arco_cooldown_timer.start() 
 				player._animation.play("arco_disparo" + anim_sufixo) 
 				player._disparar_flecha(anim_sufixo) 
 				Logger.log("Player usou ARCO SIMPLES!")
 			
 		elif Input.is_action_just_pressed("ataque_especial"): # LT + Y
-			# --- MUDANÇA AQUI ---
-			if round(player.energia_atual) >= player.custo_ataque_especial:
-				player.energia_atual -= player.custo_ataque_especial
-			# --- FIM DA MUDANÇA ---
+			
+			# --- CORREÇÃO DO BUG DA RAJADA ---
+			# (Removemos a checagem que trancava o ataque.
+			# Agora o ataque especial de 2 flechas  funciona
+			# desde o início, e o upgrade "Rajada Extra"  adiciona +1 [cite: 31, 35])
+			# --- FIM DA CORREÇÃO ---
+				
+			if round(player.energia_atual) >= custo_final:
+				player.energia_atual -= custo_final
 				player.emit_signal("energia_mudou", player.energia_atual, player.energia_maxima)
 				player._animation.play("arco_disparo" + anim_sufixo)
 				player._disparar_rajada_de_flechas(anim_sufixo)
-				Logger.log("Player usou RAJADA DE FLECHAS!")
+				Logger.log("Player usou RAJADA DE FLECHAS! Custo: %s" % custo_final)
 			else:
-				Logger.log("Sem energia para a Rajada de Flechas!")
+				Logger.log("Sem energia para a Rajada de Flechas! (Custo: %s)" % custo_final)
 	
 	else: # "magia"
 		# --- AÇÕES DE MAGIA (RT + X / Y) ---
 		
 		if Input.is_action_just_pressed("ataque_primario"): # RT + X
 			if player.magia_cooldown_timer.is_stopped():
-				player.magia_cooldown_timer.start(player.cadencia_magia_base)
+				player.magia_cooldown_timer.start()
 				player._animation.play("magia_fogo" + anim_sufixo)
 				player._disparar_missil(anim_sufixo) 
 				Logger.log("Player usou MÍSSIL DE FOGO!")
 			
 		elif Input.is_action_just_pressed("ataque_especial"): # RT + Y
-			# --- MUDANÇA AQUI ---
-			if round(player.energia_atual) >= player.custo_ataque_especial:
-				player.energia_atual -= player.custo_ataque_especial
-			# --- FIM DA MUDANÇA ---
+			
+			# --- CORREÇÃO DO BUG DO LEQUE ---
+			# (Removemos a checagem que trancava o ataque.
+			# O ataque especial de 2 mísseis  agora funciona
+			# desde o início, e o "Leque Incendiário"  adiciona +1 [cite: 31, 35])
+			# --- FIM DA CORREÇÃO ---
+			
+			if round(player.energia_atual) >= custo_final:
+				player.energia_atual -= custo_final
 				player.emit_signal("energia_mudou", player.energia_atual, player.energia_maxima)
 				player._animation.play("magia_fogo" + anim_sufixo)
 				player._disparar_leque_de_misseis(anim_sufixo)
-				Logger.log("Player usou LEQUE DE FOGO!")
+				Logger.log("Player usou LEQUE DE FOGO! Custo %s" % custo_final)
 			else:
-				Logger.log("Sem energia para o Leque de Fogo!")
-@warning_ignore("unused_parameter")
+				Logger.log("Sem energia para o Leque de Fogo! (Custo: %s)" % custo_final)
 func process_physics(_delta: float):
 	# 1. Checa se o player SOLTOU o botão de mira
 	var mira_pressionada = Input.is_action_pressed("equip_arco") if _tipo_mira == "arco" else Input.is_action_pressed("equip_magia")

@@ -91,7 +91,7 @@ const DB = {
 		"titulo": "Rajada Extra",
 		"descricao": "Adiciona +1 flecha à sua Rajada de Flechas.",
 		"icone_path": "res://assets/skills/upgrade_rajada_flechas.png",
-		"tipo": "habilidade" # (Era "Tiro Triplo", mas "Rajada Extra" é melhor)
+		"tipo": "stack" # (Era "Tiro Triplo", mas "Rajada Extra" é melhor)
 	},
 	"upgrade_velocidade_rajada": {
 		"titulo": "Rajada Veloz",
@@ -117,7 +117,7 @@ const DB = {
 		"titulo": "Leque Incendiário",
 		"descricao": "Adiciona +1 Míssil de Fogo ao seu Leque de Mísseis.",
 		"icone_path": "res://assets/skills/upgrade_leque_misseis.png",
-		"tipo": "habilidade" # (Era "Tridente", mas "Leque Incendiário" é melhor)
+		"tipo": "stack" # (Era "Tridente", mas "Leque Incendiário" é melhor)
 	},
 	"upgrade_foco_leque": {
 		"titulo": "Fogo Concentrado",
@@ -162,10 +162,11 @@ func get_upgrade_data(id: String) -> Dictionary:
 		return DB[id]
 	push_warning("UpgradeDatabase: ID de upgrade não encontrado no DB: %s" % id)
 	return {}
-
+# [Em: UpgradeDatabase.gd]
+# (SUBSTITUA ESTA FUNÇÃO INTEIRA)
 
 # A função CHAVE: Pega N upgrades aleatórios que o jogador AINDA NÃO POSSUI
-func get_random_upgrades(amount: int) -> Array[String]:
+func get_random_upgrades(amount: int) -> Array: # (Tipo de retorno também atualizado)
 	
 	if SaveManager.dados_atuais == null:
 		push_error("UpgradeDatabase não conseguiu acessar o SaveManager.dados_atuais!")
@@ -174,7 +175,9 @@ func get_random_upgrades(amount: int) -> Array[String]:
 	var dados_save = SaveManager.dados_atuais
 	
 	# 1. Pega TODOS os IDs (chaves) do nosso banco de dados
-	var pool_de_upgrades: Array[String] = DB.keys()
+	# --- A LINHA CORRIGIDA É ESTA ---
+	var pool_de_upgrades: Array = DB.keys() # (Removemos o [String])
+	# --- FIM DA CORREÇÃO ---
 	
 	# 2. FILTRAGEM: Remove os upgrades do tipo "unico" ou "habilidade"
 	#    que o jogador já possui no SaveGame.
@@ -195,18 +198,20 @@ func get_random_upgrades(amount: int) -> Array[String]:
 				
 				"upgrade_cargas_cura":
 					# (Lógica bônus: só oferece se o jogador tiver menos de 3)
-					var cargas_atuais_base = 3 # (O player começa com 3) [cite: 3]
+					var cargas_atuais_base = 3 # (O player começa com 3)
 					var bonus_cargas = dados_save.bonus_cargas_cura
 					if (cargas_atuais_base + bonus_cargas) >= 3:
 						pool_de_upgrades.remove_at(i)
 
 				"upgrade_rajada_flechas":
-					if dados_save.tem_upgrade_rajada_flechas:
+					var flechas_atuais = 2 + dados_save.bonus_rajada_flechas
+					if flechas_atuais >= 8: 
 						pool_de_upgrades.remove_at(i)
 						
 				"upgrade_leque_misseis":
-					if dados_save.tem_upgrade_leque_misseis:
-						pool_de_upgrades.remove_at(i)
+					var misseis_atuais = 2 + dados_save.bonus_leque_misseis
+					if misseis_atuais >= 7: # (Limite de 7 mísseis, por ex)
+							pool_de_upgrades.remove_at(i)
 	
 	# 3. Embaralha o pool que sobrou
 	pool_de_upgrades.shuffle()

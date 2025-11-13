@@ -24,7 +24,7 @@ extends CanvasLayer
 @onready var descricao_label: Label = $ColorRect/Painel/VBoxContainer/BannerDescricao/VBoxContainer/DescricaoLabel
 
 # Guarda os 3 IDs (ex: "upgrade_vida_maxima") que estamos mostrando
-var upgrades_oferecidos: Array[String] = []
+var upgrades_oferecidos: Array = []
 
 func _ready():
 	# 1. Pausa o jogo (a tela de transição já deve ter pausado, mas garantimos)
@@ -110,11 +110,11 @@ func _on_nicho_focus_exited(index: int):
 		0: seletor1.visible = false
 		1: seletor2.visible = false
 		2: seletor3.visible = false
+# [Em: tela_recompensa.gd]
+# (SUBSTITUA ESTA FUNÇÃO INTEIRA)
 
 func _on_nicho_pressed(index: int):
 	var id_escolhido = upgrades_oferecidos[index]
-	
-	# 1. Aplica o upgrade no SaveGame
 	var save_data = SaveManager.dados_atuais
 	var data = UpgradeDatabase.get_upgrade_data(id_escolhido)
 	
@@ -123,8 +123,6 @@ func _on_nicho_pressed(index: int):
 		_avancar_e_fechar()
 		return
 
-	# --- O "APLICADOR" (A MÁGICA ACONTECE AQUI) ---
-	# (Adicionamos os bônus reais nas "gavetas" do SaveGame.gd)
 	match id_escolhido:
 		"upgrade_vida_maxima":
 			save_data.bonus_vida_maxima += 15.0
@@ -138,39 +136,42 @@ func _on_nicho_pressed(index: int):
 		"upgrade_potencia_cura":
 			save_data.bonus_potencia_cura += 10.0 
 		"upgrade_cura_por_morte":
-			save_data.bonus_cura_por_morte += 1.0 # (Cura 1 de HP por morte)
+			save_data.bonus_cura_por_morte += 1.0 
+		
+		# --- CORREÇÃO (Bug #8) ---
+		"upgrade_reducao_dano":
+			save_data.bonus_reducao_dano += 2.0 # (Cada upgrade dá 2 pontos de redução)
+		# --- FIM DA CORREÇÃO ---
 			
+		# --- CORREÇÃO (Bug #3) ---
 		"upgrade_dano_espada":
-			save_data.bonus_dano_espada += 5.0
+			save_data.bonus_dano_espada += 3.0 # (Baixamos de 5.0 para 3.0)
+		# --- FIM DA CORREÇÃO ---
+			
 		"upgrade_dano_espada_especial":
 			save_data.bonus_dano_espada_especial += 10.0
 			
 		"upgrade_cadencia_arco":
-			save_data.bonus_cadencia_arco += 0.05 # (Reduz o cooldown em 0.05s)
+			save_data.bonus_cadencia_arco += 0.05 
 		"upgrade_rajada_flechas":
-			save_data.tem_upgrade_rajada_flechas = true
+			save_data.bonus_rajada_flechas += 1
 			
 		"upgrade_cadencia_magia":
-			save_data.bonus_cadencia_magia += 0.1 # (Reduz o cooldown em 0.1s)
+			save_data.bonus_cadencia_magia += 0.1 
 		"upgrade_leque_misseis":
-			save_data.tem_upgrade_leque_misseis = true
+			save_data.bonus_leque_misseis += 1
 			
 		"upgrade_conservar_energia":
 			save_data.conserva_energia_entre_ondas = true
 		
-		# (Adicione os 'cases' para os outros upgrades aqui)
+		"upgrade_eficiencia_energia":
+			save_data.bonus_eficiencia_energia += 5.0 
 		
 		_:
 			push_warning("Upgrade '%s' (Titulo: %s) foi escolhido, mas não há lógica de aplicação!" % [id_escolhido, data.titulo])
 
-	# 2. Salva os dados
-	SaveManager.salvar_dados()
 	Logger.log("Upgrade adquirido: %s" % data.titulo)
-	
-	# 3. Avança o jogo
 	_avancar_e_fechar()
-
-
 func _avancar_e_fechar():
 	get_tree().paused = false
 	GameManager.avancar_para_proxima_onda() # Diz ao GM para recarregar a cena
