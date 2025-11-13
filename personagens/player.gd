@@ -160,7 +160,7 @@ func _on_hit_box_espada_body_entered(body: Node2D) -> void:
 		Logger.log("ACERTEI O INIMIGO: %s" % body.name)
 
 func _on_health_component_vida_mudou(vida_atual: float, vida_maxima: float):
-	emit_signal("vida_atualizada", vida_atual, vida_maxima)
+	emit_signal.call_deferred("vida_atualizada", vida_atual, vida_maxima)
 
 func ganhar_energia(quantidade: float):
 	energia_atual = min(energia_maxima, energia_atual + quantidade)
