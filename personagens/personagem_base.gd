@@ -38,8 +38,11 @@ func _physics_process(_delta: float) -> void:
 	# Os estados do player (Idle, Move) agora são
 	# responsáveis por chamar a lógica de áudio.
 	pass
-	
-func execute_movement_logic(delta: float) -> Vector2:
+
+# [Em: personagem_base.gd]
+# (SUBSTITUA ESTA FUNÇÃO)
+
+func execute_movement_logic(_delta: float) -> Vector2:
 	var _direcao: Vector2 = Input.get_vector(
 		"move_esquerda", "move_direita", "move_cima", "move_baixo"
 	)
@@ -52,7 +55,14 @@ func execute_movement_logic(delta: float) -> Vector2:
 				_direcao.x = 0
 			_direcao = _direcao.normalized()
 	
-	velocity = _direcao * _velocidade_movimento
+	# --- NOSSA NOVA LÓGICA DE UPGRADE! ---
+	var velocidade_final = _velocidade_movimento
+	if SaveManager.dados_atuais != null:
+		velocidade_final += SaveManager.dados_atuais.bonus_velocidade_movimento
+		
+	velocity = _direcao * velocidade_final
+	# --- FIM DA LÓGICA ---
+	
 	move_and_slide()
 	
 	if land_layer_ref == null or sand_layer_ref == null:
@@ -64,10 +74,8 @@ func execute_movement_logic(delta: float) -> Vector2:
 		elif land_layer_ref.get_cell_source_id(map_coords) != -1:
 			terreno_atual = "grama"
 	
-	# --- A LINHA ABAIXO FOI REMOVIDA DAQUI! ---
-	# _is_moving = velocity.length_squared() > 0.01 
-	
-	if velocity.length_squared() > 0.01: # (Usamos a checagem direta)
+	# (O resto da função continua igual...)
+	if velocity.length_squared() > 0.01: 
 		var _abs_vel_x = abs(velocity.x)
 		var _abs_vel_y = abs(velocity.y)
 		
@@ -95,7 +103,7 @@ func execute_movement_logic(delta: float) -> Vector2:
 					
 	var _target_anim_name: String = ""
 	
-	if velocity.length_squared() > 0.01: # (Usamos a checagem direta)
+	if velocity.length_squared() > 0.01: 
 		_target_anim_name = "run"
 	else:
 		_target_anim_name = "idle"
@@ -120,7 +128,6 @@ func execute_movement_logic(delta: float) -> Vector2:
 		_animation.play(_target_anim_name)
 	
 	return _direcao
-
 func _update_footstep_audio():
 	# Esta lógica precisa rodar independente do movimento
 	var esta_se_movendo_agora: bool = velocity.length_squared() > 0.01

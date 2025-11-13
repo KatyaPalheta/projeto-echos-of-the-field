@@ -1,0 +1,288 @@
+[gd_scene load_steps=9 format=3 uid="uid://cjpsfa1ss6co4"]
+
+[ext_resource type="Texture2D" uid="uid://ca6qiboe6vek" path="res://HUD/painel.png" id="1_04rhi"]
+[ext_resource type="Script" uid="uid://dncado5slmtrt" path="res://HUD/tela_recompensa.gd" id="1_qbjsn"]
+[ext_resource type="Texture2D" uid="uid://du7yr67jhpvnr" path="res://HUD/painel4.png" id="2_4o443"]
+[ext_resource type="Texture2D" uid="uid://c6b6lpjutqy0g" path="res://HUD/painel5.png" id="2_bd3pl"]
+[ext_resource type="Texture2D" uid="uid://dbfsjhob1a5cw" path="res://assets/skills/upgrade_vida_maxima.png" id="2_p3i13"]
+[ext_resource type="Texture2D" uid="uid://ckipaw06ylrul" path="res://HUD/seletor.png" id="4_l7grs"]
+[ext_resource type="Texture2D" uid="uid://bxwewenw84te0" path="res://assets/skills/upgrade_dano_espada.png" id="6_l7grs"]
+[ext_resource type="Texture2D" uid="uid://bpkxofjiqm8g1" path="res://assets/skills/upgrade_chance_critico.png" id="7_qbjsn"]
+
+[node name="TelaRecompensa" type="CanvasLayer"]
+process_mode = 2
+script = ExtResource("1_qbjsn")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0.403922)
+
+[node name="Painel" type="NinePatchRect" parent="ColorRect"]
+custom_minimum_size = Vector2(800, 400)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -200.0
+offset_right = 400.0
+offset_bottom = 300.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_04rhi")
+region_rect = Rect2(-1, -1, 50, 50)
+patch_margin_left = 20
+patch_margin_top = 20
+patch_margin_right = 20
+patch_margin_bottom = 20
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ColorRect/Painel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="TituloLabel" type="Label" parent="ColorRect/Painel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.913725, 0.964706, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 48
+text = "Escolha um Bônus"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="NichosContainer" type="HBoxContainer" parent="ColorRect/Painel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="Nicho1" type="TextureButton" parent="ColorRect/Painel/VBoxContainer/NichosContainer"]
+custom_minimum_size = Vector2(150, 200)
+layout_mode = 2
+texture_normal = ExtResource("2_bd3pl")
+texture_pressed = ExtResource("2_4o443")
+stretch_mode = 0
+
+[node name="Seletor" type="NinePatchRect" parent="ColorRect/Painel/VBoxContainer/NichosContainer/Nicho1"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -17.0
+offset_top = -14.0
+offset_right = -76.0
+offset_bottom = -101.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(2, 2)
+texture = ExtResource("4_l7grs")
+region_rect = Rect2(4, 6, 39, 38)
+patch_margin_left = 20
+patch_margin_top = 20
+patch_margin_right = 20
+patch_margin_bottom = 20
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ColorRect/Painel/VBoxContainer/NichosContainer/Nicho1"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -38.0
+offset_top = -45.5
+offset_right = 38.0
+offset_bottom = 45.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 15
+alignment = 1
+
+[node name="Icone1" type="TextureRect" parent="ColorRect/Painel/VBoxContainer/NichosContainer/Nicho1/VBoxContainer"]
+custom_minimum_size = Vector2(100, 100)
+layout_direction = 4
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = ExtResource("2_p3i13")
+stretch_mode = 4
+
+[node name="Titulo1" type="Label" parent="ColorRect/Painel/VBoxContainer/NichosContainer/Nicho1/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Upgrade 1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Nicho2" type="TextureButton" parent="ColorRect/Painel/VBoxContainer/NichosContainer"]
+custom_minimum_size = Vector2(150, 200)
+layout_mode = 2
+texture_normal = ExtResource("2_bd3pl")
+texture_pressed = ExtResource("2_4o443")
+stretch_mode = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ColorRect/Painel/VBoxContainer/NichosContainer/Nicho2"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -38.0
+offset_top = -45.5
+offset_right = 38.0
+offset_bottom = 45.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 15
+alignment = 1
+
+[node name="Icone2" type="TextureRect" parent="ColorRect/Painel/VBoxContainer/NichosContainer/Nicho2/VBoxContainer"]
+custom_minimum_size = Vector2(100, 100)
+layout_direction = 4
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = ExtResource("6_l7grs")
+stretch_mode = 4
+
+[node name="Titulo2" type="Label" parent="ColorRect/Painel/VBoxContainer/NichosContainer/Nicho2/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Upgrade 2"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Seletor" type="NinePatchRect" parent="ColorRect/Painel/VBoxContainer/NichosContainer/Nicho2"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -17.0
+offset_top = -14.0
+offset_right = -76.0
+offset_bottom = -101.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(2, 2)
+texture = ExtResource("4_l7grs")
+region_rect = Rect2(4, 6, 39, 38)
+patch_margin_left = 20
+patch_margin_top = 20
+patch_margin_right = 20
+patch_margin_bottom = 20
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[node name="Nicho3" type="TextureButton" parent="ColorRect/Painel/VBoxContainer/NichosContainer"]
+custom_minimum_size = Vector2(150, 200)
+layout_mode = 2
+texture_normal = ExtResource("2_bd3pl")
+texture_pressed = ExtResource("2_4o443")
+stretch_mode = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ColorRect/Painel/VBoxContainer/NichosContainer/Nicho3"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -38.0
+offset_top = -45.5
+offset_right = 38.0
+offset_bottom = 45.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 15
+alignment = 1
+
+[node name="Icone3" type="TextureRect" parent="ColorRect/Painel/VBoxContainer/NichosContainer/Nicho3/VBoxContainer"]
+custom_minimum_size = Vector2(100, 100)
+layout_direction = 4
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = ExtResource("7_qbjsn")
+stretch_mode = 4
+
+[node name="Titulo3" type="Label" parent="ColorRect/Painel/VBoxContainer/NichosContainer/Nicho3/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Upgrade 3"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Seletor" type="NinePatchRect" parent="ColorRect/Painel/VBoxContainer/NichosContainer/Nicho3"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -17.0
+offset_top = -14.0
+offset_right = -76.0
+offset_bottom = -101.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(2, 2)
+texture = ExtResource("4_l7grs")
+region_rect = Rect2(4, 6, 39, 38)
+patch_margin_left = 20
+patch_margin_top = 20
+patch_margin_right = 20
+patch_margin_bottom = 20
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[node name="BannerDescricao" type="NinePatchRect" parent="ColorRect/Painel/VBoxContainer"]
+custom_minimum_size = Vector2(500, 75)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = ExtResource("2_bd3pl")
+region_rect = Rect2(0, 0, 48, 49)
+patch_margin_left = 10
+patch_margin_top = 12
+patch_margin_right = 10
+patch_margin_bottom = 11
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ColorRect/Painel/VBoxContainer/BannerDescricao"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="DescricaoLabel" type="Label" parent="ColorRect/Painel/VBoxContainer/BannerDescricao/VBoxContainer"]
+custom_minimum_size = Vector2(480, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.811765, 0.819608, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "DESCRIÇÃO DA HABILIDADE"
+horizontal_alignment = 1
+autowrap_mode = 2
+justification_flags = 171

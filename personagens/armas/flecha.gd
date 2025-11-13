@@ -19,8 +19,8 @@ func _ready():
 	body_entered.connect(_on_body_entered)
 	$VisibleOnScreenNotifier2D.screen_exited.connect(queue_free)
 
-func _physics_process(delta: float):
-	global_position += direcao * velocidade * delta
+func _physics_process(_delta: float):
+	global_position += direcao * velocidade * _delta
 
 # --- FUNÇÃO _on_body_entered ATUALIZADA ---
 func _on_body_entered(body: Node2D):

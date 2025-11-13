@@ -1469,6 +1469,11 @@ points = PackedVector2Array(-10, 10, -48.304, 72, 0, 90, 48.304, 72, 10, 10, 0, 
 [node name="Player" node_paths=PackedStringArray("_animation") instance=ExtResource("1_g6smn")]
 scale = Vector2(0.993707, 1)
 script = ExtResource("2_e213c")
+cadencia_arco_base = 0.8
+cadencia_magia_base = 1.0
+dano_espada_base = 25.0
+dano_espada_especial = 50.0
+potencia_cura_base = 25.0
 cena_flecha = ExtResource("3_j7ync")
 cena_missil_de_fogo = null
 _animation = NodePath("animacao")
@@ -1575,5 +1580,11 @@ shape = SubResource("ConvexPolygonShape2D_6idsq")
 
 [node name="AudioCastMagia" type="AudioStreamPlayer2D" parent="." index="15"]
 stream = ExtResource("16_5s2va")
+
+[node name="ArcoCooldownTimer" type="Timer" parent="." index="16"]
+one_shot = true
+
+[node name="MagiaCooldownTimer" type="Timer" parent="." index="17"]
+one_shot = true
 
 [connection signal="body_entered" from="textura/HitBoxEspada" to="." method="_on_hit_box_espada_body_entered"]

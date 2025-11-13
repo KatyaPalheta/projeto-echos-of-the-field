@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://c1oknh4ou4w5u"]
+[gd_scene load_steps=38 format=3 uid="uid://c1oknh4ou4w5u"]
 
 [ext_resource type="PackedScene" uid="uid://dn2pbvh8nkfeo" path="res://personagens/inimigos/inimigo_base.tscn" id="1_askva"]
 [ext_resource type="Texture2D" uid="uid://dde51emhjoogr" path="res://assets/personagens/inimigos/Slime-sheet-purple.png" id="2_bh3cl"]
@@ -6,11 +6,19 @@
 [ext_resource type="AudioStream" uid="uid://b15kg4vj1ssjk" path="res://assets/personagens/inimigos/audios/hit_monstro.MP3" id="3_5nmoa"]
 [ext_resource type="AudioStream" uid="uid://bn4apggykod4c" path="res://assets/personagens/inimigos/audios/passo_jelli.MP3" id="3_p3tmj"]
 [ext_resource type="AudioStream" uid="uid://lne3yx1bmgqg" path="res://assets/personagens/inimigos/audios/morte_jelli.MP3" id="4_016n7"]
+[ext_resource type="Script" uid="uid://c5yfd07ogvo5a" path="res://personagens/inimigos/StateMachineInimigo.gd" id="9_aclwj"]
+[ext_resource type="Script" uid="uid://djdi2vfjre13j" path="res://personagens/inimigos/idle.gd" id="10_vkr8s"]
+[ext_resource type="Script" uid="uid://drur00akes8gq" path="res://personagens/inimigos/wander.gd" id="11_r4755"]
 [ext_resource type="Texture2D" uid="uid://cvaeua8t1w2nf" path="res://assets/personagens/inimigos/Slime_blue.png" id="11_ublk7"]
+[ext_resource type="Script" uid="uid://c20w780n7tca8" path="res://personagens/inimigos/chase.gd" id="12_0j2k1"]
 [ext_resource type="Texture2D" uid="uid://nqsrgaygt7t2" path="res://assets/personagens/inimigos/Slime_golden.png" id="12_w0jvu"]
+[ext_resource type="Script" uid="uid://db7g2f1ddhntk" path="res://personagens/inimigos/attack.gd" id="13_gsack"]
 [ext_resource type="Texture2D" uid="uid://b4foga2gx05cn" path="res://assets/personagens/inimigos/Slime_green.png" id="13_orpia"]
+[ext_resource type="Script" uid="uid://bwmlp5tp3mq5p" path="res://personagens/inimigos/hurt.gd" id="14_hvs8c"]
 [ext_resource type="Texture2D" uid="uid://bf1u766ck7plf" path="res://assets/personagens/inimigos/Slime_pink.png" id="14_txwit"]
 [ext_resource type="Texture2D" uid="uid://c82ptb3usoxf4" path="res://assets/personagens/inimigos/Slime_rose.png" id="15_a6wmc"]
+[ext_resource type="Script" uid="uid://cpcld4xhtrr6w" path="res://personagens/inimigos/dead.gd" id="15_hpjlf"]
+[ext_resource type="Script" uid="uid://c4426xpbealpw" path="res://personagens/inimigos/flee.gd" id="16_kh0uh"]
 
 [sub_resource type="Animation" id="Animation_p3tmj"]
 length = 0.001
@@ -532,31 +540,54 @@ attack_range = 15.0
 jump_cooldown = 3.0
 jump_duration = 0.5
 
-[node name="Textura" parent="." index="0"]
+[node name="StateMachine" type="Node" parent="." index="0"]
+script = ExtResource("9_aclwj")
+initial_state = NodePath("Idle")
+
+[node name="Idle" type="Node" parent="StateMachine" index="0"]
+script = ExtResource("10_vkr8s")
+
+[node name="Wander" type="Node" parent="StateMachine" index="1"]
+script = ExtResource("11_r4755")
+
+[node name="Chase" type="Node" parent="StateMachine" index="2"]
+script = ExtResource("12_0j2k1")
+
+[node name="Attack" type="Node" parent="StateMachine" index="3"]
+script = ExtResource("13_gsack")
+
+[node name="Hurt" type="Node" parent="StateMachine" index="4"]
+script = ExtResource("14_hvs8c")
+
+[node name="Dead" type="Node" parent="StateMachine" index="5"]
+script = ExtResource("15_hpjlf")
+
+[node name="Flee" type="Node" parent="StateMachine" index="6"]
+script = ExtResource("16_kh0uh")
+
+[node name="Textura" parent="." index="1"]
 hframes = 4
 vframes = 15
 
-[node name="Animacao" parent="." index="1"]
+[node name="Animacao" parent="." index="2"]
 libraries = {
 &"": SubResource("AnimationLibrary_3brva")
 }
 
-[node name="Colisao" parent="." index="2"]
+[node name="Colisao" parent="." index="3"]
 shape = SubResource("RectangleShape2D_bm8g4")
 
-[node name="AudioHit" parent="." index="4"]
+[node name="AudioHit" parent="." index="5"]
 stream = ExtResource("3_5nmoa")
 
-[node name="AudioMorrer" parent="." index="5"]
+[node name="AudioMorrer" parent="." index="6"]
 stream = ExtResource("4_016n7")
 
-[node name="AudioAtaque" parent="." index="6"]
+[node name="AudioAtaque" parent="." index="7"]
 stream = ExtResource("3_p3tmj")
 
-[node name="AudioJump" type="AudioStreamPlayer2D" parent="." index="7"]
+[node name="AudioJump" type="AudioStreamPlayer2D" parent="." index="8"]
 stream = ExtResource("3_p3tmj")
 
-[node name="JumpTimer" type="Timer" parent="." index="8"]
+[node name="JumpTimer" type="Timer" parent="." index="9"]
 wait_time = 0.5
-
-[connection signal="timeout" from="JumpTimer" to="." method="_on_jump_timer_timeout"]

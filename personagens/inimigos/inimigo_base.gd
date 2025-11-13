@@ -1,7 +1,6 @@
+# [Script: inimigo_base.gd] (VERSÃO REATORADA)
 extends CharacterBody2D
-class_name InimigoBase # <-- Muito útil para o futuro!
-
-#signal morreu_e_deu_energia(valor)
+class_name InimigoBase
 
 # --- Componentes (como no player) ---
 @onready var animacao: AnimationPlayer = $Animacao
@@ -11,78 +10,78 @@ class_name InimigoBase # <-- Muito útil para o futuro!
 @onready var audio_hurt: AudioStreamPlayer2D = $AudioHit
 @onready var efeito_queimadura: Sprite2D = $EfeitoQueimadura
 @onready var efeito_queimadura_anim: AnimationPlayer = $EfeitoQueimadura/AnimationPlayer
-
 @onready var sinal_alerta: Sprite2D = $SinalAlerta
 @onready var audio_alerta: AudioStreamPlayer2D = $AudioAlerta
 @onready var alerta_timer: Timer = $AlertaTimer
-
 @onready var dot_timer: Timer = $DoTTimer
 @onready var audio_queimadura: AudioStreamPlayer2D = $AudioQueimadura
 
+# --- A GRANDE MUDANÇA: Referência para a StateMachine ---
+@onready var state_machine: Node = $StateMachine
 
-# Variáveis de controle do DoT (Dano Contínuo)
-var dot_dano_por_tick: float = 0.0
-var dot_duracao_restante: float = 0.0
-
-
-# --- Variáveis de Estado ---
-# Vamos usar isso para controlar (parado, andando, atacando, morrendo)
-enum State { IDLE, WANDER, CHASE, ATTACK, HURT, DEAD, FLEE }
-var current_state: State = State.IDLE
+# --- Variáveis de Estado (AGORA SÃO GLOBAIS) ---
 var face_direction: Vector2 = Vector2.DOWN
 var player_target: Node2D = null
+var is_dead: bool = false # (Para evitar dano duplo, etc)
 
 # --- Stats Base (cada inimigo pode mudar isso) ---
 @export var move_speed: float = 50.0
 @export var attack_damage: float = 10.0
 @export var knockback_force: float = 400.0
 
+var dot_dano_por_tick: float = 0.0
+var dot_duracao_restante: float = 0.0
+
 func _ready():
-	# Conecta o sinal de morte do HealthComponent 
 	add_to_group("inimigos")
 	health_component.morreu.connect(_on_morte)
-	animacao.animation_finished.connect(_on_animation_finished)
 	alerta_timer.timeout.connect(_on_alerta_timer_timeout)
-	set_physics_process(false)
-	animacao.set_process(false)
 	dot_timer.timeout.connect(_on_dot_timer_timeout)
-	#visible = false
+	
+	# A lógica de VisibleOnScreenNotifier2D (se existir) continua a mesma
+	# A lógica de _on_animation_finished foi MOVIDA para os estados
+	# A lógica de set_physics_process(false) e visible = false (se existir) continua a mesma
+	pass
+
+# [Em: inimigo_base.gd]
+# (Substitua esta função)
 
 func sofrer_dano(dano: float, direcao_do_ataque: Vector2):
-	if current_state == State.DEAD:
-		return 
+	
+	# --- NOSSA NOVA GUARDA (IGUAL A DO PLAYER!) ---
+	# Checa se já estamos mortos OU se já estamos no estado Hurt
+	var estado_atual_str = state_machine.current_state.name
+	if is_dead or estado_atual_str == "Hurt":
+		return # Ignora este dano!
+	# --- FIM DA GUARDA ---
 
 	health_component.sofrer_dano(dano)
 
-	# --- ATUALIZAÇÃO DE ÁUDIO (Sua ideia!) ---
 	if audio_hurt != null:
 		audio_hurt.play()
-	# --- FIM DA ATUALIZAÇÃO ---
-
+	
 	# O sinal "morreu" já pode ter sido emitido
-	if current_state == State.DEAD:
+	if is_dead:
 		return 
 	
-	var anim_sufixo = _get_suffix_from_direction(direcao_do_ataque)
-
-	current_state = State.HURT
-	animacao.play("hurt" + anim_sufixo) 
+	# --- DELEGA PARA O ESTADO HURT ---
+	# (O resto da função continua igual)
+	var hurt_state = state_machine.get_node("Hurt")
 	
-	# (Esta lógica  já cuida do "sem knockback" 
-	#  quando passamos Vector2.ZERO)
-	if direcao_do_ataque != Vector2.ZERO: 
-		velocity = direcao_do_ataque * knockback_force
+	# 2. "Ensina" a ele a direção do knockback
+	hurt_state.setup_knockback(direcao_do_ataque)
+	
+	# 3. MUDA o estado
+	state_machine._change_state(hurt_state)
 
 func _on_morte():
-	current_state = State.DEAD
-	animacao.play("dead" + _get_suffix_from_direction(face_direction))
+	if is_dead: return
+	is_dead = true
+	
+	# --- DELEGA PARA O ESTADO DEAD ---
+	state_machine._change_state(state_machine.get_node("Dead"))
 
-	# --- ATUALIZAÇÃO AQUI ---
-	_parar_queimadura() # Para o som e o efeito de fogo!
-	# --- FIM DA ATUALIZAÇÃO ---
 
-	# Avisa ao Cérebro Mestre que uma morte ocorreu
-	GameManager.registrar_morte_inimigo() #[cite: 63]
 func _get_suffix_from_direction(direction: Vector2) -> String:
 	# Se o movimento Y (vertical) for o mais forte...
 	if abs(direction.y) > abs(direction.x):
@@ -93,111 +92,53 @@ func _get_suffix_from_direction(direction: Vector2) -> String:
 	# Se o movimento X (horizontal) for o mais forte...
 	else:
 		if direction.x != 0:
+			# Lógica de flip (movida do smile.gd para cá)
+			if direction.x > 0.1:
+				textura.flip_h = true # Indo para Direita
+			elif direction.x < -0.1:
+				textura.flip_h = false # Indo para Esquerda
 			return "_p" # Perfil
 		else:
 			# Se não tiver direção (parado), usa a frente
 			return "_f"
-# --- NOVA FUNÇÃO ---
-# Chamada quando QUALQUER animação do inimigo termina
-func _on_animation_finished(anim_name: String):
-	# Se o inimigo JÁ ESTIVER MORTO, ignore todo o resto
-	# exceto a animação de morte.
-	if current_state == State.DEAD:
-		if anim_name.begins_with("dead_"):
-			queue_free()
-			Logger.log("Smile morreu!") # Se autodestrói
-		return # Ignora todo o resto (como o "hurt_")
 
-	# --- Se ele NÃO ESTIVER MORTO, continua normal ---
-	
-	# Se a animação que acabou foi a de "tomar dano"...
-	if anim_name.begins_with("hurt_"):
-		
-		# LÓGICA ATUALIZADA:
-		# Se o player AINDA ESTIVER no nosso radar (player_target não é nulo)...
-		if player_target != null:
-			# ...então volte a PERSEGUIR!
-			current_state = State.CHASE
-		else:
-			# ...senão, AGORA SIM, volte ao estado normal (parado)
-			current_state = State.IDLE
-
-
-func _on_visible_on_screen_notifier_2d_screen_entered() -> void:
-	# Ativa a física e a IA
-	set_physics_process(true)
-	# Ativa o processamento do AnimationPlayer
-	animacao.set_process(true) # Replace with function body.
-	#visible = true
-
-
-func _on_visible_on_screen_notifier_2d_screen_exited() -> void:
-	# Desativa a física e a IA (ECONOMIZA MUITO CPU!)
-	set_physics_process(false)
-	# Pausa o processamento do AnimationPlayer (ECONOMIZA MAIS CPU!)
-	animacao.set_process(false) # Replace with function body.
-	#visible = false
-
-
-
-
+# --- Lógica de Detecção (sem mudança) ---
 
 func _on_zona_de_deteccao_body_entered(body: Node2D) -> void:
-	# Checa se quem entrou é o Player (usando a classe base)
 	if body is PersonagemBase:
-		player_target = body # Guarda o alvo!
-		var estava_passivo = (current_state == State.IDLE or current_state == State.WANDER)
-		# Só muda para CHASE se não estivermos sendo atingidos ou morrendo
-		if current_state != State.HURT and current_state != State.DEAD:
-			current_state = State.CHASE
-			if estava_passivo:
-				sinal_alerta.visible = true
-				audio_alerta.play()
-				alerta_timer.start() # Inicia o timer de 0.5s
-
+		player_target = body
+		
+		# Só toca o alerta se estivermos passivos
+		var estado_atual_str = state_machine.current_state.name
+		if estado_atual_str == "Idle" or estado_atual_str == "Wander":
+			sinal_alerta.visible = true
+			audio_alerta.play()
+			alerta_timer.start()
 
 func _on_zona_de_deteccao_body_exited(body: Node2D) -> void:
-	# Checa se quem saiu é o MESMO alvo que estávamos perseguindo
 	if body == player_target:
-		player_target = null # Esquece o alvo
-		
-		# Se estávamos perseguindo, voltamos a ficar parados
-		if current_state == State.CHASE:
-			current_state = State.IDLE
-
+		player_target = null 
 
 func _on_hit_box_ataque_body_entered(body: Node2D) -> void:
 	if body is PersonagemBase:
-		
-		# 2. Calcula a direção do ataque (do inimigo PARA o player)
 		var direcao_do_ataque = (body.global_position - global_position).normalized()
-		
-		# 3. Chama uma NOVA função no player para ele tomar o dano
-		#    (Nós vamos criar essa função no próximo passo!)
-		#    [cite_start]Usamos a variável 'attack_damage' que já existe no inimigo! [cite: 9]
-		body.receber_dano_do_inimigo(attack_damage, direcao_do_ataque) # Replace with function body.
-# Esta função será chamada pelo GameLevel
+		body.receber_dano_do_inimigo(attack_damage, direcao_do_ataque)
+
 func fugir_do_player(posicao_do_player: Vector2):
-	if current_state == State.DEAD:
-		return # Morto não foge
+	if is_dead:
+		return
+	
+	var flee_state = state_machine.get_node("Flee")
+	flee_state.setup_flee(posicao_do_player)
+	state_machine._change_state(flee_state)
 
-	current_state = State.FLEE
-	player_target = null # Para de perseguir
-
-	# Calcula a direção OPOSTA ao player
-	var flee_direction = (global_position - posicao_do_player).normalized()
-
-	# Define a velocidade de fuga (ex: 1.5x mais rápido)
-	velocity = flee_direction * (move_speed * 1.5)
-	# Esta função é chamada pelo sinal 'timeout' do AlertaTimer
 func _on_alerta_timer_timeout() -> void:
-	# Esconde o "!"
 	sinal_alerta.visible = false
-# [Em: inimigo_base.gd]
-# (Substitua esta função)
+
+# --- Lógica de Queimadura (sem mudança) ---
 
 func aplicar_queimadura(dano_por_segundo: float, duracao_total: float):
-	if current_state == State.DEAD:
+	if is_dead:
 		return
 	if audio_hurt != null:
 		audio_hurt.play()
@@ -208,55 +149,58 @@ func aplicar_queimadura(dano_por_segundo: float, duracao_total: float):
 	if not audio_queimadura.playing:
 		audio_queimadura.play()
 		
-	# --- ARQUITETURA "BRUTA" ---
 	if efeito_queimadura != null:
 		efeito_queimadura.visible = true
-		
-		# (A linha "position.y = 1" foi REMOVIDA daqui!
-		#  Agora vamos controlar isso no Editor.)
-		
 		if efeito_queimadura_anim != null:
 			efeito_queimadura_anim.play("queimar") 
 	
 	dot_timer.start(1.0)
+
 func _on_dot_timer_timeout():
-	# 1. Se a duração acabou, para tudo
-	dot_duracao_restante -= 1.0 # (Subtrai 1 segundo)
+	dot_duracao_restante -= 1.0
 	
 	if dot_duracao_restante <= 0.0:
 		_parar_queimadura()
 		return
 
-	# 2. Se ainda tem duração, aplica o dano
 	if health_component != null:
-		
-		# --- CORREÇÃO AQUI ---
-		# A função do componente SÓ aceita o dano.
-		# Isso já ignora o knockback, como queríamos!
 		health_component.sofrer_dano(dot_dano_por_tick)
-		# --- FIM DA CORREÇÃO ---
 	
-	# 3. Reinicia o timer para o próximo tick
 	dot_timer.start(1.0)
-
-# (Nova função "helper" para limpar tudo)
-# [Em: inimigo_base.gd]
-# (Substitua esta função)
 
 func _parar_queimadura():
 	dot_timer.stop()
 	audio_queimadura.stop()
 	dot_duracao_restante = 0.0
 	
-	# --- A SUA ARQUITETURA "BRUTA"! ---
 	if efeito_queimadura != null:
-		# 1. ESCONDE o foguinho!
 		efeito_queimadura.visible = false
-		
-		# 2. PARA a animação (para economizar CPU)
 		if efeito_queimadura_anim != null:
 			efeito_queimadura_anim.stop()
+# [Em: inimigo_base.gd]
+# (Adicione estas duas funções de volta)
+
+func _on_visible_on_screen_notifier_2d_screen_entered() -> void:
+	# Ativa a física (do corpo)
+	set_physics_process(true)
+	
+	# --- A LINHA QUE FALTAVA ---
+	# Ativa a física (da IA / StateMachine)
+	state_machine.set_physics_process(true)
 	# --- FIM DA CORREÇÃO ---
-# --- ATUALIZAÇÃO IMPORTANTE ---
-# Precisamos garantir que a queimadura pare se o inimigo morrer!
-# Substitua sua função _on_morte INTEIRA por esta:
+
+	# Ativa o processamento do AnimationPlayer
+	animacao.set_process(true)
+
+
+func _on_visible_on_screen_notifier_2d_screen_exited() -> void:
+	# Desativa a física (do corpo)
+	set_physics_process(false)
+	
+	# --- A LINHA QUE FALTAVA ---
+	# Desativa a física (da IA / StateMachine)
+	state_machine.set_physics_process(false)
+	# --- FIM DA CORREÇÃO ---
+
+	# Pausa o processamento do AnimationPlayer
+	animacao.set_process(false)
