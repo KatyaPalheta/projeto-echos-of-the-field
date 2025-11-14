@@ -37,41 +37,29 @@ func _ready():
 	health_component.morreu.connect(_on_morte)
 	alerta_timer.timeout.connect(_on_alerta_timer_timeout)
 	dot_timer.timeout.connect(_on_dot_timer_timeout)
-	
-	# A lógica de VisibleOnScreenNotifier2D (se existir) continua a mesma
-	# A lógica de _on_animation_finished foi MOVIDA para os estados
-	# A lógica de set_physics_process(false) e visible = false (se existir) continua a mesma
 	pass
 
-# [Em: inimigo_base.gd]
-# (Substitua esta função)
+
 
 func sofrer_dano(dano: float, direcao_do_ataque: Vector2):
-	
-	# --- NOSSA NOVA GUARDA (IGUAL A DO PLAYER!) ---
-	# Checa se já estamos mortos OU se já estamos no estado Hurt
-	var estado_atual_str = state_machine.current_state.name
-	if is_dead or estado_atual_str == "Hurt":
-		return # Ignora este dano!
-	# --- FIM DA GUARDA ---
+
+	if is_dead:
+		return
 
 	health_component.sofrer_dano(dano)
 
 	if audio_hurt != null:
 		audio_hurt.play()
-	
-	# O sinal "morreu" já pode ter sido emitido
+		
 	if is_dead:
 		return 
-	
-	# --- DELEGA PARA O ESTADO HURT ---
-	# (O resto da função continua igual)
+
+	var estado_atual_str = state_machine.current_state.name
+	if estado_atual_str == "Hurt":
+		return 
+		
 	var hurt_state = state_machine.get_node("Hurt")
-	
-	# 2. "Ensina" a ele a direção do knockback
 	hurt_state.setup_knockback(direcao_do_ataque)
-	
-	# 3. MUDA o estado
 	state_machine._change_state(hurt_state)
 
 func _on_morte():
