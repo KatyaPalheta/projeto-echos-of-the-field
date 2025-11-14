@@ -1464,7 +1464,7 @@ _data = {
 }
 
 [sub_resource type="ConvexPolygonShape2D" id="ConvexPolygonShape2D_6idsq"]
-points = PackedVector2Array(-10, 10, -48.304, 72, 0, 90, 48.304, 72, 10, 10, 0, 0)
+points = PackedVector2Array(-10, 10, -48.304, 72, 0, 104, 48.304, 72, 10, 10, 0, 0)
 
 [node name="Player" node_paths=PackedStringArray("_animation") instance=ExtResource("1_g6smn")]
 scale = Vector2(0.993707, 1)
