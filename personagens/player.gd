@@ -220,7 +220,6 @@ func _atualizar_alvo_com_cone(sufixo_anim: String):
 				menor_distancia_quadrada = dist_quadrada
 				inimigo_mais_proximo = corpo
 	alvo_travado = inimigo_mais_proximo
-
 # [Em: player.gd]
 # (SUBSTITUA ESTA FUNÇÃO INTEIRA)
 
@@ -229,15 +228,21 @@ func _disparar_rajada_de_flechas(sufixo_anim: String):
 		push_warning("Cena da Flecha não configurada no Player!")
 		return
 	
-	var flechas_base = 2 
+	var flechas_base = 2
 	var bonus_flechas = 0
+	var bonus_velocidade_rajada = 0.0 # (Bônus em segundos)
+	
 	if SaveManager.dados_atuais != null:
 		bonus_flechas = SaveManager.dados_atuais.bonus_rajada_flechas
+		bonus_velocidade_rajada = SaveManager.dados_atuais.bonus_velocidade_rajada
 	
 	var total_flechas = flechas_base + bonus_flechas
 	
-	# --- CORREÇÃO DO BUG DA RAJADA (#2, #3) ---
-	var delay_entre_flechas = 0.35 # (Era 0.2)
+	# --- CORREÇÃO DO BUG DA RAJADA (AGORA LENDO O BÔNUS) ---
+	var delay_base_entre_flechas = 0.35 # (O valor original)
+	
+	# O bônus REDUZ o delay, com um mínimo de 0.1s para não ser instantâneo
+	var delay_final = max(0.1, delay_base_entre_flechas - bonus_velocidade_rajada)
 	# --- FIM DA CORREÇÃO ---
 	
 	for i in range(total_flechas):
@@ -245,8 +250,8 @@ func _disparar_rajada_de_flechas(sufixo_anim: String):
 		
 		_disparar_flecha(sufixo_anim)
 		
-		if i < (total_flechas - 1): 
-			await get_tree().create_timer(delay_entre_flechas).timeout
+		if i < (total_flechas - 1):
+			await get_tree().create_timer(delay_final).timeout
 
 func _disparar_missil(sufixo_anim: String):
 	if cena_missil_de_fogo == null:

@@ -18,12 +18,20 @@ var duracao_queimadura: float = 5.0 # por 5 segundos (Total 15 DoT)
 @onready var sprite: Sprite2D = $Sprite2D # (Ou o nome do seu nó de sprite)
 @onready var notifier: VisibleOnScreenNotifier2D = $VisibleOnScreenNotifier2D
 
+# [Em: missil_de_fogo.gd]
+# (SUBSTITUA ESTA FUNÇÃO INTEIRA)
+
 func _ready():
+	# --- CORREÇÃO: APLICA O BÔNUS DE VELOCIDADE ---
+	if SaveManager.dados_atuais != null:
+		velocidade += SaveManager.dados_atuais.bonus_velocidade_missil
+	# --- FIM DA CORREÇÃO ---
+
 	# Define a rotação (igual fizemos na flecha) 
 	rotation = direcao.angle()
 	
 		# Conecta os sinais
-	body_entered.connect(_on_body_entered)
+	body_entered.connect(_on_body_entered) 
 	notifier.screen_exited.connect(queue_free) 
 
 func _physics_process(_delta: float):

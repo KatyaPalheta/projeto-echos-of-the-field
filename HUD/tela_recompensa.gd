@@ -50,7 +50,26 @@ func _ready():
 	# 4. Foca no primeiro nicho
 	nicho1.call_deferred("grab_focus")
 
-# --- Funções de Setup ---
+# [Em: tela_recompensa.gd]
+# (SUBSTITUA A FUNÇÃO _input PELA VERSÃO CORRIGIDA)
+
+func _input(_event): # O 'event' agora é ignorado (pode ser _event)
+	
+	# --- NOSSA FERRAMENTA DE DEBUG "RE-ROLL" ---
+	# Checa se a ação "curar" (Botão B) foi pressionada
+	
+	# CORREÇÃO: Usamos o Singleton global 'Input' em vez do 'event'
+	if Input.is_action_just_pressed("curar"):
+		
+		Logger.log("--- DEBUG: Sorteando novos upgrades! ---")
+		
+		# 1. Roda a lógica de sortear e preencher os nichos novamente
+		_setup_tela()
+		
+		# 2. Força o foco de volta para o primeiro nicho
+		nicho1.call_deferred("grab_focus")
+	# --- FIM DO DEBUG ---
+
 
 func _setup_tela():
 	# 1. Pede 3 upgrades aleatórios ao nosso "Cérebro"
@@ -159,7 +178,10 @@ func _on_nicho_pressed(index: int):
 			save_data.bonus_cadencia_magia += 0.1 
 		"upgrade_leque_misseis":
 			save_data.bonus_leque_misseis += 1
-			
+		
+		"upgrade_velocidade_rajada":
+			SaveManager.dados_atuais.bonus_velocidade_rajada += 0.05 
+		
 		"upgrade_conservar_energia":
 			save_data.conserva_energia_entre_ondas = true
 		

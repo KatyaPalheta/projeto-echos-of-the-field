@@ -63,30 +63,27 @@ func iniciar_onda() -> float:
 			Logger.log("Iniciando Onda 1, cronômetro de partida zerado!")
 
 			# ZERA todos os upgrades da partida!
-			save_data.conserva_energia_entre_ondas = false
+			save_data.conserva_energia_entre_ondas = false 
 			save_data.energia_atual_salva = 0.0 
-			
-			save_data.bonus_rajada_flechas = 0
-			save_data.bonus_leque_misseis = 0
-			
-			save_data.bonus_vida_maxima = 0.0
-			save_data.bonus_energia_maxima = 0.0
+			save_data.bonus_rajada_flechas = 0 
+			save_data.bonus_leque_misseis = 0 
+			save_data.bonus_vida_maxima = 0.0 
+			save_data.bonus_energia_maxima = 0.0 
 			save_data.bonus_velocidade_movimento = 0.0
 			save_data.bonus_reducao_dano = 0.0 
-			
-			save_data.bonus_potencia_cura = 0.0
-			save_data.bonus_cura_por_morte = 0.0
-			save_data.bonus_cargas_cura = 0
-			
-			save_data.bonus_dano_espada = 0.0
-			save_data.bonus_dano_espada_especial = 0.0
-			save_data.bonus_cadencia_arco = 0.0
-			save_data.bonus_cadencia_magia = 0.0
-			save_data.bonus_eficiencia_energia = 0.0
-			
-			# --- ADIÇÃO DO RESET ---
+			save_data.bonus_potencia_cura = 0.0 
+			save_data.bonus_cura_por_morte = 0.0 
+			save_data.bonus_cargas_cura = 0 
+			save_data.bonus_dano_espada = 0.0 
+			save_data.bonus_dano_espada_especial = 0.0 
+			save_data.bonus_cadencia_arco = 0.0 
+			save_data.bonus_cadencia_magia = 0.0 
+			save_data.bonus_eficiencia_energia = 0.0 
 			save_data.bonus_foco_leque = 0.0
-			# --- FIM DA ADIÇÃO ---
+			save_data.bonus_velocidade_flecha = 0.0
+			save_data.bonus_velocidade_missil = 0.0
+			save_data.bonus_velocidade_rajada = 0.0
+	
 
 			Logger.log("SaveData resetado para início de partida.")
 

@@ -10,14 +10,20 @@ var dano: float = 20.0 # <-- DANO ATUALIZADO!
 
 @onready var audio_disparo = $AudioDisparo
 
+# [Em: flecha.gd]
+# (SUBSTITUA ESTA FUNÇÃO INTEIRA)
+
 func _ready():
-	
+	# --- CORREÇÃO: APLICA O BÔNUS DE VELOCIDADE ---
+	if SaveManager.dados_atuais != null:
+		velocidade += SaveManager.dados_atuais.bonus_velocidade_flecha
+	# --- FIM DA CORREÇÃO ---
 	
 	# Define a rotação da flecha (ex: 0°, 90°, 180°...)
-	rotation = direcao.angle()
+	rotation = direcao.angle() 
 	
-	body_entered.connect(_on_body_entered)
-	$VisibleOnScreenNotifier2D.screen_exited.connect(queue_free)
+	body_entered.connect(_on_body_entered) 
+	$VisibleOnScreenNotifier2D.screen_exited.connect(queue_free) 
 
 func _physics_process(_delta: float):
 	global_position += direcao * velocidade * _delta
