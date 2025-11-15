@@ -1,12 +1,14 @@
-[gd_scene load_steps=10 format=3 uid="uid://dn2pbvh8nkfeo"]
+[gd_scene load_steps=12 format=3 uid="uid://dn2pbvh8nkfeo"]
 
 [ext_resource type="Script" uid="uid://bmwqf41mnett8" path="res://personagens/inimigos/inimigo_base.gd" id="1_uejkv"]
+[ext_resource type="Texture2D" uid="uid://cvaeua8t1w2nf" path="res://assets/personagens/inimigos/Slime_blue.png" id="2_cibfy"]
 [ext_resource type="Script" uid="uid://poeui62rhe38" path="res://personagens/health_component.gd" id="2_spr2x"]
 [ext_resource type="PackedScene" uid="uid://bklkio2ubbtxr" path="res://personagens/dano_flutuante.tscn" id="3_lt0re"]
 [ext_resource type="Texture2D" uid="uid://b6elp3vtu8n2p" path="res://HUD/alert.png" id="4_brd8b"]
 [ext_resource type="AudioStream" uid="uid://bud6wxjfvc3o0" path="res://assets/personagens/inimigos/audios/alerte.mp3" id="5_ego8o"]
 [ext_resource type="AudioStream" uid="uid://dohdlx2nyklia" path="res://personagens/armas/brun.MP3" id="6_ego8o"]
 [ext_resource type="PackedScene" uid="uid://b0oe86bp60sjv" path="res://personagens/armas/efeito_queimadura.tscn" id="7_f0pd7"]
+[ext_resource type="PackedScene" uid="uid://fa3ke5macjl6" path="res://HUD/inimigo_health_bar.tscn" id="9_83n77"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_lt0re"]
 radius = 120.0
@@ -18,6 +20,7 @@ radius = 12.0
 script = ExtResource("1_uejkv")
 
 [node name="Textura" type="Sprite2D" parent="."]
+texture = ExtResource("2_cibfy")
 
 [node name="Animacao" type="AnimationPlayer" parent="."]
 
@@ -73,6 +76,8 @@ stream = ExtResource("6_ego8o")
 [node name="EfeitoQueimadura" parent="." instance=ExtResource("7_f0pd7")]
 visible = false
 position = Vector2(0, -16)
+
+[node name="InimigoHealthBar" parent="." instance=ExtResource("9_83n77")]
 
 [connection signal="screen_entered" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_entered"]
 [connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_exited"]

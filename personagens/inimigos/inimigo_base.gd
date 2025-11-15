@@ -18,6 +18,7 @@ class_name InimigoBase
 
 # --- A GRANDE MUDANÇA: Referência para a StateMachine ---
 @onready var state_machine: Node = $StateMachine
+@onready var health_bar: ProgressBar = $InimigoHealthBar
 
 # --- Variáveis de Estado (AGORA SÃO GLOBAIS) ---
 var face_direction: Vector2 = Vector2.DOWN
@@ -32,11 +33,16 @@ var is_dead: bool = false # (Para evitar dano duplo, etc)
 var dot_dano_por_tick: float = 0.0
 var dot_duracao_restante: float = 0.0
 
+
 func _ready():
 	add_to_group("inimigos")
-	health_component.morreu.connect(_on_morte)
 	alerta_timer.timeout.connect(_on_alerta_timer_timeout)
 	dot_timer.timeout.connect(_on_dot_timer_timeout)
+	
+	health_component.morreu.connect(_on_morte)
+	health_component.vida_mudou.connect(_on_inimigo_vida_mudou)
+
+	
 	pass
 
 
@@ -66,9 +72,12 @@ func _on_morte():
 	if is_dead: return
 	is_dead = true
 	
+	# Esconde a barra de vida para não ficar flutuando
+	if health_bar != null:
+		health_bar.visible = false
+	
 	# --- DELEGA PARA O ESTADO DEAD ---
 	state_machine._change_state(state_machine.get_node("Dead"))
-
 
 func _get_suffix_from_direction(direction: Vector2) -> String:
 	# Se o movimento Y (vertical) for o mais forte...
@@ -144,18 +153,30 @@ func aplicar_queimadura(dano_por_segundo: float, duracao_total: float):
 	
 	dot_timer.start(1.0)
 
-func _on_dot_timer_timeout():
-	dot_duracao_restante -= 1.0
-	
-	if dot_duracao_restante <= 0.0:
-		_parar_queimadura()
-		return
+# [Em: inimigo_base.gd]
+# (SUBSTITUA ESTA FUNÇÃO INTEIRA)
 
+func _on_dot_timer_timeout():
+	# --- CORREÇÃO DO BUG DO DoT ---
+	# (Movemos o dano para ANTES da checagem de parada)
+	
+	# 1. Aplica o dano do tick que ACABOU de acontecer
 	if health_component != null:
 		health_component.sofrer_dano(dot_dano_por_tick)
 	
+	# 2. Reduz a duração
+	dot_duracao_restante -= 1.0
+	
+	# 3. Checa se a duração acabou
+	# (Ex: 1.0 vira 0.0, checa 0.0 <= 0.0, para. O dano já foi aplicado)
+	if dot_duracao_restante <= 0.0:
+		_parar_queimadura()
+		return # Não reinicia o timer
+	# --- FIM DA CORREÇÃO ---
+	
+	# 4. Se não acabou, reinicia o timer
 	dot_timer.start(1.0)
-
+	
 func _parar_queimadura():
 	dot_timer.stop()
 	audio_queimadura.stop()
@@ -192,3 +213,16 @@ func _on_visible_on_screen_notifier_2d_screen_exited() -> void:
 
 	# Pausa o processamento do AnimationPlayer
 	animacao.set_process(false)
+func _on_inimigo_vida_mudou(vida_atual: float, vida_maxima: float):
+	if health_bar != null:
+		
+
+		if not health_bar.visible:
+			# 1. Torne-a visível
+			health_bar.visible = true
+			# 2. Configure seu valor máximo (SÓ UMA VEZ)
+			health_bar.max_value = vida_maxima
+		# --- FIM DA LÓGICA ---
+		
+		# 3. Atualize o valor da barra (SEMPRE)
+		health_bar.value = vida_atual

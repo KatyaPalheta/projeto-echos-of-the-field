@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://fa3ke5macjl6"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u6jrp"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ip3s7"]
+bg_color = Color(1, 0, 0.211765, 1)
+
+[node name="InimigoHealthBar" type="ProgressBar"]
+visible = false
+offset_left = 8.0
+offset_top = -9.0
+offset_right = 9.0
+offset_bottom = 3.0
+theme_override_colors/font_color = Color(0.754037, 0.770891, 0.817431, 1)
+theme_override_font_sizes/font_size = 5
+theme_override_styles/background = SubResource("StyleBoxFlat_u6jrp")
+theme_override_styles/fill = SubResource("StyleBoxFlat_ip3s7")
+fill_mode = 3
+show_percentage = false
