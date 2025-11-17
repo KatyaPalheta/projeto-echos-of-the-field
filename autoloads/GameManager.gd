@@ -45,7 +45,6 @@ func _ready():
 
 func set_player_reference(player: Node2D):
 	player_ref = player
-
 # [Em: GameManager.gd]
 # (SUBSTITUA ESTA FUNÇÃO INTEIRA)
 
@@ -62,14 +61,14 @@ func iniciar_onda() -> float:
 			save_data.tempo_total_gasto = 0.0 
 			Logger.log("Iniciando Onda 1, cronômetro de partida zerado!")
 
-			# ZERA todos os upgrades da partida!
+			# [cite_start]ZERA todos os upgrades da partida! [cite: 10]
 			save_data.conserva_energia_entre_ondas = false 
 			save_data.energia_atual_salva = 0.0 
 			save_data.bonus_rajada_flechas = 0 
 			save_data.bonus_leque_misseis = 0 
 			save_data.bonus_vida_maxima = 0.0 
 			save_data.bonus_energia_maxima = 0.0 
-			save_data.bonus_velocidade_movimento = 0.0
+			save_data.bonus_velocidade_movimento = 0.0 
 			save_data.bonus_reducao_dano = 0.0 
 			save_data.bonus_potencia_cura = 0.0 
 			save_data.bonus_cura_por_morte = 0.0 
@@ -79,11 +78,15 @@ func iniciar_onda() -> float:
 			save_data.bonus_cadencia_arco = 0.0 
 			save_data.bonus_cadencia_magia = 0.0 
 			save_data.bonus_eficiencia_energia = 0.0 
-			save_data.bonus_foco_leque = 0.0
-			save_data.bonus_velocidade_flecha = 0.0
-			save_data.bonus_velocidade_missil = 0.0
-			save_data.bonus_velocidade_rajada = 0.0
+			save_data.bonus_foco_leque = 0.0 
+			save_data.bonus_velocidade_flecha = 0.0 
+			save_data.bonus_velocidade_missil = 0.0 
+			save_data.bonus_velocidade_rajada = 0.0 
+
 	
+			# --- NOSSA NOVA LINHA ---
+			save_data.upgrades_da_partida.clear()
+			# --- FIM DA ADIÇÃO ---
 
 			Logger.log("SaveData resetado para início de partida.")
 
@@ -95,7 +98,6 @@ func iniciar_onda() -> float:
 	emit_signal.call_deferred("stats_atualizadas", inimigos_mortos, inimigos_total_na_onda, onda_atual_index + 1)
 	emit_signal("onda_iniciada") 
 	return chance_spawn
-
 func registrar_morte_inimigo():
 	inimigos_mortos += 1
 	emit_signal("stats_atualizadas", inimigos_mortos, inimigos_total_na_onda, onda_atual_index + 1)

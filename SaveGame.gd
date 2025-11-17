@@ -7,6 +7,7 @@ class_name SaveGame
 @export var onda_mais_alta_salva: int = 1 
 @export var personagem_escolhido: String = "Heroina" 
 
+@export var upgrades_da_partida: Dictionary = {}
 
 @export var conserva_energia_entre_ondas: bool = false
 @export var energia_atual_salva: float = 0.0 
