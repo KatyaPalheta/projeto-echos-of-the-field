@@ -1,3 +1,5 @@
+# [Script: hud.gd]
+# (Versão com o gerenciador de slots de skill)
 extends CanvasLayer
 
 # Pega as referências das três barras
@@ -22,9 +24,30 @@ extends CanvasLayer
 @export var tex_estrela_cheia: Texture2D
 @export var tex_estrela_vazia: Texture2D
 
+# --- LÓGICA DOS SLOTS DE SKILL ---
+var skill_slots: Array[Node] = []
+# --- FIM DA ADIÇÃO ---
+
+
 func _ready():
 	Logger.log_updated.connect(_on_log_updated)
 	GameManager.stats_atualizadas.connect(atualizar_contador_inimigos)
+	
+	# --- LÓGICA DOS SLOTS DE SKILL ---
+	# Pega todos os 20 slots que colocamos no grupo
+	skill_slots = get_tree().get_nodes_in_group("skill_slots")
+	
+	# Conecta ao "sinal mestre" do SaveManager
+	if SaveManager != null:
+		SaveManager.upgrades_da_partida_mudaram.connect(_on_upgrades_mudaram)
+	
+	# Garante que a HUD comece limpa
+	_resetar_slots_de_skill()
+	
+	# Força uma atualização no início (caso o save já tenha dados)
+	# Usamos call_deferred para garantir que o SaveManager já carregou os dados
+	call_deferred("_on_upgrades_mudaram")
+	# --- FIM DA ADIÇÃO ---
 
 func atualizar_vida(vida_atual: float, vida_maxima: float) -> void:
 	barra_vida.max_value = vida_maxima
@@ -79,12 +102,51 @@ func _on_onda_timer_timeout() -> void:
 
 func _on_player_vida_atualizada(vida_atual: float, vida_maxima: float) -> void:
 	# Agora sim, chamamos a função que atualiza a barra!
-	atualizar_vida(vida_atual, vida_maxima) #[cite: 1]
+	atualizar_vida(vida_atual, vida_maxima)
 
 func _on_player_energia_mudou(energia_atual: float, energia_maxima: float) -> void:
 	# E aqui também!
-	atualizar_energia(energia_atual, energia_maxima)# [cite: 2]
+	atualizar_energia(energia_atual, energia_maxima)
 
 func _on_player_cargas_cura_mudou(cargas_restantes: int) -> void:
 	# E aqui!
-	atualizar_cargas_cura(cargas_restantes) #[cite: 3]
+	atualizar_cargas_cura(cargas_restantes)
+
+# --- FUNÇÕES ADICIONADAS (GERENCIADOR DE SLOTS) ---
+
+# Esta é a função que reseta os 20 slots (ex: na Onda 1)
+func _resetar_slots_de_skill():
+	for slot in skill_slots:
+		# Chama a função que criamos no IconeSkill.gd
+		slot.resetar_slot()
+
+# O GERENCIADOR PRINCIPAL!
+# Chamado sempre que o SaveManager.registrar_upgrade_escolhido() é usado.
+func _on_upgrades_mudaram():
+	if SaveManager == null or SaveManager.dados_atuais == null:
+		return
+
+	# 1. Pega o "estado da verdade" (o dicionário)
+	var upgrades_no_save: Dictionary = SaveManager.dados_atuais.upgrades_da_partida
+	
+	# 2. Reseta tudo (é mais fácil do que gerenciar o que mudou)
+	_resetar_slots_de_skill()
+	
+	var slot_idx: int = 0 # Qual slot estamos preenchendo (de 0 a 19)
+	
+	# 3. Itera pelo dicionário do save e preenche os slots
+	for id_upgrade in upgrades_no_save.keys():
+		if slot_idx >= skill_slots.size():
+			push_warning("HUD: Acabaram os slots de skill! (Mais de 20 upgrades)")
+			break # Quebra o loop se tivermos mais de 20 upgrades
+		
+		var contador: int = upgrades_no_save[id_upgrade]
+		
+		# Pega o próximo slot vazio da nossa lista
+		var slot_atual: Node = skill_slots[slot_idx]
+		
+		# Configura o slot
+		slot_atual.setup_slot(id_upgrade)
+		slot_atual.atualizar_contador(contador)
+		
+		slot_idx += 1

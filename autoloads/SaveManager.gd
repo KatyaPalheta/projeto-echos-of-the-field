@@ -1,6 +1,8 @@
 # [Script: SaveManager.gd]
-# (Versão corrigida dos bugs do Logger)
+# (Versão com o novo sinal e função de registro)
 extends Node
+
+signal upgrades_da_partida_mudaram # <-- SINAL ADICIONADO
 
 # O caminho onde vamos salvar o jogo
 const SAVE_PATH = "user://savegame.tres"
@@ -35,21 +37,14 @@ func carregar_dados():
 
 func salvar_dados():
 	if dados_atuais == null:
-		
-		# --- CORREÇÃO 1 AQUI ---
-		# (Colocamos o "ERRO" dentro da string)
 		Logger.log("[ERRO] Tentativa de salvar dados nulos!")
-		# --- FIM DA CORREÇÃO ---
 		return
 		
 	var erro = ResourceSaver.save(dados_atuais, SAVE_PATH)
 	if erro == OK:
 		Logger.log("Jogo salvo com sucesso em: %s" % SAVE_PATH)
 	else:
-		# --- CORREÇÃO 2 AQUI ---
-		# (Colocamos o "ERRO" dentro da string)
 		Logger.log("[ERRO] FALHA AO SALVAR O JOGO! Código: %s" % erro)
-		# --- FIM DA CORREÇÃO ---
 
 func get_tempo_total_formatado() -> String:
 	if dados_atuais == null:
@@ -58,12 +53,32 @@ func get_tempo_total_formatado() -> String:
 	# 1. Pega o tempo como float (decimal)
 	var tempo_float: float = dados_atuais.tempo_total_gasto
 	
-	# --- CORREÇÃO AQUI ---
 	# 2. Arredonda para baixo a divisão de floats
 	var minutos = int(floor(tempo_float / 60.0))
 	
 	# 3. Pega o "resto" dos segundos (usando a função de resto de float)
 	var segundos = int(fmod(tempo_float, 60.0))
-	# --- FIM DA CORREÇÃO ---
 	
 	return "%02d:%02d" % [minutos, segundos]
+
+# --- FUNÇÃO ADICIONADA ---
+# A futura "Tela de Upgrade" vai chamar esta função
+func registrar_upgrade_escolhido(id_upgrade: String):
+	if dados_atuais == null:
+		Logger.log("[ERRO] SaveManager não pôde registrar upgrade, dados nulos!")
+		return
+		
+	# 1. Atualiza o dicionário (exatamente como planejamos)
+	if not dados_atuais.upgrades_da_partida.has(id_upgrade):
+		dados_atuais.upgrades_da_partida[id_upgrade] = 1
+	else:
+		dados_atuais.upgrades_da_partida[id_upgrade] += 1
+	
+	Logger.log("Upgrade registrado: %s (Total: %s)" % [id_upgrade, dados_atuais.upgrades_da_partida[id_upgrade]])
+	
+	# 2. Emite o "sinal mestre" para a HUD (ou quem quiser) ouvir
+	emit_signal("upgrades_da_partida_mudaram")
+	
+	# 3. (Importante): Salva os dados no disco
+	# Assim, se o jogador fechar o jogo, o dicionário está salvo.
+	salvar_dados()

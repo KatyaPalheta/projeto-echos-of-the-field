@@ -1,9 +1,8 @@
-[gd_scene load_steps=77 format=3 uid="uid://cnhkqju6duija"]
+[gd_scene load_steps=76 format=3 uid="uid://cnhkqju6duija"]
 
 [ext_resource type="PackedScene" uid="uid://wfv6d3q4n54l" path="res://personagens/personagem_base.tscn" id="1_g6smn"]
 [ext_resource type="Script" uid="uid://dremfquadjvsr" path="res://personagens/player.gd" id="2_e213c"]
 [ext_resource type="Texture2D" uid="uid://ckp5mqrmtyap4" path="res://assets/personagens/player/Player.png" id="2_hkm7i"]
-[ext_resource type="PackedScene" uid="uid://f21j78uq7ea1" path="res://personagens/armas/flecha.tscn" id="3_j7ync"]
 [ext_resource type="AudioStream" uid="uid://dtnbhhfn0x1gh" path="res://assets/terrain/audios/passos.MP3" id="3_wfqsr"]
 [ext_resource type="AudioStream" uid="uid://d3hoouw3hpf7q" path="res://assets/terrain/audios/sand.MP3" id="4_of8di"]
 [ext_resource type="Script" uid="uid://brix2vvn8ajax" path="res://personagens/player_states/StateMachine.gd" id="4_q3yxu"]
@@ -1466,7 +1465,7 @@ _data = {
 [sub_resource type="ConvexPolygonShape2D" id="ConvexPolygonShape2D_6idsq"]
 points = PackedVector2Array(-10, 10, -48.304, 72, 0, 96, 48.304, 72, 10, 10, 0, 0)
 
-[node name="Player" node_paths=PackedStringArray("_animation") instance=ExtResource("1_g6smn")]
+[node name="Player" instance=ExtResource("1_g6smn")]
 scale = Vector2(0.993707, 1)
 script = ExtResource("2_e213c")
 cadencia_arco_base = 0.8
@@ -1474,9 +1473,8 @@ cadencia_magia_base = 1.0
 dano_espada_base = 25.0
 dano_espada_especial = 50.0
 potencia_cura_base = 25.0
-cena_flecha = ExtResource("3_j7ync")
+cena_flecha = null
 cena_missil_de_fogo = null
-_animation = NodePath("animacao")
 
 [node name="StateMachine" type="Node" parent="." index="0"]
 script = ExtResource("4_q3yxu")
