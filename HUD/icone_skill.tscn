@@ -1,12 +1,22 @@
-[gd_scene load_steps=3 format=3 uid="uid://dtcyylaetympv"]
+[gd_scene load_steps=5 format=3 uid="uid://dtcyylaetympv"]
 
 [ext_resource type="Script" uid="uid://7ifo71revl0p" path="res://HUD/icone_skill.gd" id="1_iex52"]
 [ext_resource type="Texture2D" uid="uid://dhbdr76sn1a2v" path="res://HUD/painel2.png" id="2_brqu6"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_brqu6"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tbka0"]
+bg_color = Color(1, 1, 1, 0)
+border_width_right = 2
+border_width_bottom = 3
+border_color = Color(0.8, 0.8, 0.8, 0)
 
 [node name="IconeSkill" type="PanelContainer"]
 custom_minimum_size = Vector2(48, 48)
 offset_right = 48.0
 offset_bottom = 48.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_brqu6")
 script = ExtResource("1_iex52")
 
 [node name="Fundo" type="TextureRect" parent="."]
@@ -32,20 +42,29 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 stretch_mode = 5
 
+[node name="ColorRect" type="ColorRect" parent="Fundo/Icone"]
+layout_mode = 0
+offset_left = 22.0
+offset_top = 27.0
+offset_right = 42.0
+offset_bottom = 43.0
+color = Color(1, 1, 1, 0.34902)
+
 [node name="Contador" type="Label" parent="Fundo/Icone"]
 layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
+anchors_preset = -1
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -48.0
-offset_top = -23.0
-grow_horizontal = 0
-grow_vertical = 0
+offset_left = 22.5
+offset_top = 22.5
+offset_right = -2.5
+offset_bottom = 3.5
+grow_horizontal = 2
+grow_vertical = 2
 size_flags_vertical = 8
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.952941, 0.819608, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_tbka0")
 text = "x2"
 horizontal_alignment = 2
-vertical_alignment = 2

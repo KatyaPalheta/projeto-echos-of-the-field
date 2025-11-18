@@ -143,6 +143,7 @@ func _on_nicho_pressed(index: int):
 		_avancar_e_fechar()
 		return
 
+	# --- INÍCIO DA APLICAÇÃO DE BÔNUS (SEU CÓDIGO) ---
 	match id_escolhido:
 		"upgrade_vida_maxima":
 			save_data.bonus_vida_maxima += 15.0
@@ -155,7 +156,7 @@ func _on_nicho_pressed(index: int):
 			save_data.bonus_cargas_cura += 1
 			
 		"upgrade_potencia_cura":
-			save_data.bonus_potencia_cura += 3.0 # (Era 10.0)
+			save_data.bonus_potencia_cura += 3.0
 			
 		"upgrade_cura_por_morte":
 			save_data.bonus_cura_por_morte += 1.0 
@@ -169,7 +170,7 @@ func _on_nicho_pressed(index: int):
 			save_data.bonus_dano_espada_especial += 10.0
 			
 		"upgrade_cadencia_arco":
-			save_data.bonus_cadencia_arco += 0.1 # (Era 0.05)
+			save_data.bonus_cadencia_arco += 0.1
 			
 		"upgrade_rajada_flechas":
 			save_data.bonus_rajada_flechas += 1
@@ -189,13 +190,17 @@ func _on_nicho_pressed(index: int):
 			save_data.bonus_eficiencia_energia += 5.0 
 		
 		"upgrade_foco_leque":
-			save_data.bonus_foco_leque += 2.0 # (Reduz 2 graus por nível)
+			save_data.bonus_foco_leque += 2.0
 		
 		_:
-			# --- A CORREÇÃO ESTÁ AQUI ---
+			# Removemos a chamada antiga que estava aqui
 			push_warning("Upgrade '%s' (Titulo: %s) foi escolhido, mas não há lógica de aplicação!" % [id_escolhido, data.titulo])
-			# --- FIM DA CORREÇÃO ---
 
+	# --- INJEÇÃO DA CHAMADA (ONDE DEVERIA ESTAR) ---
+	# 1. Avisa o SaveManager para registrar no dicionário (dispara o sinal para o HUD)
+	SaveManager.registrar_upgrade_escolhido(id_escolhido)
+	# ------------------------------------------------
+	
 	Logger.log("Upgrade adquirido: %s" % data.titulo)
 	_avancar_e_fechar()
 

@@ -33,21 +33,38 @@ var custo_ataque_especial: float = 50.00
 var current_attack_damage = 25.0
 var alvo_travado: Node2D = null
 
-# (SUBSTITUA ESTA FUNÇÃO INTEIRA)
+# [Em: player.gd]
+# (SUBSTITUA APENAS A FUNÇÃO _ready POR ESTA)
+
 func _ready():
+	# --- CORREÇÃO DO CRASH (Auto-Detecção) ---
+	# Se a variável herdada estiver vazia, tentamos achar o nó pelo nome padrão.
+	if _animation == null:
+		if has_node("AnimationPlayer"):
+			_animation = $AnimationPlayer
+		elif has_node("Animacao"):
+			_animation = $Animacao
+		else:
+			push_error("PLAYER: Não encontrei nenhum nó 'AnimationPlayer' ou 'Animacao'!")
+			return # Aborta para não travar o jogo, mas vai avisar no erro
+	# -----------------------------------------
+
 	# 1. CONECTA ao sinal do GameManager
 	if GameManager != null:
-		GameManager.onda_iniciada.connect(aplicar_upgrades_da_partida) 
+		GameManager.onda_iniciada.connect(aplicar_upgrades_da_partida)
 
 	# 2. Conecta os sinais locais
-	health_component.morreu.connect(_on_morte) 
-	health_component.vida_mudou.connect(_on_health_component_vida_mudou) 
-	_animation.animation_finished.connect(_on_animation_finished) 
+	health_component.morreu.connect(_on_morte)
+	health_component.vida_mudou.connect(_on_health_component_vida_mudou)
+	
+	# Agora é seguro conectar, pois garantimos que _animation existe ali em cima
+	if _animation != null:
+		_animation.animation_finished.connect(_on_animation_finished)
 	
 	# 3. Avisa a HUD (isso será corrigido pela função aplicar_upgrades)
-	emit_signal.call_deferred("cargas_cura_mudou", cargas_de_cura) 
+	emit_signal.call_deferred("cargas_cura_mudou", cargas_de_cura)
 	
-	Logger.log("Player _ready() executado. Aguardando sinal 'onda_iniciada'...") 
+	Logger.log("Player _ready() executado. Aguardando sinal 'onda_iniciada'...")
 
 
 # Esta função é chamada pelo SINAL 'onda_iniciada' do GameManager
@@ -87,30 +104,20 @@ func aplicar_upgrades_da_partida():
 
 func _physics_process(_delta):
 	
-	# --- CÓDIGO DE DEBUG TEMPORÁRIO ---
-	if Input.is_action_just_pressed("ui_accept"): # (Tecla "Espaço" ou "Enter") 
+	# --- CÓDIGO DE DEBUG (Alterado para tecla T) ---
+	if Input.is_key_pressed(KEY_T): # <--- MUDAMOS AQUI! (Era ui_accept)
 		if UpgradeDatabase != null and SaveManager != null:
 			# Pega um ID aleatório do banco de dados
-			var upgrades_ids = UpgradeDatabase.DB.keys() 
-			upgrades_ids.shuffle() 
-			var id_aleatorio = upgrades_ids[0] 
+			var upgrades_ids = UpgradeDatabase.DB.keys()
+			upgrades_ids.shuffle()
+			var id_aleatorio = upgrades_ids[0]
 			
 			# Simula a escolha!
-			SaveManager.registrar_upgrade_escolhido(id_aleatorio) 
-			Logger.log("[DEBUG] Registrando upgrade de teste: %s" % id_aleatorio) 
+			SaveManager.registrar_upgrade_escolhido(id_aleatorio)
+			Logger.log("[DEBUG] Registrando upgrade de teste: %s" % id_aleatorio)
 	# --- FIM DO DEBUG ---
-
-	if Input.is_action_just_pressed("ui_pausar"): 
-		var pause_menu_scene = load("res://HUD/pause_menu.tscn") 
-		var pause_instance = pause_menu_scene.instantiate() 
-		add_child(pause_instance) 
-		return 
-
-	if is_dead: 
-		velocity = Vector2.ZERO 
-		move_and_slide() 
-		return 
-	pass 
+	
+	# (O resto continua igual...)
 
 func _input(_event):
 	pass 
