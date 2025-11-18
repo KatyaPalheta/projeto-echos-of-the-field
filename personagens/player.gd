@@ -277,6 +277,7 @@ func _disparar_missil(sufixo_anim: String):
 		else: 
 			direcao_disparo = Vector2.DOWN 
 	missil.direcao = direcao_disparo 
+	
 	missil.global_position = global_position 
 	get_parent().add_child(missil) 
 
@@ -318,3 +319,21 @@ func _disparar_leque_de_misseis(sufixo_anim: String):
 		missil.direcao = direcao_atual 
 		missil.global_position = global_position 
 		get_parent().add_child(missil) 
+
+# [Em: player.gd]
+# (Adicione ou substitua esta função)
+
+func _unhandled_input(event: InputEvent):
+	# Checa se a ação ui_pausar foi pressionada e se o jogo NÃO está pausado
+	if event.is_action_pressed("ui_pausar") and not get_tree().paused:
+		
+		var pause_menu_scene = load("res://HUD/pause_menu.tscn")
+		
+		if pause_menu_scene != null:
+			var pause_instance = pause_menu_scene.instantiate()
+			# Adicionamos à cena atual
+			get_tree().current_scene.add_child(pause_instance)
+			
+			# Pausa o jogo (O Menu de Pausa assumirá o controle do input)
+			get_tree().paused = true 
+			get_viewport().set_input_as_handled()

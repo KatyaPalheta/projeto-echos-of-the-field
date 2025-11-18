@@ -22,7 +22,7 @@ extends CanvasLayer
 
 @export var cena_icone_skill: PackedScene
 # Usamos apenas a linha superior para todos os 20 slots
-@onready var linha_superior: HBoxContainer = $ContainerSkills/LinhaSuperior 
+@onready var linha_superior: HBoxContainer = $ContainerSkills/MarginContainer/LinhaSuperior 
 # O @onready var linha_inferior foi removido
 
 var skill_slots: Array[Node] = []

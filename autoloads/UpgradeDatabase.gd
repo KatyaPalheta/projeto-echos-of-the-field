@@ -1,7 +1,7 @@
 # [Script: UpgradeDatabase.gd]
 # (VERSÃO FINAL - Sincronizado com sua planilha 'image_abcabd.png')
 extends Node
-
+@export var stack_max_limit: int = 5
 # O "tipo" define como o upgrade é tratado:
 # - "stack": Pode aparecer várias vezes (ex: +10% Dano)
 # - "unico": Só pode ser pego uma vez (ex: "Bateria Arcana")
@@ -153,20 +153,14 @@ const DB = {
 	},
 }
 
-
-# API "Pública" do nosso banco de dados
-
 # Retorna os dados de um upgrade específico
 func get_upgrade_data(id: String) -> Dictionary:
 	if DB.has(id):
 		return DB[id]
 	push_warning("UpgradeDatabase: ID de upgrade não encontrado no DB: %s" % id)
 	return {}
-# [Em: UpgradeDatabase.gd]
-# (SUBSTITUA ESTA FUNÇÃO INTEIRA)
 
-# A função CHAVE: Pega N upgrades aleatórios que o jogador AINDA NÃO POSSUI
-func get_random_upgrades(amount: int) -> Array: # (Tipo de retorno também atualizado)
+func get_random_upgrades(amount: int) -> Array:
 	
 	if SaveManager.dados_atuais == null:
 		push_error("UpgradeDatabase não conseguiu acessar o SaveManager.dados_atuais!")
@@ -175,19 +169,22 @@ func get_random_upgrades(amount: int) -> Array: # (Tipo de retorno também atual
 	var dados_save = SaveManager.dados_atuais
 	
 	# 1. Pega TODOS os IDs (chaves) do nosso banco de dados
-	# --- A LINHA CORRIGIDA É ESTA ---
-	var pool_de_upgrades: Array = DB.keys() # (Removemos o [String])
-	# --- FIM DA CORREÇÃO ---
+	var pool_de_upgrades: Array = DB.keys().duplicate()
 	
-	# 2. FILTRAGEM: Remove os upgrades do tipo "unico" ou "habilidade"
-	#    que o jogador já possui no SaveGame.
-	
-	# (Vamos iterar de trás para frente para poder remover itens com segurança)
+	# 2. FILTRAGEM: Remove os upgrades que o jogador já atingiu o limite.
 	for i in range(pool_de_upgrades.size() - 1, -1, -1):
 		var id_upgrade = pool_de_upgrades[i]
 		var dados_upgrade = DB[id_upgrade]
+		var contador_upgrade = dados_save.upgrades_da_partida.get(id_upgrade, 0)
 		
-		# Se não for "stackable", checamos se já o temos
+		# --- FILTRAGEM DE STACK GENÉRICA (Baseado no @export) ---
+		# Se for "stack" E o contador já atingiu o limite exportado, remove.
+		if dados_upgrade.tipo == "stack" and contador_upgrade >= stack_max_limit:
+			pool_de_upgrades.remove_at(i)
+			continue
+		# ------------------------------------------------------
+
+		# 2. FILTRAGEM ESPECÍFICA (unico/habilidade):
 		if dados_upgrade.tipo == "unico" or dados_upgrade.tipo == "habilidade":
 			
 			# Checagens específicas baseadas no SaveGame.gd
@@ -197,21 +194,27 @@ func get_random_upgrades(amount: int) -> Array: # (Tipo de retorno também atual
 						pool_de_upgrades.remove_at(i)
 				
 				"upgrade_cargas_cura":
-					# (Lógica bônus: só oferece se o jogador tiver menos de 3)
-					var cargas_atuais_base = 3 # (O player começa com 3)
-					var bonus_cargas = dados_save.bonus_cargas_cura
-					if (cargas_atuais_base + bonus_cargas) >= 3:
+					# Limite de cargas de cura é 5 (base 3 + 2 de bônus).
+					var cargas_atuais = 3 + dados_save.bonus_cargas_cura
+					if (cargas_atuais) >= 5:
 						pool_de_upgrades.remove_at(i)
 
 				"upgrade_rajada_flechas":
+					# Limite de rajadas é 8 (base 2 + 6 de bônus, permitindo 6 stacks)
 					var flechas_atuais = 2 + dados_save.bonus_rajada_flechas
 					if flechas_atuais >= 8: 
 						pool_de_upgrades.remove_at(i)
 						
 				"upgrade_leque_misseis":
+					# Limite de mísseis é 7 (base 2 + 5 de bônus, permitindo 5 stacks)
 					var misseis_atuais = 2 + dados_save.bonus_leque_misseis
-					if misseis_atuais >= 7: # (Limite de 7 mísseis, por ex)
+					if misseis_atuais >= 7:
 							pool_de_upgrades.remove_at(i)
+				
+				# Se for unico e não tiver checagem específica acima, usa o contador.
+				_:
+					if contador_upgrade > 0:
+						pool_de_upgrades.remove_at(i)
 	
 	# 3. Embaralha o pool que sobrou
 	pool_de_upgrades.shuffle()
