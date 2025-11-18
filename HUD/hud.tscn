@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://8q4xf32uui6"]
+[gd_scene load_steps=16 format=3 uid="uid://8q4xf32uui6"]
 
 [ext_resource type="Texture2D" uid="uid://ch1u4sdlfylev" path="res://HUD/healt.png" id="1_mi5n8"]
 [ext_resource type="Script" uid="uid://cmqp1qwjheqk1" path="res://HUD/hud.gd" id="1_ncsg0"]
@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://d1g2mjyit7108" path="res://HUD/manastar.png" id="7_ncsg0"]
 [ext_resource type="Texture2D" uid="uid://23jigeks4awg" path="res://HUD/slime icone.png" id="10_q5vrg"]
 [ext_resource type="Texture2D" uid="uid://ca6qiboe6vek" path="res://HUD/painel.png" id="11_03xa0"]
+[ext_resource type="Texture2D" uid="uid://cfmxflc1wutky" path="res://HUD/container.png" id="12_03xa0"]
 
 [sub_resource type="Animation" id="Animation_4jypp"]
 length = 0.001
@@ -55,7 +56,7 @@ _data = {
 script = ExtResource("1_ncsg0")
 tex_estrela_cheia = ExtResource("7_ncsg0")
 tex_estrela_vazia = ExtResource("3_y0nqa")
-metadata/_edit_horizontal_guides_ = [114.0]
+metadata/_edit_horizontal_guides_ = [114.0, 20.0]
 
 [node name="BarraVida" type="TextureProgressBar" parent="."]
 offset_left = 30.0
@@ -144,7 +145,7 @@ stretch_mode = 2
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 z_index = 1
-position = Vector2(1192, 47)
+position = Vector2(1210, 53)
 scale = Vector2(5, 5)
 texture = ExtResource("10_q5vrg")
 hframes = 10
@@ -157,15 +158,15 @@ autoplay = "iconeslime"
 
 [node name="ContadorLabel" type="Label" parent="."]
 z_index = 1
-offset_left = 1168.0
-offset_top = 64.0
-offset_right = 1221.0
-offset_bottom = 92.0
+offset_left = 1183.0
+offset_top = 65.0
+offset_right = 1236.0
+offset_bottom = 93.0
 theme_override_font_sizes/font_size = 20
 text = "0 / 10"
 
 [node name="Sprite2D2" type="Sprite2D" parent="."]
-position = Vector2(1192, 64)
+position = Vector2(1209, 71)
 scale = Vector2(2, 2)
 texture = ExtResource("11_03xa0")
 
@@ -181,5 +182,35 @@ text = "Onda 1"
 [node name="OndaTimer" type="Timer" parent="."]
 wait_time = 3.0
 one_shot = true
+
+[node name="NinePatchRect" type="NinePatchRect" parent="."]
+custom_minimum_size = Vector2(600, 100)
+offset_left = 386.0
+offset_top = 24.0
+offset_right = 986.0
+offset_bottom = 124.0
+texture = ExtResource("12_03xa0")
+region_rect = Rect2(5, 8, 166, 30)
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="NinePatchRect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="NinePatchRect/VBoxContainer"]
+custom_minimum_size = Vector2(480, 48)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="NinePatchRect/VBoxContainer"]
+custom_minimum_size = Vector2(480, 48)
+layout_mode = 2
 
 [connection signal="timeout" from="OndaTimer" to="." method="_on_onda_timer_timeout"]
