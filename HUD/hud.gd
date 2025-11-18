@@ -1,5 +1,3 @@
-# [Script: hud.gd]
-# (Versão com o gerenciador de slots de skill)
 extends CanvasLayer
 
 # Pega as referências das três barras
@@ -9,10 +7,7 @@ extends CanvasLayer
 @onready var onda_timer: Timer = $OndaTimer
 
 @onready var vida_label: Label = $VidaLabel
-
-# --- NOVO! A REFERÊNCIA QUE FALTAVA ---
 @onready var energia_label: Label = $EnergiaLabel 
-# (Baseado no seu print 'image_23a_f0.png', o nome do nó é esse!)
 
 @onready var log_container: VBoxContainer = $LogContainer
 @onready var contador_label: Label = $ContadorLabel
@@ -24,31 +19,46 @@ extends CanvasLayer
 @export var tex_estrela_cheia: Texture2D
 @export var tex_estrela_vazia: Texture2D
 
-# --- LÓGICA DOS SLOTS DE SKILL ---
+@export var cena_icone_skill: PackedScene
+@onready var linha_superior: HBoxContainer = $ContainerSkills/GradeSkills/LinhaSuperior 
+@onready var linha_inferior: HBoxContainer = $ContainerSkills/GradeSkills/LinhaInferior
 var skill_slots: Array[Node] = []
-# --- FIM DA ADIÇÃO ---
-
 
 func _ready():
 	Logger.log_updated.connect(_on_log_updated)
 	GameManager.stats_atualizadas.connect(atualizar_contador_inimigos)
 	
-	# --- LÓGICA DOS SLOTS DE SKILL ---
-	# Pega todos os 20 slots que colocamos no grupo
-	skill_slots = get_tree().get_nodes_in_group("skill_slots")
+	# 1. Primeiro cria as caixas vazias
+	criar_slots_dinamicamente()
 	
-	# Conecta ao "sinal mestre" do SaveManager
 	if SaveManager != null:
 		SaveManager.upgrades_da_partida_mudaram.connect(_on_upgrades_mudaram)
 	
-	# Garante que a HUD comece limpa
-	_resetar_slots_de_skill()
-	
-	# Força uma atualização no início (caso o save já tenha dados)
-	# Usamos call_deferred para garantir que o SaveManager já carregou os dados
+	# 2. Depois preenche com os dados (só precisa chamar uma vez)
 	call_deferred("_on_upgrades_mudaram")
-	# --- FIM DA ADIÇÃO ---
-
+	
+func criar_slots_dinamicamente():
+	if cena_icone_skill == null:
+		push_error("HUD: Faltou arrastar a 'IconeSkill.tscn' no Inspetor!")
+		return
+		
+	# Vamos criar 20 slots
+	for i in range(20):
+		var novo_slot = cena_icone_skill.instantiate()
+		
+		# Adiciona na lista de controle (para a lógica)
+		skill_slots.append(novo_slot)
+		
+		# Decide onde colocar (Visualmente)
+		if i < 10:
+			# USA A VARIÁVEL QUE CRIAMOS LÁ EM CIMA!
+			linha_superior.add_child(novo_slot)
+		else:
+			# USA A VARIÁVEL QUE CRIAMOS LÁ EM CIMA!
+			linha_inferior.add_child(novo_slot)
+			
+		# Garante que nasce resetado
+		novo_slot.resetar_slot()
 func atualizar_vida(vida_atual: float, vida_maxima: float) -> void:
 	barra_vida.max_value = vida_maxima
 	vida_label.text = str(int(vida_atual))
@@ -82,17 +92,12 @@ func atualizar_contador_inimigos(mortos: int, total: int, _onda: int):
 	# 1. O código que você já tem (para o "0 / 10")
 	contador_label.text = "%s / %s" % [mortos, total] # (Ou como você ajustou!)
 
-	# --- NOSSA NOVA LÓGICA DE FEEDBACK! ---
-	# Se 'mortos' é 0, significa que a onda ACABOU de começar!
 	if mortos == 0:
-		
-		# Define o texto do label (usando o parâmetro _onda!)
+
 		onda_label.text = "Onda %s" % _onda
-		
-		# Mostra o label
+
 		onda_label.visible = true
-		
-		# Inicia o timer de 3 segundos
+
 		onda_timer.start()
 
 func _on_onda_timer_timeout() -> void:
@@ -112,16 +117,11 @@ func _on_player_cargas_cura_mudou(cargas_restantes: int) -> void:
 	# E aqui!
 	atualizar_cargas_cura(cargas_restantes)
 
-# --- FUNÇÕES ADICIONADAS (GERENCIADOR DE SLOTS) ---
-
-# Esta é a função que reseta os 20 slots (ex: na Onda 1)
 func _resetar_slots_de_skill():
 	for slot in skill_slots:
 		# Chama a função que criamos no IconeSkill.gd
 		slot.resetar_slot()
 
-# O GERENCIADOR PRINCIPAL!
-# Chamado sempre que o SaveManager.registrar_upgrade_escolhido() é usado.
 func _on_upgrades_mudaram():
 	if SaveManager == null or SaveManager.dados_atuais == null:
 		return

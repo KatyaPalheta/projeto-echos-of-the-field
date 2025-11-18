@@ -1,8 +1,8 @@
 # [Script: IconeSkill.gd]
 extends PanelContainer
 
-@onready var icone: TextureRect = $Icone
-@onready var contador_label: Label = $Contador
+@onready var icone: TextureRect = $Fundo/Icone
+@onready var contador_label: Label = $Fundo/Icone/Contador
 
 # Guarda qual upgrade este slot está mostrando
 var id_upgrade_atual: String = ""
