@@ -14,6 +14,7 @@ signal energia_mudou(energia_atual, energia_maxima)
 @onready var arco_cooldown_timer: Timer = $ArcoCooldownTimer
 @onready var magia_cooldown_timer: Timer = $MagiaCooldownTimer
 @onready var state_machine = $StateMachine
+@onready var player_camera: Camera2D = $Camera2D
 
 @export_category("Stats de Combate")
 @export var cadencia_arco_base: float = 0.8
@@ -26,15 +27,13 @@ signal energia_mudou(energia_atual, energia_maxima)
 @export var cena_missil_de_fogo: PackedScene
 
 var is_dead: bool = false 
-var cargas_de_cura: int = 3
-var energia_maxima: float = 100.0
+var cargas_de_cura: int = 0
+var energia_maxima: float = 0.0
 var energia_atual: float = 0.0
 var custo_ataque_especial: float = 50.00 
 var current_attack_damage = 25.0
 var alvo_travado: Node2D = null
 
-# [Em: player.gd]
-# (SUBSTITUA APENAS A FUNÇÃO _ready POR ESTA)
 
 func _ready():
 	# --- CORREÇÃO DO CRASH (Auto-Detecção) ---
@@ -48,12 +47,15 @@ func _ready():
 			push_error("PLAYER: Não encontrei nenhum nó 'AnimationPlayer' ou 'Animacao'!")
 			return # Aborta para não travar o jogo, mas vai avisar no erro
 	# -----------------------------------------
+	
+	# 1. NOVO PASSO: Configurações de Dificuldade/Preset (SÓ AQUI)
+	_setup_configuracoes()
 
-	# 1. CONECTA ao sinal do GameManager
+	# 2. CONECTA ao sinal do GameManager
 	if GameManager != null:
 		GameManager.onda_iniciada.connect(aplicar_upgrades_da_partida)
 
-	# 2. Conecta os sinais locais
+	# 3. Conecta os sinais locais
 	health_component.morreu.connect(_on_morte)
 	health_component.vida_mudou.connect(_on_health_component_vida_mudou)
 	
@@ -61,36 +63,74 @@ func _ready():
 	if _animation != null:
 		_animation.animation_finished.connect(_on_animation_finished)
 	
-	# 3. Avisa a HUD (isso será corrigido pela função aplicar_upgrades)
+	# 4. Avisa a HUD (A HUD deve ler os valores de vida/energia/cura que setamos em _setup_configuracoes)
 	emit_signal.call_deferred("cargas_cura_mudou", cargas_de_cura)
+	emit_signal.call_deferred("energia_mudou", energia_atual, energia_maxima)
+	emit_signal.call_deferred("vida_atualizada", health_component.vida_atual, health_component.max_vida)
 	
 	Logger.log("Player _ready() executado. Aguardando sinal 'onda_iniciada'...")
 
 
-# Esta função é chamada pelo SINAL 'onda_iniciada' do GameManager
+func _setup_configuracoes():
+	
+	var vida_base = ConfigManager.get_gameplay_value("vida_base_player")
+	var energia_base = ConfigManager.get_gameplay_value("energia_base_player")
+	var cargas_base = ConfigManager.get_gameplay_value("cargas_cura_base")
+	
+	if vida_base == null or energia_base == null or cargas_base == null:
+		Logger.log("[ERRO] Falha ao carregar Configurações de Gameplay. Usando valores de fallback.")
+		vida_base = 100.0
+		energia_base = 100.0
+		cargas_base = 3
+	
+	# 2. APLICA OS VALORES BASE
+	# A. Vida (HealthComponent)
+	health_component.max_vida = float(vida_base)
+	health_component.vida_atual = health_component.max_vida 
+	
+	# B. Energia
+	energia_maxima = float(energia_base)
+	energia_atual = energia_maxima
+	
+	# C. Cargas de Cura
+	cargas_de_cura = int(cargas_base)
+	
+	# 3. PEGA O VALOR GLOBAL DO ZOOM
+	# Este valor é lido do @export var zoom_camera em Configuracoes.gd
+	var zoom_global = ConfigManager.config_data.zoom_camera
+	if player_camera != null:
+		player_camera.zoom = Vector2(zoom_global, zoom_global)
+	else:
+		push_warning("Camera2D não encontrada no Player! Zoom (%s) não aplicado." % zoom_global)
+
+
 func aplicar_upgrades_da_partida():
 	Logger.log("Sinal 'onda_iniciada' recebido! Aplicando upgrades...") 
+	
+	# NOTA: O _setup_configuracoes() já rodou no _ready e setou a BASE.
+	# Aqui, vamos garantir que a BASE esteja correta antes de aplicar os BÔNUS
+	_setup_configuracoes() # <--- Novo passo para re-aplicar a BASE e o ZOOM
 	
 	if SaveManager.dados_atuais != null:
 		var save = SaveManager.dados_atuais
 		
-		# 1. Aplica Bônus de Vida
+		# 1. Aplica Bônus de Vida (ACRESCENTA o bônus sobre a BASE de dificuldade)
 		health_component.aplicar_bonus_de_vida(save.bonus_vida_maxima) 
 		
-		# 2. Aplica Bônus de Energia
-		energia_maxima = 100.0 # Reseta a base
+		# 2. Aplica Bônus de Energia (ACRESCENTA o bônus sobre a BASE de dificuldade)
 		energia_maxima += save.bonus_energia_maxima 
 		
-		# 3. Aplica Bônus de Cargas de Cura
-		cargas_de_cura = 3 # Reseta para 3
+		# 3. Aplica Bônus de Cargas de Cura (ACRESCENTA o bônus sobre a BASE de dificuldade)
 		cargas_de_cura += save.bonus_cargas_cura 
-		cargas_de_cura = min(cargas_de_cura, 3) 
 		
-		# 4. Aplica Bônus de Cadência (Arco)
+		# O limite máximo de cargas de cura agora é 5 (base 3 + 2 bônus [cite: 67] + o que a dificuldade setou)
+		# Deixaremos o limite de 5 a cargo do UpgradeDatabase, apenas garantindo que a base + bônus é o que vale.
+		
+		# 4. Aplica Bônus de Cadência (Arco) [cite: 62]
 		var nova_cadencia_arco = cadencia_arco_base - save.bonus_cadencia_arco 
 		arco_cooldown_timer.wait_time = max(0.1, nova_cadencia_arco) 
 		
-		# 5. Aplica Bônus de Cadência (Magia)
+		# 5. Aplica Bônus de Cadência (Magia) [cite: 63]
 		var nova_cadencia_magia = cadencia_magia_base - save.bonus_cadencia_magia 
 		magia_cooldown_timer.wait_time = max(0.1, nova_cadencia_magia) 
 		
@@ -100,7 +140,7 @@ func aplicar_upgrades_da_partida():
 	emit_signal.call_deferred("cargas_cura_mudou", cargas_de_cura) 
 	
 	# 7. Reseta a energia (agora no lugar certo)
-	resetar_para_proxima_onda.call_deferred() 
+	resetar_para_proxima_onda.call_deferred()
 
 func _physics_process(_delta):
 	
