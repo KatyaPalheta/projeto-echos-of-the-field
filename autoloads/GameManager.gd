@@ -45,8 +45,6 @@ func _ready():
 
 func set_player_reference(player: Node2D):
 	player_ref = player
-# [Em: GameManager.gd]
-# (SUBSTITUA ESTA FUNÇÃO INTEIRA)
 
 func iniciar_onda() -> float:
 	inimigos_mortos = 0
@@ -61,7 +59,7 @@ func iniciar_onda() -> float:
 			save_data.tempo_total_gasto = 0.0 
 			Logger.log("Iniciando Onda 1, cronômetro de partida zerado!")
 
-			# [cite_start]ZERA todos os upgrades da partida! [cite: 10]
+			# ZERA todos os upgrades da partida!
 			save_data.conserva_energia_entre_ondas = false 
 			save_data.energia_atual_salva = 0.0 
 			save_data.bonus_rajada_flechas = 0 
@@ -83,21 +81,41 @@ func iniciar_onda() -> float:
 			save_data.bonus_velocidade_missil = 0.0 
 			save_data.bonus_velocidade_rajada = 0.0 
 
-	
-			# --- NOSSA NOVA LINHA ---
 			save_data.upgrades_da_partida.clear()
-			# --- FIM DA ADIÇÃO ---
-
 			Logger.log("SaveData resetado para início de partida.")
 
+	# --- NOVO: LÓGICA DE MULTIPLICADOR DE DIFICULDADE DE ONDA ---
 	var dados_onda = ONDAS[onda_atual_index]
-	inimigos_total_na_onda = dados_onda[0]
+	var total_base_da_onda = dados_onda[0]
 	var chance_spawn = dados_onda[1]
+	
+	var mult_monstro = ConfigManager.get_gameplay_value("multiplicador_monstro_total")
+	if mult_monstro == null: mult_monstro = 1.0
+	
+	var dificuldade_progressiva = ConfigManager.config_data.dificuldade_progressiva
+	var onda_atual = onda_atual_index + 1
+	
+	var fator_progressao = 1.0
+	# Se a dificuldade progressiva estiver LIGADA, a progressão aumenta
+	if dificuldade_progressiva:
+		# Multiplica o fator de progressão pelo número da onda (ex: Onda 5 = 5.0)
+		fator_progressao = float(onda_atual) 
+		Logger.log("Progressão ATIVA. Fator: %s" % fator_progressao)
+	
+	# Cálculo final: (Total Base * Multiplicador Dificuldade) * Fator de Progressão
+	inimigos_total_na_onda = int(round(total_base_da_onda * mult_monstro * fator_progressao))
+	
+	# Garante que o número de inimigos nunca seja zero
+	inimigos_total_na_onda = max(1, inimigos_total_na_onda) 
+	
+	Logger.log("Onda %s: Total de inimigos (Base: %s, Multiplicador: %s) = %s" % [onda_atual, total_base_da_onda, mult_monstro, inimigos_total_na_onda])
+	# --- FIM NOVO ---
 
 	tempo_inicio_onda = Time.get_ticks_msec() / 1000.0
-	emit_signal.call_deferred("stats_atualizadas", inimigos_mortos, inimigos_total_na_onda, onda_atual_index + 1)
+	emit_signal.call_deferred("stats_atualizadas", inimigos_mortos, inimigos_total_na_onda, onda_atual)
 	emit_signal("onda_iniciada") 
-	return chance_spawn
+	return chance_spawn # A chance de spawn é o segundo elemento (índice 1) do array ONDAS
+
 func registrar_morte_inimigo():
 	inimigos_mortos += 1
 	emit_signal("stats_atualizadas", inimigos_mortos, inimigos_total_na_onda, onda_atual_index + 1)

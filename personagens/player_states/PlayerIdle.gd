@@ -2,17 +2,27 @@
 extends EstadoPlayer
 
 # [Em: PlayerIdle.gd]
-# (SUBSTITUA ESTA FUNÇÃO INTEIRA)
+# (SUBSTITUA ESTA FUNÇÃO process_input INTEIRA)
 
 func process_input(_event: InputEvent):
 	
+	# --- NOVO: PEGA O MULTIPLICADOR GERAL DE DANO DO PLAYER ---
+	var mult_dano_player = ConfigManager.get_gameplay_value("multiplicador_dano_espada")
+	if mult_dano_player == null:
+		# Fallback para 1.0 se o ConfigManager falhar
+		mult_dano_player = 1.0 
+	# --- FIM NOVO ---
+	
 	# --- 1. AÇÕES DE AÇÃO (Prioridade) ---
 	if Input.is_action_just_pressed("ataque_primario"): # X
+		
+		# Dano Simples de Espada (Aplica Multiplicador de Dificuldade + Bônus do Upgrade)
 		var bonus_dano = 0.0
 		if SaveManager.dados_atuais != null:
 			bonus_dano = SaveManager.dados_atuais.bonus_dano_espada
 		
-		player.current_attack_damage = player.dano_espada_base + bonus_dano
+		# CÁLCULO FINAL: (Dano Base * Multiplicador Dificuldade) + Bônus de Upgrade
+		player.current_attack_damage = (player.dano_espada_base * mult_dano_player) + bonus_dano
 		
 		Logger.log("Player usou ATAQUE SIMPLES!")
 		state_machine._change_state(state_machine.get_node("AttackSword"))
@@ -32,13 +42,15 @@ func process_input(_event: InputEvent):
 			player.energia_atual -= custo_final
 			player.emit_signal("energia_mudou", player.energia_atual, player.energia_maxima)
 			
+			# Dano Especial de Espada (Aplica Multiplicador de Dificuldade + Bônus do Upgrade)
 			var bonus_dano_especial = 0.0
 			if SaveManager.dados_atuais != null:
 				bonus_dano_especial = SaveManager.dados_atuais.bonus_dano_espada_especial
 				
-			player.current_attack_damage = player.dano_espada_especial + bonus_dano_especial
+			# CÁLCULO FINAL: (Dano Especial Base * Multiplicador Dificuldade) + Bônus de Upgrade
+			player.current_attack_damage = (player.dano_espada_especial * mult_dano_player) + bonus_dano_especial
 			
-			Logger.log("Golpe Duplo usado! Custo: %s" % custo_final)
+			Logger.log("Golpe Duplo usado! Custo: %s" % custo_final) [cite: 63]
 			state_machine._change_state(state_machine.get_node("AttackSword"))
 		else:
 			Logger.log("Sem energia para o Golpe Duplo! (Custo: %s)" % custo_final)

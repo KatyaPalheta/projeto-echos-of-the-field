@@ -51,8 +51,9 @@ func exit():
 	# --- FIM DA CORREÇÃO ---
 
 @warning_ignore("unused_parameter")
+
 # [Em: PlayerAim.gd]
-# (SUBSTITUA ESTA FUNÇÃO INTEIRA)
+# (SUBSTITUA ESTA FUNÇÃO process_input INTEIRA)
 
 func process_input(_event: InputEvent):
 	# Esta é a lógica de DISPARO
@@ -61,7 +62,7 @@ func process_input(_event: InputEvent):
 	if player._face_direction == 1: anim_sufixo = "_c"
 	elif player._face_direction == 2: anim_sufixo = "_p"
 	
-	# --- LÓGICA DE CUSTO CORRIGIDA (Calcula 1 vez) ---
+	# --- LÓGICA DE CUSTO (Já estava correta) ---
 	var bonus_reducao = 0.0
 	if SaveManager.dados_atuais != null:
 		bonus_reducao = SaveManager.dados_atuais.bonus_eficiencia_energia
@@ -69,6 +70,19 @@ func process_input(_event: InputEvent):
 	var custo_final = max(0.0, player.custo_ataque_especial - bonus_reducao)
 	# --- FIM DA LÓGICA ---
 	
+	# --- NOVO CÁLCULO DE DANO: DIFICULDADE + UPGRADE ---
+	var dano_arco_base = player.dano_arco_base # Variável precisa ser declarada em player.gd!
+	var dano_magia_base = player.dano_magia_base # Variável precisa ser declarada em player.gd!
+
+	var mult_arco = ConfigManager.get_gameplay_value("multiplicador_dano_arco")
+	var mult_magia = ConfigManager.get_gameplay_value("multiplicador_dano_magia")
+	if mult_arco == null: mult_arco = 1.0
+	if mult_magia == null: mult_magia = 1.0
+	
+	var dano_total_arco = (dano_arco_base * mult_arco) # Arco não tem bônus de upgrade salvo
+	var dano_total_magia = (dano_magia_base * mult_magia) # Magia não tem bônus de upgrade salvo
+	# --- FIM NOVO CÁLCULO ---
+
 	if _tipo_mira == "arco":
 		# --- AÇÕES DE ARCO (LT + X / Y) ---
 		
@@ -76,25 +90,22 @@ func process_input(_event: InputEvent):
 			if player.arco_cooldown_timer.is_stopped():
 				player.arco_cooldown_timer.start()
 				player._animation.play("arco_disparo" + anim_sufixo)
-				player._disparar_flecha(anim_sufixo)
+				# ⚠️ NOVO: Passa o dano calculado para a função
+				player._disparar_flecha(anim_sufixo, dano_total_arco) 
 				Logger.log("Player usou ARCO SIMPLES!")
 		
 		elif Input.is_action_just_pressed("ataque_especial"): # LT + Y
 			
-			# --- CORREÇÃO DO BUG DE SPAM (await) ---
-			# Agora checa se o cooldown base do arco está pronto
 			if player.arco_cooldown_timer.is_stopped():
-			# --- FIM DA CORREÇÃO ---
 			
 				if round(player.energia_atual) >= custo_final:
-					# --- CORREÇÃO 2: Inicia o cooldown ---
 					player.arco_cooldown_timer.start()
-					# --- FIM DA CORREÇÃO ---
 					
 					player.energia_atual -= custo_final
 					player.emit_signal("energia_mudou", player.energia_atual, player.energia_maxima)
 					player._animation.play("arco_disparo" + anim_sufixo)
-					player._disparar_rajada_de_flechas(anim_sufixo)
+					# ⚠️ NOVO: Passa o dano calculado para a função
+					player._disparar_rajada_de_flechas(anim_sufixo, dano_total_arco) 
 					Logger.log("Player usou RAJADA DE FLECHAS! Custo: %s" % custo_final)
 				else:
 					Logger.log("Sem energia para a Rajada de Flechas! (Custo: %s)" % custo_final)
@@ -106,28 +117,26 @@ func process_input(_event: InputEvent):
 			if player.magia_cooldown_timer.is_stopped():
 				player.magia_cooldown_timer.start()
 				player._animation.play("magia_fogo" + anim_sufixo)
-				player._disparar_missil(anim_sufixo)
+				# ⚠️ NOVO: Passa o dano calculado para a função
+				player._disparar_missil(anim_sufixo, dano_total_magia) 
 				Logger.log("Player usou MÍSSIL DE FOGO!")
 		
 		elif Input.is_action_just_pressed("ataque_especial"): # RT + Y
 			
-			# --- CORREÇÃO DO BUG DE SPAM (await) ---
-			# Adiciona a checagem de cooldown
 			if player.magia_cooldown_timer.is_stopped():
-			# --- FIM DA CORREÇÃO ---
 			
 				if round(player.energia_atual) >= custo_final:
-					# --- CORREÇÃO 2: Inicia o cooldown ---
 					player.magia_cooldown_timer.start()
-					# --- FIM DA CORREÇÃO ---
 					
 					player.energia_atual -= custo_final
 					player.emit_signal("energia_mudou", player.energia_atual, player.energia_maxima)
 					player._animation.play("magia_fogo" + anim_sufixo)
-					player._disparar_leque_de_misseis(anim_sufixo)
+					# ⚠️ NOVO: Passa o dano calculado para a função
+					player._disparar_leque_de_misseis(anim_sufixo, dano_total_magia) 
 					Logger.log("Player usou LEQUE DE FOGO! Custo %s" % custo_final)
 				else:
 					Logger.log("Sem energia para o Leque de Fogo! (Custo: %s)" % custo_final)
+
 func process_physics(_delta: float):
 	# 1. Checa se o player SOLTOU o botão de mira
 	var mira_pressionada = Input.is_action_pressed("equip_arco") if _tipo_mira == "arco" else Input.is_action_pressed("equip_magia")

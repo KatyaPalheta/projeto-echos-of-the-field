@@ -32,9 +32,11 @@ var is_dead: bool = false # (Para evitar dano duplo, etc)
 
 var dot_dano_por_tick: float = 0.0
 var dot_duracao_restante: float = 0.0
-
-
 func _ready():
+	# --- NOVO: Aplica os multiplicadores de dificuldade ANTES de conectar sinais ---
+	_setup_dificuldade()
+	# --- FIM NOVO ---
+	
 	add_to_group("inimigos")
 	alerta_timer.timeout.connect(_on_alerta_timer_timeout)
 	dot_timer.timeout.connect(_on_dot_timer_timeout)
@@ -42,10 +44,42 @@ func _ready():
 	health_component.morreu.connect(_on_morte)
 	health_component.vida_mudou.connect(_on_inimigo_vida_mudou)
 
-	
 	pass
 
+func _setup_dificuldade():
+	
+	# Se o GameManager não carregou a onda ainda, evita crash
+	if GameManager.onda_atual_index == 0 and GameManager.inimigos_total_na_onda == 0:
+		return
+		
+	# 1. PEGA MULTIPLICADORES BASE
+	var mult_vida = ConfigManager.get_gameplay_value("multiplicador_vida_monstro")
+	var mult_dano = ConfigManager.get_gameplay_value("multiplicador_dano_monstro")
+	if mult_vida == null: mult_vida = 1.0
+	if mult_dano == null: mult_dano = 1.0
 
+	# 2. PEGA FATOR DE PROGRESSÃO (Opcional)
+	var dificuldade_progressiva = ConfigManager.config_data.dificuldade_progressiva
+	var onda_atual = GameManager.onda_atual_index + 1
+	
+	var fator_progressao = 1.0
+	if dificuldade_progressiva:
+		# Usamos a raiz quadrada para suavizar a dificuldade (ex: Onda 25 é 5x mais forte)
+		# Se usássemos 'onda_atual', a Onda 25 seria 25x mais forte, o que é demais!
+		fator_progressao = sqrt(float(onda_atual)) 
+		
+	# 3. APLICA CÁLCULO FINAL
+	# Vida: Multiplica a vida base do inimigo (definida no inspector)
+	health_component.max_vida = max(1.0, health_component.max_vida * mult_vida * fator_progressao)
+	health_component.vida_atual = health_component.max_vida
+	
+	# Dano: Multiplica o dano de ataque do inimigo (definida no inspector)
+	attack_damage = max(1.0, attack_damage * mult_dano * fator_progressao)
+	
+	Logger.log.call_deferred("Inimigo Spawnado: Vida Final: %s (Dano: %s)" % [int(health_component.max_vida), int(attack_damage)])
+	
+	# Efeito colateral: A barra de vida precisa ser atualizada
+	_on_inimigo_vida_mudou(health_component.vida_atual, health_component.max_vida)
 
 func sofrer_dano(dano: float, direcao_do_ataque: Vector2):
 

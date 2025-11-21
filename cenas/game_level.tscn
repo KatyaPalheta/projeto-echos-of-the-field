@@ -10,6 +10,8 @@
 y_sort_enabled = true
 
 [node name="Player" parent="." instance=ExtResource("2_7cgj1")]
+dano_arco_base = 20.0
+dano_magia_base = 15.0
 
 [node name="GerenciadorDeTerreno" parent="." node_paths=PackedStringArray("player_node") instance=ExtResource("1_b5r0v")]
 y_sort_enabled = true

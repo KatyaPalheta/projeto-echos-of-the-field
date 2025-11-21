@@ -22,6 +22,8 @@ signal energia_mudou(energia_atual, energia_maxima)
 @export var dano_espada_base: float = 25.0
 @export var dano_espada_especial: float = 50.0
 @export var potencia_cura_base: float = 25.0
+@export var dano_arco_base: float = 20.0   
+@export var dano_magia_base: float = 15.0  
 
 @export var cena_flecha: PackedScene 
 @export var cena_missil_de_fogo: PackedScene
@@ -232,11 +234,15 @@ func resetar_para_proxima_onda():
 	
 	emit_signal("energia_mudou", energia_atual, energia_maxima) 
 
-func _disparar_flecha(sufixo_anim: String):
+func _disparar_flecha(sufixo_anim: String, dano: float):
 	if cena_flecha == null: 
 		push_warning("Cena da Flecha não configurada no Player!") 
 		return 
 	var flecha = cena_flecha.instantiate() 
+	
+	# ⚠️ NOVO: Passa o dano calculado
+	flecha.dano = dano 
+	
 	var direcao_disparo: Vector2
 	if alvo_travado != null: 
 		direcao_disparo = (alvo_travado.global_position - global_position).normalized() 
@@ -249,7 +255,7 @@ func _disparar_flecha(sufixo_anim: String):
 			direcao_disparo = Vector2.DOWN 
 	flecha.direcao = direcao_disparo 
 	flecha.global_position = global_position 
-	get_parent().add_child(flecha) 
+	get_parent().add_child(flecha)
 
 func _atualizar_alvo_com_cone(sufixo_anim: String):
 	if sufixo_anim == "_c": 
@@ -272,8 +278,7 @@ func _atualizar_alvo_com_cone(sufixo_anim: String):
 				inimigo_mais_proximo = corpo 
 	alvo_travado = inimigo_mais_proximo 
 
-# (SUBSTITUA ESTA FUNÇÃO INTEIRA)
-func _disparar_rajada_de_flechas(sufixo_anim: String):
+func _disparar_rajada_de_flechas(sufixo_anim: String, dano: float):
 	if cena_flecha == null: 
 		push_warning("Cena da Flecha não configurada no Player!") 
 		return 
@@ -296,16 +301,20 @@ func _disparar_rajada_de_flechas(sufixo_anim: String):
 	for i in range(total_flechas): 
 		if is_dead: return 
 		
-		_disparar_flecha(sufixo_anim) 
+		_disparar_flecha(sufixo_anim, dano) # ⚠️ NOVO: Passa o dano
 		
 		if i < (total_flechas - 1): 
-			await get_tree().create_timer(delay_final).timeout 
+			await get_tree().create_timer(delay_final).timeout
 
-func _disparar_missil(sufixo_anim: String):
+func _disparar_missil(sufixo_anim: String, dano: float):
 	if cena_missil_de_fogo == null: 
 		push_warning("Cena do Míssil de Fogo não configurada no Player!") 
 		return 
 	var missil = cena_missil_de_fogo.instantiate() 
+	
+	# ⚠️ NOVO: Passa o dano calculado
+	missil.dano_imediato = dano 
+	
 	var direcao_disparo: Vector2
 	if alvo_travado != null: 
 		direcao_disparo = (alvo_travado.global_position - global_position).normalized() 
@@ -319,10 +328,9 @@ func _disparar_missil(sufixo_anim: String):
 	missil.direcao = direcao_disparo 
 	
 	missil.global_position = global_position 
-	get_parent().add_child(missil) 
+	get_parent().add_child(missil)
 
-# (SUBSTITUA ESTA FUNÇÃO INTEIRA)
-func _disparar_leque_de_misseis(sufixo_anim: String):
+func _disparar_leque_de_misseis(sufixo_anim: String, dano: float):
 	if cena_missil_de_fogo == null: 
 		push_warning("Cena do Míssil de Fogo não configurada no Player!") 
 		return 
@@ -358,10 +366,11 @@ func _disparar_leque_de_misseis(sufixo_anim: String):
 		var missil = cena_missil_de_fogo.instantiate() 
 		missil.direcao = direcao_atual 
 		missil.global_position = global_position 
-		get_parent().add_child(missil) 
-
-# [Em: player.gd]
-# (Adicione ou substitua esta função)
+		
+		# ⚠️ NOVO: Passa o dano calculado para o míssil
+		missil.dano_imediato = dano
+		
+		get_parent().add_child(missil)
 
 func _unhandled_input(event: InputEvent):
 	# Checa se a ação ui_pausar foi pressionada e se o jogo NÃO está pausado

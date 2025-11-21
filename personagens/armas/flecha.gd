@@ -31,9 +31,11 @@ func _physics_process(_delta: float):
 # --- FUNÇÃO _on_body_entered ATUALIZADA ---
 func _on_body_entered(body: Node2D):
 	
-	# 1. Checa se acertou um inimigo
+# 1. Checa se acertou um inimigo
 	if body.is_in_group("damageable_enemy"):
-		body.sofrer_dano(dano, Vector2.ZERO)
+		
+		# Dano já foi setado pelo Player antes de instanciar!
+		body.sofrer_dano(dano, Vector2.ZERO) 
 		
 		# (Se tivermos uma cena de impacto configurada, spawna ela)
 		if cena_impacto != null:
@@ -48,9 +50,8 @@ func _on_body_entered(body: Node2D):
 		if cena_impacto != null:
 			_spawnar_impacto()
 		
-		queue_free() # Flecha se destrói
+		queue_free() # Flecha se destrói	
 
-# --- NOSSA NOVA FUNÇÃO HELPER ---
 func _spawnar_impacto():
 	# 1. Cria a cena de impacto
 	var impacto = cena_impacto.instantiate()
