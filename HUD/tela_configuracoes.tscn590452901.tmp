@@ -13,26 +13,15 @@ script = ExtResource("1_tabp0")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -4.0
-offset_top = 4.0
-offset_right = -4.0
-offset_bottom = 4.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(1, 1, 1, 0.466667)
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ColorRect"]
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_direction = 2
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -637.0
-offset_top = -384.0
-offset_right = -383.0
-offset_bottom = -230.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(5, 5)
@@ -41,19 +30,22 @@ size_flags_vertical = 4
 theme_override_constants/separation = 3
 alignment = 1
 
-[node name="Panel" type="PanelContainer" parent="ColorRect/VBoxContainer"]
+[node name="Panel" type="PanelContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="TabContainer" type="TabContainer" parent="ColorRect/VBoxContainer"]
+[node name="TabContainer" type="TabContainer" parent="VBoxContainer/Panel"]
 layout_mode = 2
 
-[node name="BotaoNovoJogo" type="TextureButton" parent="ColorRect/VBoxContainer"]
+[node name="TabContainer" type="TabContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="BotaoNovoJogo" type="TextureButton" parent="VBoxContainer"]
 layout_mode = 2
 texture_normal = ExtResource("2_wu173")
 texture_pressed = ExtResource("3_by6y3")
 stretch_mode = 3
 
-[node name="Label" type="Label" parent="ColorRect/VBoxContainer/BotaoNovoJogo"]
+[node name="Label" type="Label" parent="VBoxContainer/BotaoNovoJogo"]
 layout_mode = 1
 anchors_preset = 14
 anchor_top = 0.5
@@ -69,7 +61,7 @@ theme_override_font_sizes/font_size = 9
 text = "Novo"
 horizontal_alignment = 1
 
-[node name="Seletor" type="NinePatchRect" parent="ColorRect/VBoxContainer/BotaoNovoJogo"]
+[node name="Seletor" type="NinePatchRect" parent="VBoxContainer/BotaoNovoJogo"]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -84,13 +76,13 @@ patch_margin_top = 8
 patch_margin_right = 8
 patch_margin_bottom = 8
 
-[node name="BotaoContinuar" type="TextureButton" parent="ColorRect/VBoxContainer"]
+[node name="BotaoContinuar" type="TextureButton" parent="VBoxContainer"]
 layout_mode = 2
 texture_normal = ExtResource("2_wu173")
 texture_pressed = ExtResource("3_by6y3")
 stretch_mode = 3
 
-[node name="Label" type="Label" parent="ColorRect/VBoxContainer/BotaoContinuar"]
+[node name="Label" type="Label" parent="VBoxContainer/BotaoContinuar"]
 layout_mode = 1
 anchors_preset = 14
 anchor_top = 0.5
@@ -106,7 +98,7 @@ theme_override_font_sizes/font_size = 9
 text = "Continua"
 horizontal_alignment = 1
 
-[node name="Seletor" type="NinePatchRect" parent="ColorRect/VBoxContainer/BotaoContinuar"]
+[node name="Seletor" type="NinePatchRect" parent="VBoxContainer/BotaoContinuar"]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -121,13 +113,13 @@ patch_margin_top = 8
 patch_margin_right = 8
 patch_margin_bottom = 8
 
-[node name="BotaoConfig" type="TextureButton" parent="ColorRect/VBoxContainer"]
+[node name="BotaoConfig" type="TextureButton" parent="VBoxContainer"]
 layout_mode = 2
 texture_normal = ExtResource("2_wu173")
 texture_pressed = ExtResource("3_by6y3")
 stretch_mode = 3
 
-[node name="Label" type="Label" parent="ColorRect/VBoxContainer/BotaoConfig"]
+[node name="Label" type="Label" parent="VBoxContainer/BotaoConfig"]
 layout_mode = 1
 anchors_preset = 14
 anchor_top = 0.5
@@ -141,7 +133,7 @@ theme_override_font_sizes/font_size = 9
 text = "Opções"
 horizontal_alignment = 1
 
-[node name="Seletor" type="NinePatchRect" parent="ColorRect/VBoxContainer/BotaoConfig"]
+[node name="Seletor" type="NinePatchRect" parent="VBoxContainer/BotaoConfig"]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -156,13 +148,13 @@ patch_margin_top = 8
 patch_margin_right = 8
 patch_margin_bottom = 8
 
-[node name="BotaoSair" type="TextureButton" parent="ColorRect/VBoxContainer"]
+[node name="BotaoSair" type="TextureButton" parent="VBoxContainer"]
 layout_mode = 2
 texture_normal = ExtResource("2_wu173")
 texture_pressed = ExtResource("3_by6y3")
 stretch_mode = 3
 
-[node name="Label" type="Label" parent="ColorRect/VBoxContainer/BotaoSair"]
+[node name="Label" type="Label" parent="VBoxContainer/BotaoSair"]
 layout_mode = 1
 anchors_preset = 14
 anchor_top = 0.5
@@ -178,7 +170,7 @@ theme_override_font_sizes/font_size = 9
 text = "Sair"
 horizontal_alignment = 1
 
-[node name="Seletor" type="NinePatchRect" parent="ColorRect/VBoxContainer/BotaoSair"]
+[node name="Seletor" type="NinePatchRect" parent="VBoxContainer/BotaoSair"]
 visible = false
 layout_mode = 1
 anchors_preset = 15
