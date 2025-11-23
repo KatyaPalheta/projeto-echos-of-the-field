@@ -3,7 +3,7 @@ extends CanvasLayer
 
 # --- Referências de Cena ---
 const CENA_JOGO = preload("res://cenas/game_level.tscn") # ⚠️ Confirme este caminho!
-#const CENA_CONFIG = preload("res://HUD/tela_configuracoes.tscn") # ⚠️ Criaremos este .tscn depois
+const CENA_CONFIG = preload("res://HUD/tela_configuracoes.tscn") # ⚠️ Criaremos este .tscn depois
 
 # --- Referências de Botões ---
 @onready var botao_novo_jogo: TextureButton = $VBoxContainer/BotaoNovoJogo

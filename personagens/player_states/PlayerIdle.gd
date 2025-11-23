@@ -50,7 +50,7 @@ func process_input(_event: InputEvent):
 			# CÁLCULO FINAL: (Dano Especial Base * Multiplicador Dificuldade) + Bônus de Upgrade
 			player.current_attack_damage = (player.dano_espada_especial * mult_dano_player) + bonus_dano_especial
 			
-			Logger.log("Golpe Duplo usado! Custo: %s" % custo_final) [cite: 63]
+			Logger.log("Golpe Duplo usado! Custo: %s" % custo_final) 
 			state_machine._change_state(state_machine.get_node("AttackSword"))
 		else:
 			Logger.log("Sem energia para o Golpe Duplo! (Custo: %s)" % custo_final)

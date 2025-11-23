@@ -49,7 +49,13 @@ func set_player_reference(player: Node2D):
 func iniciar_onda() -> float:
 	inimigos_mortos = 0
 	
-	if onda_atual_index < 0 or onda_atual_index >= ONDAS.size():
+	# ⚠️ NOVO: Limita o tamanho da lista ONDAS pelo valor do jogador (Máx: 20)
+	var max_ondas_config = ConfigManager.config_data.numero_de_ondas_max
+	var limite_ondas = min(ONDAS.size(), max_ondas_config)
+	# -----------------------------------------------------------------
+	
+	# O check original de limite deve usar o novo limite
+	if onda_atual_index < 0 or onda_atual_index >= limite_ondas:
 		onda_atual_index = 0 
 		
 	if onda_atual_index == 0: 
@@ -84,7 +90,7 @@ func iniciar_onda() -> float:
 			save_data.upgrades_da_partida.clear()
 			Logger.log("SaveData resetado para início de partida.")
 
-	# --- NOVO: LÓGICA DE MULTIPLICADOR DE DIFICULDADE DE ONDA ---
+	# --- LÓGICA DE MULTIPLICADOR DE DIFICULDADE DE ONDA (EXISTENTE) ---
 	var dados_onda = ONDAS[onda_atual_index]
 	var total_base_da_onda = dados_onda[0]
 	var chance_spawn = dados_onda[1]
@@ -93,14 +99,14 @@ func iniciar_onda() -> float:
 	if mult_monstro == null: mult_monstro = 1.0
 	
 	var dificuldade_progressiva = ConfigManager.config_data.dificuldade_progressiva
-	var onda_atual = onda_atual_index + 1
+	var onda_atual = onda_atual_index + 1 
 	
 	var fator_progressao = 1.0
 	# Se a dificuldade progressiva estiver LIGADA, a progressão aumenta
 	if dificuldade_progressiva:
 		# Multiplica o fator de progressão pelo número da onda (ex: Onda 5 = 5.0)
 		fator_progressao = float(onda_atual) 
-		Logger.log("Progressão ATIVA. Fator: %s" % fator_progressao)
+		Logger.log("Progressão ATIVA. Fator: %s" % fator_progressao) 
 	
 	# Cálculo final: (Total Base * Multiplicador Dificuldade) * Fator de Progressão
 	inimigos_total_na_onda = int(round(total_base_da_onda * mult_monstro * fator_progressao))
@@ -138,20 +144,20 @@ func registrar_morte_inimigo():
 		Logger.log(log_msg)
 
 		onda_atual_index += 1
-
-		if onda_atual_index >= ONDAS.size():
+		
+		# ⚠️ NOVO: Checa o limite baseado na config do jogador
+		var max_ondas_config = ConfigManager.config_data.numero_de_ondas_max
+		var limite_ondas = min(ONDAS.size(), max_ondas_config)
+		
+		if onda_atual_index >= limite_ondas:
 			Logger.log("VOCÊ VENCEU A DEMO!")
 			onda_atual_index = 0 
+		# ----------------------------------------------------
 		
 		var dados_para_transicao = {
 			"onda": onda_que_terminou,
 			"tempo": tempo_gasto
 		}
-		
-		timer_vitoria_onda.timeout.connect(
-			_on_timer_vitoria_onda_timeout.bind(dados_para_transicao), 
-			CONNECT_ONE_SHOT
-		)
 		
 		timer_vitoria_onda.start(1.0)
 

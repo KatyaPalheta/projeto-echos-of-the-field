@@ -20,7 +20,7 @@ const CENA_TELA_INICIAL = preload("res://HUD/tela_inicial.tscn")
 
 
 # O Godot tem um bug com OptionButton (o texto precisa ser preenchido por código)
-const ZOOM_OPTIONS: Array[float] = [3.0, 2.0, 1.0, 0.5] 
+const ZOOM_OPTIONS: Array[float] = [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0] 
 # ⚠️ NOTA: Seu OptionButton mostrava 1x, 2x, 3x, 4x. Usarei os valores reais float.
 # Ajustei o máximo para 4.0x no array, mas o seu jogo usa 1.0x como base.
 
