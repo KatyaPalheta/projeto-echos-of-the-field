@@ -38,10 +38,9 @@ size_flags_vertical = 3
 
 [node name="TabContainer" type="TabContainer" parent="VBoxContainerCentral/PainelPrincipal"]
 layout_mode = 2
-current_tab = 1
+current_tab = 0
 
 [node name="AbaGlobais" type="VBoxContainer" parent="VBoxContainerCentral/PainelPrincipal/TabContainer"]
-visible = false
 layout_mode = 2
 theme_override_constants/separation = 12
 alignment = 1
@@ -90,7 +89,9 @@ text = "Número Máx de Ondas (1-20)"
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_vertical = 4
+min_value = 1.0
 max_value = 20.0
+value = 1.0
 
 [node name="LabelOndasValor" type="Label" parent="VBoxContainerCentral/PainelPrincipal/TabContainer/AbaGlobais/LinhaOndas"]
 layout_mode = 2
@@ -122,6 +123,7 @@ popup/item_3/id = 3
 popup/item_3/separator = true
 
 [node name="AbaGameplay" type="VBoxContainer" parent="VBoxContainerCentral/PainelPrincipal/TabContainer"]
+visible = false
 layout_mode = 2
 theme_override_constants/separation = 12
 alignment = 1
@@ -251,6 +253,18 @@ text = "Dificuldade Progressiva (Multiplicador de Onda)"
 [node name="CheckProgressiva" type="CheckBox" parent="VBoxContainerCentral/PainelPrincipal/TabContainer/AbaDificuldade/LinhaProgressiva"]
 layout_mode = 2
 
+[node name="LinhaDanoPlayer" type="HBoxContainer" parent="VBoxContainerCentral/PainelPrincipal/TabContainer/AbaDificuldade"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="LabelDanoPlayer" type="Label" parent="VBoxContainerCentral/PainelPrincipal/TabContainer/AbaDificuldade/LinhaDanoPlayer"]
+layout_mode = 2
+text = "Alterar Dano Base do Player"
+
+[node name="CheckDanoPlayer" type="CheckBox" parent="VBoxContainerCentral/PainelPrincipal/TabContainer/AbaDificuldade/LinhaDanoPlayer"]
+layout_mode = 2
+
 [node name="LinhaPreset" type="HBoxContainer" parent="VBoxContainerCentral/PainelPrincipal/TabContainer/AbaDificuldade"]
 layout_mode = 2
 theme_override_constants/separation = 10
@@ -280,19 +294,28 @@ popup/item_3/separator = true
 layout_mode = 2
 size_flags_vertical = 4
 
-[node name="LinhaVidaMonstro" type="Label" parent="VBoxContainerCentral/PainelPrincipal/TabContainer/AbaDificuldade"]
+[node name="LinhaVidaMonstroValor" type="Label" parent="VBoxContainerCentral/PainelPrincipal/TabContainer/AbaDificuldade"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.933333, 0.960784, 1)
 text = "Vida Base ds Monstros: [Valor Atual]"
 horizontal_alignment = 1
 
-[node name="LinhaDanoMonstro" type="Label" parent="VBoxContainerCentral/PainelPrincipal/TabContainer/AbaDificuldade"]
+[node name="LinhaDanoMonstroValor" type="Label" parent="VBoxContainerCentral/PainelPrincipal/TabContainer/AbaDificuldade"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.933333, 0.960784, 1)
 text = "Multiplicador de Dano Inimigo: [Valor Atual]"
 horizontal_alignment = 1
 
-[node name="LinhaTotalMonstros" type="Label" parent="VBoxContainerCentral/PainelPrincipal/TabContainer/AbaDificuldade"]
+[node name="LinhaTotalMonstrosValor" type="Label" parent="VBoxContainerCentral/PainelPrincipal/TabContainer/AbaDificuldade"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.933333, 0.960784, 1)
 text = "Multiplicador de Inimigos/Onda: [Valor Atual]"
+horizontal_alignment = 1
+
+[node name="LinhaDanoPlayerValor" type="Label" parent="VBoxContainerCentral/PainelPrincipal/TabContainer/AbaDificuldade"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.933333, 0.960784, 1)
+text = "Multiplicador de Dano Player: [Valor Atual]"
 horizontal_alignment = 1
 
 [node name="BotaoSair" type="TextureButton" parent="."]

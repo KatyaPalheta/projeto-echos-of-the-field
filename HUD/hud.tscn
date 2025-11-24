@@ -72,9 +72,9 @@ texture_progress = ExtResource("3_6dvid")
 
 [node name="BarraEnergia" type="TextureProgressBar" parent="."]
 offset_left = 10.0
-offset_top = 60.0
+offset_top = 42.0
 offset_right = 58.0
-offset_bottom = 100.0
+offset_bottom = 82.0
 scale = Vector2(5, 5)
 texture_under = ExtResource("4_6dvid")
 texture_progress = ExtResource("5_y0nqa")
@@ -89,17 +89,17 @@ text = "100"
 
 [node name="EnergiaLabel" type="Label" parent="."]
 offset_left = 35.0
-offset_top = 99.0
+offset_top = 81.0
 offset_right = 75.0
-offset_bottom = 122.0
+offset_bottom = 104.0
 scale = Vector2(1, 0.759999)
 text = "0"
 
 [node name="TexturaEnergia" type="TextureRect" parent="."]
 offset_left = 10.0
-offset_top = 60.0
+offset_top = 42.0
 offset_right = 58.0
-offset_bottom = 76.0
+offset_bottom = 58.0
 scale = Vector2(5, 5)
 texture = ExtResource("3_tnm0g")
 
@@ -122,13 +122,63 @@ offset_right = 81.32
 offset_bottom = 592.32
 alignment = 2
 
+[node name="CargasCuraContainer3" type="HBoxContainer" parent="."]
+visible = false
+custom_minimum_size = Vector2(52, 16)
+offset_left = 263.0
+offset_top = 121.0
+offset_right = 319.0
+offset_bottom = 138.0
+scale = Vector2(2, 2)
+alignment = 1
+
+[node name="Estrela9" type="TextureRect" parent="CargasCuraContainer3"]
+layout_mode = 2
+texture = ExtResource("7_ncsg0")
+stretch_mode = 2
+
+[node name="Estrela8" type="TextureRect" parent="CargasCuraContainer3"]
+layout_mode = 2
+texture = ExtResource("7_ncsg0")
+stretch_mode = 2
+
+[node name="Estrela7" type="TextureRect" parent="CargasCuraContainer3"]
+layout_mode = 2
+texture = ExtResource("7_ncsg0")
+stretch_mode = 2
+
+[node name="CargasCuraContainer2" type="HBoxContainer" parent="."]
+visible = false
+custom_minimum_size = Vector2(52, 16)
+offset_left = 145.0
+offset_top = 122.0
+offset_right = 201.0
+offset_bottom = 139.0
+scale = Vector2(2, 2)
+alignment = 1
+
+[node name="Estrela6" type="TextureRect" parent="CargasCuraContainer2"]
+layout_mode = 2
+texture = ExtResource("7_ncsg0")
+stretch_mode = 2
+
+[node name="Estrela5" type="TextureRect" parent="CargasCuraContainer2"]
+layout_mode = 2
+texture = ExtResource("7_ncsg0")
+stretch_mode = 2
+
+[node name="Estrela4" type="TextureRect" parent="CargasCuraContainer2"]
+layout_mode = 2
+texture = ExtResource("7_ncsg0")
+stretch_mode = 2
+
 [node name="CargasCuraContainer" type="HBoxContainer" parent="."]
 custom_minimum_size = Vector2(52, 16)
-offset_left = 32.0
-offset_top = 144.0
-offset_right = 72.0
-offset_bottom = 184.0
-scale = Vector2(3, 3)
+offset_left = 26.0
+offset_top = 122.0
+offset_right = 82.0
+offset_bottom = 139.0
+scale = Vector2(2, 2)
 alignment = 1
 
 [node name="Estrela1" type="TextureRect" parent="CargasCuraContainer"]

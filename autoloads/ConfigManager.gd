@@ -67,13 +67,29 @@ func set_current_preset(new_id: String):
 		return true
 	push_warning("ConfigManager: Tentativa de setar Preset inválido: %s" % new_id)
 	return false
+# [Em: ConfigManager.gd]
+# (SUBSTITUA ESTA FUNÇÃO set_global_value INTEIRA)
 
-# Função para a tela de configurações chamar e mudar uma Global (como o Zoom)
 func set_global_value(key: String, value):
-	if config_data.has(key):
-		config_data[key] = value
+	
+	# ⚠️ SOLUÇÃO FINAL (Usando a lista de propriedades)
+	var property_exists = false
+	var property_list = config_data.get_property_list()
+	
+	# Percorre a lista de propriedades que o Godot EXPORTA
+	for p in property_list:
+		if p.name == key:
+			property_exists = true
+			break
+	
+	if property_exists:
+		# Define o valor usando o método set nativo (que não causa erro)
+		config_data.set(key, value)
+		
 		salvar_configuracoes()
 		Logger.log("Configuração Global '%s' alterada para: %s" % [key, value])
 		return true
-	push_warning("ConfigManager: Tentativa de setar Global inválida: %s" % key)
-	return false
+	else:
+		# Se a propriedade não foi encontrada na lista (erro de digitação)
+		push_warning("ConfigManager: Tentativa de setar Global inválida: %s" % key)
+		return false

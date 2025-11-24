@@ -72,18 +72,17 @@ func _ready():
 	
 	Logger.log("Player _ready() executado. Aguardando sinal 'onda_iniciada'...")
 
-
 func _setup_configuracoes():
+	# Este método usa o ConfigManager para definir as stats base no Godot
 	
-	var vida_base = ConfigManager.get_gameplay_value("vida_base_player")
-	var energia_base = ConfigManager.get_gameplay_value("energia_base_player")
-	var cargas_base = ConfigManager.get_gameplay_value("cargas_cura_base")
+	# --- 1. PEGA OS VALORES DE GAMEPLAY (NOVOS MODIFICADORES) ---
+	var config = ConfigManager.config_data
 	
-	if vida_base == null or energia_base == null or cargas_base == null:
-		Logger.log("[ERRO] Falha ao carregar Configurações de Gameplay. Usando valores de fallback.")
-		vida_base = 100.0
-		energia_base = 100.0
-		cargas_base = 3
+	# Usa os índices salvos e as constantes de Configurações.gd
+	var vida_base = ConfigManager.VIDA_OPTIONS[config.base_vida_escolhida]
+	var energia_base = ConfigManager.ENERGIA_OPTIONS[config.base_energia_escolhida]
+	var cargas_base = ConfigManager.CURAS_OPTIONS[config.base_cargas_cura_escolhida]
+	var potencia_base = ConfigManager.POTENCIA_CURA_OPTIONS[config.base_potencia_cura_escolhida]
 	
 	# 2. APLICA OS VALORES BASE
 	# A. Vida (HealthComponent)
@@ -97,14 +96,20 @@ func _setup_configuracoes():
 	# C. Cargas de Cura
 	cargas_de_cura = int(cargas_base)
 	
+	# D. Potência de Cura (Passamos o valor base da config para o player)
+	potencia_cura_base = potencia_base
+	
+	# E. Inicia com Energia? (Se o jogador marcou 'sim', damos um valor alto de energia salva)
+	if config.inicia_com_energia:
+		SaveManager.dados_atuais.conserva_energia_entre_ondas = true
+		SaveManager.dados_atuais.energia_atual_salva = energia_maxima # Começa cheio!
+	
 	# 3. PEGA O VALOR GLOBAL DO ZOOM
-	# Este valor é lido do @export var zoom_camera em Configuracoes.gd
 	var zoom_global = ConfigManager.config_data.zoom_camera
 	if player_camera != null:
 		player_camera.zoom = Vector2(zoom_global, zoom_global)
 	else:
 		push_warning("Camera2D não encontrada no Player! Zoom (%s) não aplicado." % zoom_global)
-
 
 func aplicar_upgrades_da_partida():
 	Logger.log("Sinal 'onda_iniciada' recebido! Aplicando upgrades...") 

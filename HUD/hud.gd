@@ -13,9 +13,19 @@ extends CanvasLayer
 @onready var log_container: VBoxContainer = $LogContainer
 @onready var contador_label: Label = $ContadorLabel
 
+@onready var container_cargas_base: HBoxContainer = $CargasCuraContainer
+@onready var container_cargas_4_6: HBoxContainer = $CargasCuraContainer2
+@onready var container_cargas_7_9: HBoxContainer = $CargasCuraContainer3
+
 @onready var estrela1: TextureRect = $CargasCuraContainer/Estrela1
 @onready var estrela2: TextureRect = $CargasCuraContainer/Estrela2
 @onready var estrela3: TextureRect = $CargasCuraContainer/Estrela3
+@onready var estrela4: TextureRect = $CargasCuraContainer2/Estrela4
+@onready var estrela5: TextureRect = $CargasCuraContainer2/Estrela5
+@onready var estrela6: TextureRect = $CargasCuraContainer2/Estrela6
+@onready var estrela7: TextureRect = $CargasCuraContainer3/Estrela7
+@onready var estrela8: TextureRect = $CargasCuraContainer3/Estrela8
+@onready var estrela9: TextureRect = $CargasCuraContainer3/Estrela9
 
 @export var tex_estrela_cheia: Texture2D
 @export var tex_estrela_vazia: Texture2D
@@ -41,6 +51,9 @@ func _ready():
 	_resetar_slots_de_skill()
 	
 	call_deferred("_on_upgrades_mudaram")
+	
+	container_cargas_4_6.visible = false
+	container_cargas_7_9.visible = false
 
 func criar_slots_dinamicamente():
 	if cena_icone_skill == null:
@@ -79,9 +92,26 @@ func _on_log_updated(messages: Array[String]):
 		log_container.add_child(new_label)
 
 func atualizar_cargas_cura(cargas_restantes: int):
-	estrela1.texture = tex_estrela_cheia if cargas_restantes >= 1 else tex_estrela_vazia
-	estrela2.texture = tex_estrela_cheia if cargas_restantes >= 2 else tex_estrela_vazia
-	estrela3.texture = tex_estrela_cheia if cargas_restantes == 3 else tex_estrela_vazia
+	# Criamos um array com todas as 9 estrelas na ordem correta
+	var estrelas_array: Array[TextureRect] = [
+		estrela1, estrela2, estrela3, 
+		estrela4, estrela5, estrela6, 
+		estrela7, estrela8, estrela9
+	]
+	
+	# 1. Atualiza as Texturas (cheia ou vazia)
+	for i in range(estrelas_array.size()):
+		var estrela = estrelas_array[i]
+		# Se o índice + 1 (que é a contagem da carga) for menor ou igual
+		if (i + 1) <= cargas_restantes:
+			estrela.texture = tex_estrela_cheia
+		else:
+			estrela.texture = tex_estrela_vazia
+			
+	container_cargas_4_6.visible = cargas_restantes >= 4
+	
+	# Mostra o contêiner 3 (Estrelas 7 a 9) se houver 7 ou mais cargas
+	container_cargas_7_9.visible = cargas_restantes >= 7
 
 func atualizar_contador_inimigos(mortos: int, total: int, _onda: int):
 	

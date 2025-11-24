@@ -45,7 +45,6 @@ _data = {
 }
 
 [node name="TelaInicial" type="CanvasLayer"]
-process_mode = 2
 script = ExtResource("1_2ag13")
 
 [node name="ColorRect" type="ColorRect" parent="."]
