@@ -36,10 +36,9 @@ var custo_ataque_especial: float = 50.00
 var current_attack_damage = 25.0
 var alvo_travado: Node2D = null
 
-
 func _ready():
 	# --- CORREÇÃO DO CRASH (Auto-Detecção) ---
-	# Se a variável herdada estiver vazia, tentamos achar o nó pelo nome padrão.
+	# (Se a variável herdada estiver vazia...)
 	if _animation == null:
 		if has_node("AnimationPlayer"):
 			_animation = $AnimationPlayer
@@ -47,11 +46,11 @@ func _ready():
 			_animation = $Animacao
 		else:
 			push_error("PLAYER: Não encontrei nenhum nó 'AnimationPlayer' ou 'Animacao'!")
-			return # Aborta para não travar o jogo, mas vai avisar no erro
+			return 
 	# -----------------------------------------
 	
 	# 1. NOVO PASSO: Configurações de Dificuldade/Preset (SÓ AQUI)
-	_setup_configuracoes()
+	_setup_configuracoes() 
 
 	# 2. CONECTA ao sinal do GameManager
 	if GameManager != null:
@@ -61,56 +60,56 @@ func _ready():
 	health_component.morreu.connect(_on_morte)
 	health_component.vida_mudou.connect(_on_health_component_vida_mudou)
 	
-	# Agora é seguro conectar, pois garantimos que _animation existe ali em cima
+	# Agora é seguro conectar
 	if _animation != null:
 		_animation.animation_finished.connect(_on_animation_finished)
 	
-	# 4. Avisa a HUD (A HUD deve ler os valores de vida/energia/cura que setamos em _setup_configuracoes)
+	# 4. Avisa a HUD (A HUD agora lê os valores DEFINIDOS pelo _setup_configuracoes)
 	emit_signal.call_deferred("cargas_cura_mudou", cargas_de_cura)
 	emit_signal.call_deferred("energia_mudou", energia_atual, energia_maxima)
-	emit_signal.call_deferred("vida_atualizada", health_component.vida_atual, health_component.max_vida)
+	emit_signal.call_deferred("vida_atualizada", health_component.vida_atual, health_component.vida_maxima) 
 	
 	Logger.log("Player _ready() executado. Aguardando sinal 'onda_iniciada'...")
 
+
 func _setup_configuracoes():
-	# Este método usa o ConfigManager para definir as stats base no Godot
-	
-	# --- 1. PEGA OS VALORES DE GAMEPLAY (NOVOS MODIFICADORES) ---
+
 	var config = ConfigManager.config_data
 	
-	# Usa os índices salvos e as constantes de Configurações.gd
+	
 	var vida_base = ConfigManager.VIDA_OPTIONS[config.base_vida_escolhida]
 	var energia_base = ConfigManager.ENERGIA_OPTIONS[config.base_energia_escolhida]
 	var cargas_base = ConfigManager.CURAS_OPTIONS[config.base_cargas_cura_escolhida]
 	var potencia_base = ConfigManager.POTENCIA_CURA_OPTIONS[config.base_potencia_cura_escolhida]
 	
-	# 2. APLICA OS VALORES BASE
-	# A. Vida (HealthComponent)
-	health_component.max_vida = float(vida_base)
-	health_component.vida_atual = health_component.max_vida 
 	
-	# B. Energia
+
+	health_component.aplicar_vida_base(float(vida_base))
+	
+	
 	energia_maxima = float(energia_base)
 	energia_atual = energia_maxima
 	
-	# C. Cargas de Cura
+	
 	cargas_de_cura = int(cargas_base)
 	
-	# D. Potência de Cura (Passamos o valor base da config para o player)
+
 	potencia_cura_base = potencia_base
 	
-	# E. Inicia com Energia? (Se o jogador marcou 'sim', damos um valor alto de energia salva)
+
+	
 	if config.inicia_com_energia:
 		SaveManager.dados_atuais.conserva_energia_entre_ondas = true
-		SaveManager.dados_atuais.energia_atual_salva = energia_maxima # Começa cheio!
-	
-	# 3. PEGA O VALOR GLOBAL DO ZOOM
-	var zoom_global = ConfigManager.config_data.zoom_camera
-	if player_camera != null:
-		player_camera.zoom = Vector2(zoom_global, zoom_global)
-	else:
-		push_warning("Camera2D não encontrada no Player! Zoom (%s) não aplicado." % zoom_global)
+		SaveManager.dados_atuais.energia_atual_salva = energia_maxima 
 
+	
+	var zoom_index = clamp(config.zoom_camera, 0, ConfigManager.ZOOM_OPTIONS.size() - 1)
+	var zoom_global_value = ConfigManager.ZOOM_OPTIONS[zoom_index]
+	
+	if player_camera != null:
+		player_camera.zoom = Vector2(zoom_global_value, zoom_global_value)
+	else:
+		push_warning("Camera2D não encontrada no Player! Zoom (%s) não aplicado." % zoom_global_value)
 func aplicar_upgrades_da_partida():
 	Logger.log("Sinal 'onda_iniciada' recebido! Aplicando upgrades...") 
 	

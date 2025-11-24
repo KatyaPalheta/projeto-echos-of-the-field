@@ -2,8 +2,12 @@
 extends CanvasLayer
 
 # --- Referências de Cena ---
+
+const CAMINHO_CENA_JOGO = "res://cenas/game_level.tscn"
+const CENA_TRANSICAO = preload("res://HUD/transicao_onda.tscn") 
+const CENA_CONFIG = preload("res://HUD/tela_configuracoes.tscn")
 const CENA_JOGO = preload("res://cenas/game_level.tscn") # ⚠️ Confirme este caminho!
-const CENA_CONFIG = preload("res://HUD/tela_configuracoes.tscn") # ⚠️ Criaremos este .tscn depois
+
 
 # --- Referências de Botões ---
 @onready var botao_novo_jogo: TextureButton = $VBoxContainer/BotaoNovoJogo
@@ -37,30 +41,23 @@ func _ready():
 		# Se não há progresso, foca em Novo Jogo
 		botao_novo_jogo.call_deferred("grab_focus")
 
-
-# --- FUNÇÕES DE BOTÃO ---
-
 func _on_botao_novo_jogo_pressed():
-	# 1. ZERA O PROGRESSO NO SAVE
 	if SaveManager.dados_atuais != null:
 		SaveManager.dados_atuais.onda_mais_alta_salva = 1
 		SaveManager.salvar_dados()
-		
-	# 2. ZERA O PROGRESSO NA MEMÓRIA
 	GameManager.onda_atual_index = 0
 	
-	# 3. Inicia o jogo na primeira cena
-	if CENA_JOGO != null:
-		get_tree().change_scene_to_file(CENA_JOGO.scene_file_path)
+
+	if CAMINHO_CENA_JOGO != "":
+		get_tree().change_scene_to_file(CAMINHO_CENA_JOGO)
 	else:
-		push_error("Cena de Jogo (game_level.tscn) não carregada!")
+		push_error("Caminho da Cena de Jogo não configurado!")
 
 func _on_botao_continuar_pressed():
-	# 1. Apenas carrega a cena de jogo, o GameManager já carrega o índice salvo
-	if CENA_JOGO != null:
-		get_tree().change_scene_to_file(CENA_JOGO.scene_file_path)
+	if CAMINHO_CENA_JOGO != "":
+		get_tree().change_scene_to_file(CAMINHO_CENA_JOGO)
 	else:
-		push_error("Cena de Jogo (game_level.tscn) não carregada!")
+		push_error("Caminho da Cena de Jogo não configurado!")
 
 func _on_botao_config_pressed():
 	# Carrega a tela de configurações (próximo passo visual)

@@ -3,12 +3,8 @@ extends CanvasLayer
 
 # --- Referências de Cena ---
 # A tela inicial que vamos reabrir
+const CAMINHO_TELA_INICIAL = "res://HUD/tela_inicial.tscn"
 const CENA_TELA_INICIAL = preload("res://HUD/tela_inicial.tscn")
-const ZOOM_OPTIONS: Array[float] = [3.0, 2.0, 1.0, 0.5] 
-const VIDA_OPTIONS: Array[float] = [100.0, 200.0, 300.0, 400.0]
-const ENERGIA_OPTIONS: Array[float] = [100.0, 200.0, 300.0, 400.0]
-const CURAS_OPTIONS: Array[int] = [3, 6, 9]
-const POTENCIA_CURA_OPTIONS: Array[float] = [25.0, 50.0, 100.0]
 
 # --- Referências da Aba Global ---
 # Opções Booleanas/Sliders
@@ -115,20 +111,21 @@ func _conectar_sinais_dificuldade():
 func _carregar_configuracoes_gameplay():
 	var config = ConfigManager.config_data
 	
-	# VIDA BASE
-	_setup_option_button(seletor_vida, VIDA_OPTIONS, config.base_vida_escolhida, "%s HP")
+	#1. VIDA BASE: Acessa ConfigManager.VIDA_OPTIONS
+	_setup_option_button(seletor_vida, ConfigManager.VIDA_OPTIONS, config.base_vida_escolhida, "%s HP")
 	
-	# ENERGIA BASE
-	_setup_option_button(seletor_energia, ENERGIA_OPTIONS, config.base_energia_escolhida, "%s Mana")
+	# 2. ENERGIA BASE: Acessa ConfigManager.ENERGIA_OPTIONS
+	_setup_option_button(seletor_energia, ConfigManager.ENERGIA_OPTIONS, config.base_energia_escolhida, "%s Mana")
 	
-	# INICIA COM ENERGIA CARREGADA
+	#3. INICIA COM ENERGIA CARREGADA
 	check_energia_carregada.button_pressed = config.inicia_com_energia
 	
-	# NÚMERO DE CURAS
-	_setup_option_button(seletor_curas, CURAS_OPTIONS, config.base_cargas_cura_escolhida, "%s Cargas")
+	#4. NÚMERO DE CURAS: Acessa ConfigManager.CURAS_OPTIONS
+	_setup_option_button(seletor_curas, ConfigManager.CURAS_OPTIONS, config.base_cargas_cura_escolhida, "%s Cargas")
 	
-	# POTÊNCIA DE CURA
-	_setup_option_button(seletor_potencia_cura, POTENCIA_CURA_OPTIONS, config.base_potencia_cura_escolhida, "+%s HP")
+	# 5. POTÊNCIA DE CURA: Acessa ConfigManager.POTENCIA_CURA_OPTIONS
+	_setup_option_button(seletor_potencia_cura, ConfigManager.POTENCIA_CURA_OPTIONS, config.base_potencia_cura_escolhida, "+%s HP")
+
 
 func _setup_option_button(button: OptionButton, options_array: Array, selected_index: int, format_string: String):
 	button.clear()
@@ -163,24 +160,24 @@ func _carregar_configuracoes_globais():
 	# ZOOM DA CÂMERA (OptionButton)
 	_setup_zoom_options(config.zoom_camera)
 
-# --- FUNÇÕES HELPER PARA O CARREGAMENTO ---
 
 func _setup_zoom_options(current_zoom: float):
 	seletor_zoom.clear()
 	var selected_index = 0
 	
-	for i in range(ZOOM_OPTIONS.size()):
-		var zoom_value = ZOOM_OPTIONS[i]
+# Acessa ConfigManager.ZOOM_OPTIONS
+	for i in range(ConfigManager.ZOOM_OPTIONS.size()):
+		var zoom_value = ConfigManager.ZOOM_OPTIONS[i]
 		var label_text = "%sx" % zoom_value
 		seletor_zoom.add_item(label_text, i)
 		
-		# Procura o valor atual (ou o mais próximo) para selecionar o item correto
+		#Procura o valor atual (ou o mais próximo) para selecionar o item correto
 		if is_equal_approx(zoom_value, current_zoom): 
 			selected_index = i
 	
 	seletor_zoom.select(selected_index)
 
-# --- PARTE 2: CONECTAR (Amarrar os eventos às funções de salvamento) ---
+
 
 func _conectar_sinais_globais():
 	
@@ -226,39 +223,23 @@ func _atualizar_ondas_label(value: int):
 	label_ondas_valor.text = "%s ondas" % value
 
 func _on_seletor_zoom_item_selected(index: int):
-	var zoom_value = ZOOM_OPTIONS[index]
+	var zoom_value = ConfigManager.ZOOM_OPTIONS[index]
 	# Salva o valor
 	ConfigManager.set_global_value("zoom_camera", zoom_value)
-	# O Player.gd lerá esse valor na próxima vez que a cena for carregada.
-
-# --- FUNÇÃO DE FECHAR/VOLTAR ---
 
 func _on_botao_fechar_pressed():
+	
 	# 1. Despausa o jogo
 	get_tree().paused = false
 	
 	# 2. Carrega a tela inicial
-	if CENA_TELA_INICIAL != null:
-		# ⚠️ CORREÇÃO: Usamos get_tree().change_scene_to_file para garantir que
-		# a troca de cena seja feita de forma limpa, substituindo a raiz.
-		get_tree().change_scene_to_file(CENA_TELA_INICIAL.scene_file_path)
+	if CAMINHO_TELA_INICIAL != "":
+		# ⚠️ CORREÇÃO: Passamos o caminho como STRING pura, o que change_scene_to_file espera.
+		get_tree().change_scene_to_file(CAMINHO_TELA_INICIAL)
 	else:
-		push_error("Cena da Tela Inicial não carregada!")
+		push_error("Caminho da Tela Inicial não configurado!")
 
-	# 3. Destrói a si mesmo (a tela de configuração)
-	# (NOTA: O change_scene_to_file já destrói a cena antiga, mas
-	# como esta é uma CanvasLayer adicionada, a destruição explícita é mais segura.)
-	queue_free()
-	# 1. Despausa o jogo
-	get_tree().paused = false
-	
-	# 2. Carrega a tela inicial
-	if CENA_TELA_INICIAL != null:
-		get_tree().change_scene_to_file(CENA_TELA_INICIAL.scene_file_path)
-	else:
-		push_error("Cena da Tela Inicial não carregada!")
-
-	# 3. Destrói a si mesmo (a tela de configuração)
+	# 3. Destrói a si mesmo (queue_free)
 	queue_free()
 
 func _on_seletor_vida_player_item_selected(index: int):

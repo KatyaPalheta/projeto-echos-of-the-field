@@ -58,3 +58,8 @@ func _mostrar_dano_flutuante(quantidade: float, cor: Color) -> void:
 		
 	get_tree().current_scene.call_deferred("add_child", dano_label)
 	dano_label.setup(quantidade, dono.global_position, cor)
+func aplicar_vida_base(vida_base_escolhida: float):
+	# A atribuição aqui é segura porque é o próprio script que está se modificando
+	vida_maxima = vida_base_escolhida
+	vida_atual = vida_maxima
+	# NOTA: O sinal só será emitido quando o player.gd terminar o setup.
