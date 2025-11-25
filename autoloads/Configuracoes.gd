@@ -6,7 +6,7 @@ class_name Configuracoes
 @export var mostrar_log: bool = true
 @export_range(0.0, 1.0, 0.1) var volume_master: float = 1.0
 @export_range(1, 20, 1, "suffix: Ondas") var numero_de_ondas_max: int = 12
-@export_range(0.5, 3.0, 0.1) var zoom_camera: float = 2.0
+@export_range(0.5, 3.0, 0.1) var zoom_camera: float = 1.0
 @export var base_vida_escolhida: int = 0      # 0 = 100, 1 = 200, etc.
 @export var base_energia_escolhida: int = 0   # 0 = 100, 1 = 200, etc.
 @export var inicia_com_energia: bool = false

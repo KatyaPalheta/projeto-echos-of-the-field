@@ -16,8 +16,11 @@ class_name InimigoBase
 @onready var dot_timer: Timer = $DoTTimer
 @onready var audio_queimadura: AudioStreamPlayer2D = $AudioQueimadura
 
+
+
+
 # --- A GRANDE MUDANÇA: Referência para a StateMachine ---
-@onready var state_machine: Node = $StateMachine
+@onready var state_machine: Node = get_node_or_null("StateMachine")
 @onready var health_bar: ProgressBar = $InimigoHealthBar
 
 # --- Variáveis de Estado (AGORA SÃO GLOBAIS) ---
@@ -32,10 +35,11 @@ var is_dead: bool = false # (Para evitar dano duplo, etc)
 
 var dot_dano_por_tick: float = 0.0
 var dot_duracao_restante: float = 0.0
+
+
 func _ready():
-	# --- NOVO: Aplica os multiplicadores de dificuldade ANTES de conectar sinais ---
-	_setup_dificuldade()
-	# --- FIM NOVO ---
+	
+	_setup_dificuldade() 
 	
 	add_to_group("inimigos")
 	alerta_timer.timeout.connect(_on_alerta_timer_timeout)
@@ -46,40 +50,36 @@ func _ready():
 
 	pass
 
+
+
 func _setup_dificuldade():
 	
-	# Se o GameManager não carregou a onda ainda, evita crash
 	if GameManager.onda_atual_index == 0 and GameManager.inimigos_total_na_onda == 0:
 		return
-		
-	# 1. PEGA MULTIPLICADORES BASE
 	var mult_vida = ConfigManager.get_gameplay_value("multiplicador_vida_monstro")
 	var mult_dano = ConfigManager.get_gameplay_value("multiplicador_dano_monstro")
-	if mult_vida == null: mult_vida = 1.0
-	if mult_dano == null: mult_dano = 1.0
+	if mult_vida == null: mult_vida = 1.0 
+	if mult_dano == null: mult_dano = 1.0 
 
-	# 2. PEGA FATOR DE PROGRESSÃO (Opcional)
+	
 	var dificuldade_progressiva = ConfigManager.config_data.dificuldade_progressiva
 	var onda_atual = GameManager.onda_atual_index + 1
 	
 	var fator_progressao = 1.0
 	if dificuldade_progressiva:
-		# Usamos a raiz quadrada para suavizar a dificuldade (ex: Onda 25 é 5x mais forte)
-		# Se usássemos 'onda_atual', a Onda 25 seria 25x mais forte, o que é demais!
-		fator_progressao = sqrt(float(onda_atual)) 
+
+		fator_progressao = sqrt(float(onda_atual))
 		
-	# 3. APLICA CÁLCULO FINAL
-	# Vida: Multiplica a vida base do inimigo (definida no inspector)
-	health_component.max_vida = max(1.0, health_component.max_vida * mult_vida * fator_progressao)
-	health_component.vida_atual = health_component.max_vida
+
+	health_component.vida_maxima = max(1.0, health_component.vida_maxima * mult_vida * fator_progressao)
+	health_component.vida_atual = health_component.vida_maxima
 	
-	# Dano: Multiplica o dano de ataque do inimigo (definida no inspector)
+
 	attack_damage = max(1.0, attack_damage * mult_dano * fator_progressao)
 	
-	Logger.log.call_deferred("Inimigo Spawnado: Vida Final: %s (Dano: %s)" % [int(health_component.max_vida), int(attack_damage)])
-	
-	# Efeito colateral: A barra de vida precisa ser atualizada
-	_on_inimigo_vida_mudou(health_component.vida_atual, health_component.max_vida)
+	Logger.log.call_deferred("Inimigo Spawnado: Vida Final: %s (Dano: %s)" % [int(health_component.vida_maxima), int(attack_damage)])
+
+	_on_inimigo_vida_mudou(health_component.vida_atual, health_component.vida_maxima)
 
 func sofrer_dano(dano: float, direcao_do_ataque: Vector2):
 
@@ -106,11 +106,15 @@ func _on_morte():
 	if is_dead: return
 	is_dead = true
 	
-	# Esconde a barra de vida para não ficar flutuando
+
+	if GameManager != null:
+		GameManager.registrar_morte_inimigo() 
+	
+
 	if health_bar != null:
 		health_bar.visible = false
 	
-	# --- DELEGA PARA O ESTADO DEAD ---
+
 	state_machine._change_state(state_machine.get_node("Dead"))
 
 func _get_suffix_from_direction(direction: Vector2) -> String:
@@ -224,39 +228,39 @@ func _parar_queimadura():
 # (Adicione estas duas funções de volta)
 
 func _on_visible_on_screen_notifier_2d_screen_entered() -> void:
-	# Ativa a física (do corpo)
+
 	set_physics_process(true)
 	
-	# --- A LINHA QUE FALTAVA ---
-	# Ativa a física (da IA / StateMachine)
-	state_machine.set_physics_process(true)
-	# --- FIM DA CORREÇÃO ---
 
-	# Ativa o processamento do AnimationPlayer
+	if is_instance_valid(state_machine):
+
+		state_machine.set_physics_process(true)
+
 	animacao.set_process(true)
 
 
 func _on_visible_on_screen_notifier_2d_screen_exited() -> void:
-	# Desativa a física (do corpo)
+
 	set_physics_process(false)
 	
-	# --- A LINHA QUE FALTAVA ---
-	# Desativa a física (da IA / StateMachine)
-	state_machine.set_physics_process(false)
-	# --- FIM DA CORREÇÃO ---
+
+	if is_instance_valid(state_machine):
+
+		state_machine.set_physics_process(false)
+
 
 	# Pausa o processamento do AnimationPlayer
 	animacao.set_process(false)
+
+
 func _on_inimigo_vida_mudou(vida_atual: float, vida_maxima: float):
 	if health_bar != null:
 		
 
 		if not health_bar.visible:
-			# 1. Torne-a visível
+			
 			health_bar.visible = true
-			# 2. Configure seu valor máximo (SÓ UMA VEZ)
-			health_bar.max_value = vida_maxima
-		# --- FIM DA LÓGICA ---
+			
+			health_bar.max_value = vida_maxima 
 		
-		# 3. Atualize o valor da barra (SEMPRE)
 		health_bar.value = vida_atual

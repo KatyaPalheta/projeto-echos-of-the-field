@@ -160,23 +160,34 @@ func _carregar_configuracoes_globais():
 	# ZOOM DA CÂMERA (OptionButton)
 	_setup_zoom_options(config.zoom_camera)
 
-
 func _setup_zoom_options(current_zoom: float):
 	seletor_zoom.clear()
 	var selected_index = 0
 	
-# Acessa ConfigManager.ZOOM_OPTIONS
+
+	var display_map = {
+		0.5: "1x - Mais Próximo",
+		1.0: "2x - Padrão",
+		2.0: "3x - Afastado",
+		3.0: "4x - Máximo Alcance",
+	}
+
 	for i in range(ConfigManager.ZOOM_OPTIONS.size()):
 		var zoom_value = ConfigManager.ZOOM_OPTIONS[i]
-		var label_text = "%sx" % zoom_value
+		
+		var label_text: String
+		
+		if display_map.has(zoom_value):
+			label_text = display_map[zoom_value]
+		else:
+			label_text = "%sx" % zoom_value
+		
 		seletor_zoom.add_item(label_text, i)
 		
-		#Procura o valor atual (ou o mais próximo) para selecionar o item correto
 		if is_equal_approx(zoom_value, current_zoom): 
 			selected_index = i
 	
 	seletor_zoom.select(selected_index)
-
 
 
 func _conectar_sinais_globais():
@@ -200,13 +211,11 @@ func _on_check_mostrar_log_toggled(button_pressed: bool):
 	# O Logger.gd já checa essa variável no _process, então não precisa de mais nada.
 
 func _on_slider_volume_value_changed(value: float):
-	# Salva o valor no ConfigManager
 	ConfigManager.set_global_value("volume_master", value)
-	# Atualiza o visual (Label)
+	
+	ConfigManager._aplicar_volume(value)
+	
 	_atualizar_volume_label(value)
-	# ⚠️ NOTA: A lógica para aplicar o volume ao AudioServer precisa ser feita
-	# no seu nó AudioPlayer ou em um nó central de áudio, usando AudioServer.set_bus_volume_db().
-	# Por hora, apenas salvamos o valor.
 
 func _atualizar_volume_label(value: float):
 	var percent = int(round(value * 100))
