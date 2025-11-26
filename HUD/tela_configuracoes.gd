@@ -166,10 +166,10 @@ func _setup_zoom_options(current_zoom: float):
 	
 
 	var display_map = {
-		0.5: "1x - Mais Próximo",
-		1.0: "2x - Padrão",
-		2.0: "3x - Afastado",
-		3.0: "4x - Máximo Alcance",
+		2.0: "1x - Proximo",
+		3.0: "2x - Padrão",
+		4.0: "3x - Afastado",
+		5.0: "4x - Máximo Alcance",
 	}
 
 	for i in range(ConfigManager.ZOOM_OPTIONS.size()):

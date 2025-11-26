@@ -3,7 +3,7 @@ extends Node
 
 # O caminho onde vamos salvar as configurações
 const CONFIG_PATH = "user://config.tres"
-const ZOOM_OPTIONS: Array[float] = [0.5, 1.0, 2.0, 3.0]
+const ZOOM_OPTIONS: Array[float] = [5.0, 4.0, 3.0, 2.0]
 const VIDA_OPTIONS: Array[float] = [100.0, 200.0, 300.0, 400.0]
 const ENERGIA_OPTIONS: Array[float] = [100.0, 200.0, 300.0, 400.0]
 const CURAS_OPTIONS: Array[int] = [3, 6, 9]

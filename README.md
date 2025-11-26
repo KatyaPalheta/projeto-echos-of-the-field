@@ -48,4 +48,19 @@ Historico de Atualizações e alterações:
 54 - ao detectar o player um sinal sonoro e um alerta na cabeça do inimigo aparecem
 55 -  golpe duplo agora custa 50
 56 - o botão menu agora pausa o jogo
-57 - o botão LB ativa o arco, ele dispara uma flecha com o X
+57 - o botão LT ativa o arco, ele dispara uma flecha com o X
+58 - o botão RT ativa magia, e dispara fogo com o X
+59 - os botões RT + Y e LT + Y dispram ataque especial
+60 - adicionado sistema de save load
+61 - adicionado o update dame manager
+62 - adicionado sistema de transição de onda - uma tela com algumas estatisticas
+63 - modularização do player para melhor manutenção das propriedades (idle, hurt, die, atack...)
+64 - modularização e refatoração dos inimigos
+65 - mecanica de apresentação de skil na tela
+66 - agora ha uma tela de recompensa depois da tela de transição
+67 - 20 skils podem ser mostradas aleatoriamente pra uma escolha antes de cada onda
+68 - as skils escolhidas agora aparecem na tela do hud
+69 - inicio de criação de tela de configurações
+70 - tela com configurações globais, gameplay e dificuldade criada
+71 - tela de inicio criada
+72 - o jogador agora pode personalizar a dificuldade, duração e experiencia visual do jogo antes de iniciar a partida

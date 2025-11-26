@@ -112,7 +112,6 @@ scale = Vector2(5, 5)
 texture = ExtResource("1_mi5n8")
 
 [node name="LogContainer" type="VBoxContainer" parent="."]
-visible = false
 anchors_preset = -1
 anchor_right = 0.006
 anchor_bottom = 0.01
