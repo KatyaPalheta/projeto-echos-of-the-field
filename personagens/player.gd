@@ -71,7 +71,7 @@ func _ready():
 	
 	Logger.log("Player _ready() executado. Aguardando sinal 'onda_iniciada'...")
 
-
+# [Em: player.gd]
 func _setup_configuracoes():
 
 	var config = ConfigManager.config_data
@@ -101,6 +101,11 @@ func _setup_configuracoes():
 	if config.inicia_com_energia:
 		SaveManager.dados_atuais.conserva_energia_entre_ondas = true
 		SaveManager.dados_atuais.energia_atual_salva = energia_maxima 
+		
+		# ⚠️ CORREÇÃO BUG #5 REVISADO: Se o GameManager está na Onda 0 (início de partida)
+		# e a configuração foi ligada, registramos o upgrade no SaveManager.
+		if GameManager.onda_atual_index == 0:
+			SaveManager.registrar_upgrade_escolhido("upgrade_conservar_energia")
 
 	
 	var zoom_index = clamp(config.zoom_camera, 0, ConfigManager.ZOOM_OPTIONS.size() - 1)
