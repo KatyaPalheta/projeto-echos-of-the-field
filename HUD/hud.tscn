@@ -1,12 +1,10 @@
-[gd_scene load_steps=17 format=3 uid="uid://8q4xf32uui6"]
+[gd_scene load_steps=15 format=3 uid="uid://8q4xf32uui6"]
 
 [ext_resource type="Texture2D" uid="uid://ch1u4sdlfylev" path="res://HUD/healt.png" id="1_mi5n8"]
 [ext_resource type="Script" uid="uid://cmqp1qwjheqk1" path="res://HUD/hud.gd" id="1_ncsg0"]
 [ext_resource type="Texture2D" uid="uid://6gby4vlt57uu" path="res://HUD/vida2.png" id="2_ncsg0"]
 [ext_resource type="Texture2D" uid="uid://dp8t3ri42hs7b" path="res://HUD/vida 1.png" id="3_6dvid"]
 [ext_resource type="Texture2D" uid="uid://cy4vboa0yb43m" path="res://HUD/energy.png" id="3_tnm0g"]
-[ext_resource type="Texture2D" uid="uid://djser4yy5u546" path="res://HUD/manastar2.png" id="3_y0nqa"]
-[ext_resource type="PackedScene" uid="uid://dtcyylaetympv" path="res://HUD/icone_skill.tscn" id="4_5ac6t"]
 [ext_resource type="Texture2D" uid="uid://dev8swwlcjiw6" path="res://HUD/energia2.png" id="4_6dvid"]
 [ext_resource type="Texture2D" uid="uid://dlevrech0ardb" path="res://HUD/energia.png" id="5_y0nqa"]
 [ext_resource type="Texture2D" uid="uid://d1g2mjyit7108" path="res://HUD/manastar.png" id="7_ncsg0"]
@@ -55,9 +53,6 @@ _data = {
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_ncsg0")
-tex_estrela_cheia = ExtResource("7_ncsg0")
-tex_estrela_vazia = ExtResource("3_y0nqa")
-cena_icone_skill = ExtResource("4_5ac6t")
 metadata/_edit_horizontal_guides_ = [114.0, 20.0]
 
 [node name="BarraVida" type="TextureProgressBar" parent="."]

@@ -1,15 +1,20 @@
-[gd_scene load_steps=6 format=3 uid="uid://cxxjg153b16x5"]
+[gd_scene load_steps=9 format=3 uid="uid://cxxjg153b16x5"]
 
 [ext_resource type="PackedScene" uid="uid://bottcc3i4efoa" path="res://cenas/gerenciador_de_terreno.tscn" id="1_b5r0v"]
 [ext_resource type="PackedScene" uid="uid://cnhkqju6duija" path="res://personagens/player.tscn" id="2_7cgj1"]
 [ext_resource type="PackedScene" uid="uid://cfwfrtql8sweg" path="res://cenas/componente_decorcao.tscn" id="2_y68d4"]
 [ext_resource type="PackedScene" uid="uid://c1oknh4ou4w5u" path="res://personagens/inimigos/smile.tscn" id="4_y68d4"]
 [ext_resource type="PackedScene" uid="uid://8q4xf32uui6" path="res://HUD/hud.tscn" id="5_hwfjb"]
+[ext_resource type="Texture2D" uid="uid://d1g2mjyit7108" path="res://HUD/manastar.png" id="6_bknfm"]
+[ext_resource type="Texture2D" uid="uid://djser4yy5u546" path="res://HUD/manastar2.png" id="7_043at"]
+[ext_resource type="PackedScene" uid="uid://dtcyylaetympv" path="res://HUD/icone_skill.tscn" id="8_3a5l2"]
 
 [node name="GameLevel" type="Node2D"]
 y_sort_enabled = true
 
 [node name="Player" parent="." instance=ExtResource("2_7cgj1")]
+cadencia_arco_base = 1.0
+dano_magia_base = 25.0
 
 [node name="GerenciadorDeTerreno" parent="." node_paths=PackedStringArray("player_node") instance=ExtResource("1_b5r0v")]
 y_sort_enabled = true
@@ -20,6 +25,9 @@ cor_spawn = Color(0.878431, 0.0941176, 0.0941176, 1)
 chance_decoracao = 0.08
 
 [node name="HUD" parent="." instance=ExtResource("5_hwfjb")]
+tex_estrela_cheia = ExtResource("6_bknfm")
+tex_estrela_vazia = ExtResource("7_043at")
+cena_icone_skill = ExtResource("8_3a5l2")
 
 [connection signal="cargas_cura_mudou" from="Player" to="HUD" method="_on_player_cargas_cura_mudou"]
 [connection signal="energia_mudou" from="Player" to="HUD" method="_on_player_energia_mudou"]

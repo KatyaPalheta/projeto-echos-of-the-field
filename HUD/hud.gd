@@ -54,6 +54,14 @@ func _ready():
 	
 	container_cargas_4_6.visible = false
 	container_cargas_7_9.visible = false
+	
+	# ⚠️ CORREÇÃO BUG #4: Chama a função que verifica a configuração.
+	_atualizar_visibilidade_log()
+
+func _atualizar_visibilidade_log():
+	if ConfigManager != null:
+		# Define a visibilidade do contêiner onde as mensagens de log aparecem.
+		log_container.visible = ConfigManager.config_data.mostrar_log
 
 func criar_slots_dinamicamente():
 	if cena_icone_skill == null:

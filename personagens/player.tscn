@@ -1536,7 +1536,7 @@ libraries = {
 }
 
 [node name="Camera2D" parent="." index="4"]
-zoom = Vector2(3, 3)
+zoom = Vector2(6, 6)
 
 [node name="AudioPassosGrama" type="AudioStreamPlayer2D" parent="." index="5"]
 stream = ExtResource("3_wfqsr")

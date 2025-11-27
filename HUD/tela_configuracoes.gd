@@ -164,16 +164,20 @@ func _setup_zoom_options(current_zoom: float):
 	seletor_zoom.clear()
 	var selected_index = 0
 	
-
+	# ⚠️ CORREÇÃO BUG #3 (FINAL): Mapeamento invertido conforme a lógica do player.
+	# VALORES ALTOS = PRÓXIMOS / VALORES BAIXOS = AFASTADOS
 	var display_map = {
-		2.0: "1x - Proximo",
-		3.0: "2x - Padrão",
-		4.0: "3x - Afastado",
-		5.0: "4x - Máximo Alcance",
+		1.0: "4x - Máximo Afastamento",
+		3.0: "3x - Longe (Padrão)",
+		5.0: "2x - Perto",
+		7.0: "1x - Muito Próximo",
 	}
 
-	for i in range(ConfigManager.ZOOM_OPTIONS.size()):
-		var zoom_value = ConfigManager.ZOOM_OPTIONS[i]
+	# AJUSTE DE REFERÊNCIA: Lê a variável exportada do nó ConfigManager.
+	var options_list = ConfigManager.ZOOM_OPTIONS
+
+	for i in range(options_list.size()):
+		var zoom_value = options_list[i]
 		
 		var label_text: String
 		
@@ -188,7 +192,6 @@ func _setup_zoom_options(current_zoom: float):
 			selected_index = i
 	
 	seletor_zoom.select(selected_index)
-
 
 func _conectar_sinais_globais():
 	
@@ -208,7 +211,11 @@ func _conectar_sinais_globais():
 
 func _on_check_mostrar_log_toggled(button_pressed: bool):
 	ConfigManager.set_global_value("mostrar_log", button_pressed)
-	# O Logger.gd já checa essa variável no _process, então não precisa de mais nada.
+
+	var hud_node = get_tree().root.find_child("HUD", true) 
+	
+	if hud_node != null and hud_node.has_method("_atualizar_visibilidade_log"):
+		hud_node._atualizar_visibilidade_log()
 
 func _on_slider_volume_value_changed(value: float):
 	ConfigManager.set_global_value("volume_master", value)

@@ -71,7 +71,7 @@ func _ready():
 	
 	Logger.log("Player _ready() executado. Aguardando sinal 'onda_iniciada'...")
 
-# [Em: player.gd]
+
 func _setup_configuracoes():
 
 	var config = ConfigManager.config_data
@@ -102,19 +102,24 @@ func _setup_configuracoes():
 		SaveManager.dados_atuais.conserva_energia_entre_ondas = true
 		SaveManager.dados_atuais.energia_atual_salva = energia_maxima 
 		
-		# ⚠️ CORREÇÃO BUG #5 REVISADO: Se o GameManager está na Onda 0 (início de partida)
-		# e a configuração foi ligada, registramos o upgrade no SaveManager.
 		if GameManager.onda_atual_index == 0:
 			SaveManager.registrar_upgrade_escolhido("upgrade_conservar_energia")
 
 	
-	var zoom_index = clamp(config.zoom_camera, 0, ConfigManager.ZOOM_OPTIONS.size() - 1)
-	var zoom_global_value = ConfigManager.ZOOM_OPTIONS[zoom_index]
+	# ⚠️ CORREÇÃO BUG #3: Usamos o valor salvo, sem clamp de índice.
+	var zoom_global_value = config.zoom_camera
+	
+	# Caso o valor salvo (1.0) não seja um dos valores exportados, usamos o primeiro valor da lista
+	if not ConfigManager.ZOOM_OPTIONS.has(zoom_global_value):
+		push_warning("Zoom salvo (%s) não é uma opção válida. Usando o primeiro valor da lista (%s)." % [zoom_global_value, ConfigManager.ZOOM_OPTIONS[0]])
+		zoom_global_value = ConfigManager.ZOOM_OPTIONS[0]
 	
 	if player_camera != null:
 		player_camera.zoom = Vector2(zoom_global_value, zoom_global_value)
 	else:
 		push_warning("Camera2D não encontrada no Player! Zoom (%s) não aplicado." % zoom_global_value)
+
+
 func aplicar_upgrades_da_partida():
 	Logger.log("Sinal 'onda_iniciada' recebido! Aplicando upgrades...") 
 	
