@@ -80,9 +80,9 @@ func _setup_dificuldade():
 	Logger.log.call_deferred("Inimigo Spawnado: Vida Final: %s (Dano: %s)" % [int(health_component.vida_maxima), int(attack_damage)])
 
 	_on_inimigo_vida_mudou(health_component.vida_atual, health_component.vida_maxima)
-
 func sofrer_dano(dano: float, direcao_do_ataque: Vector2):
 
+	# ⚠️ CORREÇÃO BUG #1: Checa a flag de morte ANTES de fazer qualquer coisa.
 	if is_dead:
 		return
 
@@ -91,8 +91,9 @@ func sofrer_dano(dano: float, direcao_do_ataque: Vector2):
 	if audio_hurt != null:
 		audio_hurt.play()
 		
-	if is_dead:
-		return 
+	# A segunda checagem 'if is_dead: return' não é mais necessária aqui,
+	# pois health_component.sofrer_dano(dano) cuida da emissão do sinal 'morreu'.
+	# Se a morte aconteceu, o _on_morte() foi chamado.
 
 	var estado_atual_str = state_machine.current_state.name
 	if estado_atual_str == "Hurt":
@@ -103,19 +104,46 @@ func sofrer_dano(dano: float, direcao_do_ataque: Vector2):
 	state_machine._change_state(hurt_state)
 
 func _on_morte():
-	if is_dead: return
+	# 1. Checagem defensiva e marcação IMEDIATA.
+	if is_dead: return 
 	is_dead = true
 	
+	# ⚠️ CORREÇÃO BUG #2 PARTE 1: Paramos a lógica do inimigo/state machine imediatamente.
+	set_physics_process(false) 
+	if is_instance_valid(state_machine):
+		state_machine.set_physics_process(false) 
 
+	# 2. REGISTRA A MORTE DE FORMA DEFERIDA (Bug #1: Previne contagem dupla)
 	if GameManager != null:
-		GameManager.registrar_morte_inimigo() 
+		GameManager.call_deferred("registrar_morte_inimigo") 
 	
+	# 3. Transição para o estado "Dead" e forçamos a animação.
+	if is_instance_valid(state_machine):
+		# Mudar para o estado Dead. 
+		state_machine._change_state(state_machine.get_node("Dead"))
+	
+	# ⚠️ CORREÇÃO BUG #2 PARTE 2: Garante a animação e o cleanup forçado.
+	if is_instance_valid(animacao):
+		# Pega o sufixo baseado na última direção de face (do Slime ou Inimigo)
+		var sufixo = _get_suffix_from_direction(face_direction) 
+		var anim_name = "dead" + sufixo # Ex: "dead_f"
 
+		if animacao.animation_finished.is_connected(_cleanup_after_death):
+			animacao.animation_finished.disconnect(_cleanup_after_death)
+		
+		# Conecta o sinal à função que removerá o inimigo.
+		animacao.animation_finished.connect(_cleanup_after_death)
+		
+		# Força a animação de morte (com o nome corrigido).
+		animacao.play(anim_name) 
+	
+	# 4. Esconde a barra de vida.
 	if health_bar != null:
 		health_bar.visible = false
-	
 
-	state_machine._change_state(state_machine.get_node("Dead"))
+func _cleanup_after_death(_anim_name: String):
+	
+	queue_free()
 
 func _get_suffix_from_direction(direction: Vector2) -> String:
 	# Se o movimento Y (vertical) for o mais forte...

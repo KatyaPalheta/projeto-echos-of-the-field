@@ -33,6 +33,7 @@ func _ready():
 	timer_vitoria_onda = Timer.new()
 	add_child(timer_vitoria_onda) 
 	timer_vitoria_onda.one_shot = true 
+	timer_vitoria_onda.timeout.connect(_on_timer_vitoria_onda_timeout)
 
 	if SaveManager.dados_atuais != null:
 		onda_atual_index = SaveManager.dados_atuais.onda_mais_alta_salva - 1
@@ -123,16 +124,20 @@ func iniciar_onda() -> float:
 	return chance_spawn # A chance de spawn é o segundo elemento (índice 1) do array ONDAS
 
 func registrar_morte_inimigo():
+	# Proteção temporária para o Bug #1 (Contagem Dupla)
+	# Se a contagem dupla persistir, é porque a flag is_dead no inimigo_base está falhando
+	# na race condition. Mas vamos focar na transição primeiro.
+	
 	inimigos_mortos += 1
 	emit_signal("stats_atualizadas", inimigos_mortos, inimigos_total_na_onda, onda_atual_index + 1)
 
 	if player_ref != null:
-		player_ref.ganhar_energia(25.0) 
+		player_ref.ganhar_energia(25.0) #[cite: 13]
 		
 		if SaveManager.dados_atuais != null:
 			var cura_por_morte = SaveManager.dados_atuais.bonus_cura_por_morte
 			if cura_por_morte > 0.0:
-				var health_comp = player_ref.get_node_or_null("HealthComponent")
+				var health_comp = player_ref.get_node_or_null("HealthComponent")# [cite: 13]
 				if health_comp != null:
 					health_comp.curar(cura_por_morte)
 
@@ -159,9 +164,17 @@ func registrar_morte_inimigo():
 			"tempo": tempo_gasto
 		}
 		
+		# ⚠️ CORREÇÃO BUG DA TRANSIÇÃO: Desconecta a função simples e conecta a função com os DADOS
+		# Para garantir que a função antiga não está conectada:
+		if timer_vitoria_onda.timeout.is_connected(_on_timer_vitoria_onda_timeout):
+			timer_vitoria_onda.timeout.disconnect(_on_timer_vitoria_onda_timeout)
+
+		# Conecta com .bind() para passar o dicionário de dados (onda e tempo)
+		timer_vitoria_onda.timeout.connect(_on_timer_vitoria_onda_timeout.bind(dados_para_transicao))
+		
 		timer_vitoria_onda.start(1.0)
 
-# (SUBSTITUA ESTA FUNÇÃO INTEIRA)
+
 func _on_timer_vitoria_onda_timeout(dados: Dictionary):
 	# SALVA A ENERGIA ATUAL (Bug #6)
 	if player_ref != null and SaveManager.dados_atuais != null:
