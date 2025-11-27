@@ -115,10 +115,10 @@ texture = ExtResource("1_mi5n8")
 anchors_preset = -1
 anchor_right = 0.006
 anchor_bottom = 0.01
-offset_left = 49.0
-offset_top = 560.0
-offset_right = 81.32
-offset_bottom = 592.32
+offset_left = 27.0
+offset_top = 187.0
+offset_right = 59.32
+offset_bottom = 219.32
 alignment = 2
 
 [node name="CargasCuraContainer3" type="HBoxContainer" parent="."]

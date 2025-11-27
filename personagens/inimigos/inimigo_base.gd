@@ -45,12 +45,14 @@ func _ready():
 	alerta_timer.timeout.connect(_on_alerta_timer_timeout)
 	dot_timer.timeout.connect(_on_dot_timer_timeout)
 	
+	# ⚠️ CORREÇÃO BUG #1: Desconecta o sinal primeiro para garantir uma conexão única.
+	if health_component.morreu.is_connected(_on_morte):
+		health_component.morreu.disconnect(_on_morte)
 	health_component.morreu.connect(_on_morte)
+	
 	health_component.vida_mudou.connect(_on_inimigo_vida_mudou)
 
 	pass
-
-
 
 func _setup_dificuldade():
 	
@@ -108,36 +110,35 @@ func _on_morte():
 	if is_dead: return 
 	is_dead = true
 	
-	# ⚠️ CORREÇÃO BUG #2 PARTE 1: Paramos a lógica do inimigo/state machine imediatamente.
+	# ⚠️ PONTO DE RASTREAMENTO 1: O inimigo confirmou a morte (Chamada 1)
+	Logger.log("[RASTREAMENTO: 1/2] Inimigo '%s' iniciou o processo de morte." % name)
+
+	# 2. Paramos a lógica do inimigo/state machine imediatamente.
 	set_physics_process(false) 
 	if is_instance_valid(state_machine):
 		state_machine.set_physics_process(false) 
 
-	# 2. REGISTRA A MORTE DE FORMA DEFERIDA (Bug #1: Previne contagem dupla)
+	# 3. REGISTRA A MORTE DE FORMA DEFERIDA (o GameManager só deve ser chamado aqui!)
 	if GameManager != null:
+		# call_deferred para agendar o registro.
 		GameManager.call_deferred("registrar_morte_inimigo") 
 	
-	# 3. Transição para o estado "Dead" e forçamos a animação.
+	# 4. Transição para o estado "Dead" e forçamos a animação/cleanup.
 	if is_instance_valid(state_machine):
-		# Mudar para o estado Dead. 
 		state_machine._change_state(state_machine.get_node("Dead"))
 	
-	# ⚠️ CORREÇÃO BUG #2 PARTE 2: Garante a animação e o cleanup forçado.
 	if is_instance_valid(animacao):
-		# Pega o sufixo baseado na última direção de face (do Slime ou Inimigo)
 		var sufixo = _get_suffix_from_direction(face_direction) 
-		var anim_name = "dead" + sufixo # Ex: "dead_f"
+		var anim_name = "dead" + sufixo
 
 		if animacao.animation_finished.is_connected(_cleanup_after_death):
 			animacao.animation_finished.disconnect(_cleanup_after_death)
 		
-		# Conecta o sinal à função que removerá o inimigo.
 		animacao.animation_finished.connect(_cleanup_after_death)
 		
-		# Força a animação de morte (com o nome corrigido).
 		animacao.play(anim_name) 
 	
-	# 4. Esconde a barra de vida.
+	# 5. Esconde a barra de vida.
 	if health_bar != null:
 		health_bar.visible = false
 

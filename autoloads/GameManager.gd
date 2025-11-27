@@ -28,6 +28,8 @@ var inimigos_total_na_onda: int = 10
 var player_ref: Node2D = null
 var tempo_inicio_onda: float = 0.0
 var timer_vitoria_onda: Timer
+var is_processing_death: bool = false 
+var is_count_queued: bool = false
 
 func _ready():
 	timer_vitoria_onda = Timer.new()
@@ -124,20 +126,34 @@ func iniciar_onda() -> float:
 	return chance_spawn # A chance de spawn é o segundo elemento (índice 1) do array ONDAS
 
 func registrar_morte_inimigo():
-	# Proteção temporária para o Bug #1 (Contagem Dupla)
-	# Se a contagem dupla persistir, é porque a flag is_dead no inimigo_base está falhando
-	# na race condition. Mas vamos focar na transição primeiro.
+
 	
+	if is_count_queued:
+		return
+		
+	is_count_queued = true
+	_processar_registro_morte.call_deferred()
+
+func _processar_registro_morte():
+	
+	# ⚠️ CORREÇÃO BUG #1: A flag is_count_queued DEVE SER VERDADEIRA AQUI.
+	# Se a função for chamada e a flag for 'false', houve um problema de sincronismo.
+	# Mas o Mutex será liberado APENAS no final.
+	
+	# PONTO DE RASTREAMENTO 2 (Verificação de contagem)
+	Logger.log("[RASTREAMENTO: 2/2] GameManager CONTANDO MORTE. Atual: %s" % (inimigos_mortos + 1))
+	
+	# --- Lógica original de contagem e recompensa ---
 	inimigos_mortos += 1
 	emit_signal("stats_atualizadas", inimigos_mortos, inimigos_total_na_onda, onda_atual_index + 1)
 
 	if player_ref != null:
-		player_ref.ganhar_energia(25.0) #[cite: 13]
+		player_ref.ganhar_energia(25.0) 
 		
 		if SaveManager.dados_atuais != null:
 			var cura_por_morte = SaveManager.dados_atuais.bonus_cura_por_morte
 			if cura_por_morte > 0.0:
-				var health_comp = player_ref.get_node_or_null("HealthComponent")# [cite: 13]
+				var health_comp = player_ref.get_node_or_null("HealthComponent")
 				if health_comp != null:
 					health_comp.curar(cura_por_morte)
 
@@ -150,30 +166,26 @@ func registrar_morte_inimigo():
 
 		onda_atual_index += 1
 		
-		# ⚠️ NOVO: Checa o limite baseado na config do jogador
 		var max_ondas_config = ConfigManager.config_data.numero_de_ondas_max
 		var limite_ondas = min(ONDAS.size(), max_ondas_config)
 		
 		if onda_atual_index >= limite_ondas:
 			Logger.log("VOCÊ VENCEU A DEMO!")
 			onda_atual_index = 0 
-		# ----------------------------------------------------
 		
 		var dados_para_transicao = {
 			"onda": onda_que_terminou,
 			"tempo": tempo_gasto
 		}
 		
-		# ⚠️ CORREÇÃO BUG DA TRANSIÇÃO: Desconecta a função simples e conecta a função com os DADOS
-		# Para garantir que a função antiga não está conectada:
 		if timer_vitoria_onda.timeout.is_connected(_on_timer_vitoria_onda_timeout):
 			timer_vitoria_onda.timeout.disconnect(_on_timer_vitoria_onda_timeout)
-
-		# Conecta com .bind() para passar o dicionário de dados (onda e tempo)
 		timer_vitoria_onda.timeout.connect(_on_timer_vitoria_onda_timeout.bind(dados_para_transicao))
 		
 		timer_vitoria_onda.start(1.0)
-
+		
+	# ⚠️ CORREÇÃO BUG #1: LIBERA O MUTEX SÓ APÓS TUDO SER PROCESSADO!
+	is_count_queued = false
 
 func _on_timer_vitoria_onda_timeout(dados: Dictionary):
 	# SALVA A ENERGIA ATUAL (Bug #6)
