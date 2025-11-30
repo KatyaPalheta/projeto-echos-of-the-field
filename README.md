@@ -65,3 +65,4 @@ Historico de Atualizações e alterações:
 71 - tela de inicio criada
 72 - o jogador agora pode personalizar a dificuldade, duração e experiencia visual do jogo antes de iniciar a partida
 73 - teste e debug
+73 - teste e debug
