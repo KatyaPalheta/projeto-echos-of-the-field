@@ -64,3 +64,8 @@ Historico de Atualizações e alterações:
 70 - tela com configurações globais, gameplay e dificuldade criada
 71 - tela de inicio criada
 72 - o jogador agora pode personalizar a dificuldade, duração e experiencia visual do jogo antes de iniciar a partida
+- as skils escolhidas agora aparecem na tela do hud
+69 - inicio de criação de tela de configurações
+70 - tela com configurações globais, gameplay e dificuldade criada
+71 - tela de inicio criada
+72 - o jogador agora pode personalizar a dificuldade, duração e experiencia visual do jogo antes de iniciar
