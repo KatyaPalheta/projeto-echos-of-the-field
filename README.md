@@ -55,17 +55,3 @@ Historico de Atualizações e alterações:
 61 - adicionado o update dame manager
 62 - adicionado sistema de transição de onda - uma tela com algumas estatisticas
 63 - modularização do player para melhor manutenção das propriedades (idle, hurt, die, atack...)
-64 - modularização e refatoração dos inimigos
-65 - mecanica de apresentação de skil na tela
-66 - agora ha uma tela de recompensa depois da tela de transição
-67 - 20 skils podem ser mostradas aleatoriamente pra uma escolha antes de cada onda
-68 - as skils escolhidas agora aparecem na tela do hud
-69 - inicio de criação de tela de configurações
-70 - tela com configurações globais, gameplay e dificuldade criada
-71 - tela de inicio criada
-72 - o jogador agora pode personalizar a dificuldade, duração e experiencia visual do jogo antes de iniciar a partida
-- as skils escolhidas agora aparecem na tela do hud
-69 - inicio de criação de tela de configurações
-70 - tela com configurações globais, gameplay e dificuldade criada
-71 - tela de inicio criada
-72 - o jogador agora pode personalizar a dificuldade, duração e experiencia visual do jogo antes de iniciar
