@@ -64,3 +64,6 @@ Historico de Atualizações e alterações:
 70 - tela com configurações globais, gameplay e dificuldade criada
 71 - tela de inicio criada
 72 - o jogador agora pode personalizar a dificuldade, duração e experiencia visual do jogo antes de iniciar a partida
+73 - O jogador pode esconder ou mostrar as linhas de log na tela do jogo
+74 - O jogador pode controlar o volume e o zoom da camera que deseja no seu game play
+75 - O jogador pode personalizar a quantidade de ondas que vai enfrentar antes de iniciar a game play
