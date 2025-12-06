@@ -1,6 +1,7 @@
-[gd_scene load_steps=11 format=3 uid="uid://cck0h6t5kadsq"]
+[gd_scene load_steps=14 format=3 uid="uid://cck0h6t5kadsq"]
 
 [ext_resource type="Script" uid="uid://c5yfd07ogvo5a" path="res://personagens/inimigos/StateMachineInimigo.gd" id="1_i2ofq"]
+[ext_resource type="Script" uid="uid://bhgkffc1g7vuk" path="res://personagens/inimigos/InimigoModular/InimigoModular.gd" id="1_tnqvr"]
 [ext_resource type="Script" uid="uid://djdi2vfjre13j" path="res://personagens/inimigos/idle.gd" id="2_tnqvr"]
 [ext_resource type="Script" uid="uid://drur00akes8gq" path="res://personagens/inimigos/wander.gd" id="3_hgvgi"]
 [ext_resource type="Script" uid="uid://c20w780n7tca8" path="res://personagens/inimigos/chase.gd" id="4_1xuhu"]
@@ -11,9 +12,15 @@
 [ext_resource type="Script" uid="uid://poeui62rhe38" path="res://personagens/health_component.gd" id="9_2mf6u"]
 [ext_resource type="PackedScene" uid="uid://bklkio2ubbtxr" path="res://personagens/dano_flutuante.tscn" id="10_pdqaj"]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_i2ofq"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tnqvr"]
+
 [node name="InimigoModular" type="CharacterBody2D"]
+script = ExtResource("1_tnqvr")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_i2ofq")
 
 [node name="StateMachine" type="Node" parent="."]
 script = ExtResource("1_i2ofq")
@@ -44,3 +51,22 @@ script = ExtResource("8_n7c8a")
 script = ExtResource("9_2mf6u")
 cena_dano_flutuante = ExtResource("10_pdqaj")
 metadata/_custom_type_script = "uid://poeui62rhe38"
+
+[node name="Visuals" type="Node2D" parent="."]
+
+[node name="BodySprite" type="Sprite2D" parent="Visuals"]
+
+[node name="WeaponPivot" type="Node2D" parent="Visuals"]
+
+[node name="HandBack" type="Sprite2D" parent="Visuals/WeaponPivot"]
+
+[node name="WeaponSprite" type="Sprite2D" parent="Visuals/WeaponPivot"]
+
+[node name="HandFront" type="Sprite2D" parent="Visuals/WeaponPivot"]
+
+[node name="HitBox" type="Area2D" parent="Visuals/WeaponPivot"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Visuals/WeaponPivot/HitBox"]
+shape = SubResource("RectangleShape2D_tnqvr")
+
+[node name="CombatAnimationPlayer" type="AnimationPlayer" parent="Visuals/WeaponPivot"]
