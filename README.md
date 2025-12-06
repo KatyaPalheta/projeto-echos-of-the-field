@@ -67,3 +67,7 @@ Historico de Atualizações e alterações:
 73 - O jogador pode esconder ou mostrar as linhas de log na tela do jogo
 74 - O jogador pode controlar o volume e o zoom da camera que deseja no seu game play
 75 - O jogador pode personalizar a quantidade de ondas que vai enfrentar antes de iniciar a game play
+76 - O jogador pode escolher a vida e a energia inicial em um novo jogo
+77 - O jogador pode iniciar a partida com energia carregada, se quiser, ganhando assim o skil correspondente
+78 - O jogaodr pode adicionar mais cargas de cura aumentando o maximo de 3 pra 6 ou 9 
+79 - O jogador pode escolher qual a força da cura
