@@ -1,0 +1,46 @@
+[gd_scene load_steps=11 format=3 uid="uid://cck0h6t5kadsq"]
+
+[ext_resource type="Script" uid="uid://c5yfd07ogvo5a" path="res://personagens/inimigos/StateMachineInimigo.gd" id="1_i2ofq"]
+[ext_resource type="Script" uid="uid://djdi2vfjre13j" path="res://personagens/inimigos/idle.gd" id="2_tnqvr"]
+[ext_resource type="Script" uid="uid://drur00akes8gq" path="res://personagens/inimigos/wander.gd" id="3_hgvgi"]
+[ext_resource type="Script" uid="uid://c20w780n7tca8" path="res://personagens/inimigos/chase.gd" id="4_1xuhu"]
+[ext_resource type="Script" uid="uid://db7g2f1ddhntk" path="res://personagens/inimigos/attack.gd" id="5_f4n38"]
+[ext_resource type="Script" uid="uid://bwmlp5tp3mq5p" path="res://personagens/inimigos/hurt.gd" id="6_484my"]
+[ext_resource type="Script" uid="uid://cpcld4xhtrr6w" path="res://personagens/inimigos/dead.gd" id="7_ij7yw"]
+[ext_resource type="Script" uid="uid://c4426xpbealpw" path="res://personagens/inimigos/flee.gd" id="8_n7c8a"]
+[ext_resource type="Script" uid="uid://poeui62rhe38" path="res://personagens/health_component.gd" id="9_2mf6u"]
+[ext_resource type="PackedScene" uid="uid://bklkio2ubbtxr" path="res://personagens/dano_flutuante.tscn" id="10_pdqaj"]
+
+[node name="InimigoModular" type="CharacterBody2D"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("1_i2ofq")
+initial_state = NodePath("Idle")
+
+[node name="Idle" type="Node" parent="StateMachine"]
+script = ExtResource("2_tnqvr")
+
+[node name="Wander" type="Node" parent="StateMachine"]
+script = ExtResource("3_hgvgi")
+
+[node name="Chase" type="Node" parent="StateMachine"]
+script = ExtResource("4_1xuhu")
+
+[node name="Attack" type="Node" parent="StateMachine"]
+script = ExtResource("5_f4n38")
+
+[node name="Hurt" type="Node" parent="StateMachine"]
+script = ExtResource("6_484my")
+
+[node name="Dead" type="Node" parent="StateMachine"]
+script = ExtResource("7_ij7yw")
+
+[node name="Flee" type="Node" parent="StateMachine"]
+script = ExtResource("8_n7c8a")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("9_2mf6u")
+cena_dano_flutuante = ExtResource("10_pdqaj")
+metadata/_custom_type_script = "uid://poeui62rhe38"
