@@ -70,4 +70,8 @@ Historico de Atualizações e alterações:
 76 - O jogador pode escolher a vida e a energia inicial em um novo jogo
 77 - O jogador pode iniciar a partida com energia carregada, se quiser, ganhando assim o skil correspondente
 78 - O jogaodr pode adicionar mais cargas de cura aumentando o maximo de 3 pra 6 ou 9 
-79 - O jogador pode escolher qual a força da cura
+79 - O jogador pode escolher qual a força da cura aumentando ou reduzindo a cura
+80 - O jogador pode selecionar a dicifuldade
+81 - O jogador pode escolher multiplicar as ondas pela numero deixando assim a progressão desafiadora
+82 - O jogador pode optar por alterar tambem os estatus do player na alteração de dificuldade
+83 - É possivel parametrizar as variáveis pra modificar as alterações de configuração
