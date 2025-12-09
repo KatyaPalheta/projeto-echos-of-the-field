@@ -13,7 +13,9 @@
 [ext_resource type="PackedScene" uid="uid://bklkio2ubbtxr" path="res://personagens/dano_flutuante.tscn" id="10_pdqaj"]
 [ext_resource type="Texture2D" uid="uid://gubejwhg5k4i" path="res://assets/personagens/inimigos/races/elfs/base_elf.png" id="12_hgvgi"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_i2ofq"]
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hgvgi"]
+radius = 3.0
+height = 20.0
 
 [sub_resource type="Animation" id="Animation_f4n38"]
 length = 0.001
@@ -26,7 +28,7 @@ tracks/0/loop_wrap = true
 tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 1,
+"update": 0,
 "values": [Vector2i(0, 1)]
 }
 
@@ -44,7 +46,7 @@ tracks/0/loop_wrap = true
 tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
-"update": 1,
+"update": 0,
 "values": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0), Vector2i(3, 0), Vector2i(4, 0), Vector2i(5, 0)]
 }
 
@@ -62,7 +64,7 @@ tracks/0/loop_wrap = true
 tracks/0/keys = {
 "times": PackedFloat32Array(0.00465136, 0.1, 0.2, 0.3),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
-"update": 1,
+"update": 0,
 "values": [Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1), Vector2i(3, 1)]
 }
 
@@ -79,14 +81,13 @@ tracks/0/loop_wrap = true
 tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.1, 0.2, 0.3),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
-"update": 1,
+"update": 0,
 "values": [Vector2i(0, 2), Vector2i(1, 2), Vector2i(2, 2), Vector2i(3, 2)]
 }
 
 [sub_resource type="Animation" id="Animation_ij7yw"]
 resource_name = "die"
 length = 0.7
-loop_mode = 1
 step = 0.1
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -97,7 +98,7 @@ tracks/0/loop_wrap = true
 tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
-"update": 1,
+"update": 0,
 "values": [Vector2i(0, 3), Vector2i(1, 3), Vector2i(2, 3), Vector2i(3, 3), Vector2i(4, 3), Vector2i(5, 3)]
 }
 
@@ -111,12 +112,15 @@ _data = {
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tnqvr"]
+size = Vector2(10, 20)
 
 [node name="InimigoModular" type="CharacterBody2D"]
 script = ExtResource("1_tnqvr")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("CircleShape2D_i2ofq")
+position = Vector2(0, -2)
+rotation = 1.5708
+shape = SubResource("CapsuleShape2D_hgvgi")
 
 [node name="StateMachine" type="Node" parent="."]
 script = ExtResource("1_i2ofq")
@@ -151,6 +155,7 @@ metadata/_custom_type_script = "uid://poeui62rhe38"
 [node name="Visuals" type="Node2D" parent="."]
 
 [node name="BodySprite" type="Sprite2D" parent="Visuals"]
+position = Vector2(0, -24)
 texture = ExtResource("12_hgvgi")
 hframes = 6
 vframes = 4
@@ -162,6 +167,7 @@ libraries = {
 }
 
 [node name="WeaponPivot" type="Node2D" parent="Visuals"]
+position = Vector2(2, -11)
 
 [node name="HandBack" type="Sprite2D" parent="Visuals/WeaponPivot"]
 
@@ -170,8 +176,10 @@ libraries = {
 [node name="HandFront" type="Sprite2D" parent="Visuals/WeaponPivot"]
 
 [node name="HitBox" type="Area2D" parent="Visuals/WeaponPivot"]
+position = Vector2(6, 0)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Visuals/WeaponPivot/HitBox"]
+position = Vector2(6, 0)
 shape = SubResource("RectangleShape2D_tnqvr")
 
 [node name="CombatAnimationPlayer" type="AnimationPlayer" parent="Visuals/WeaponPivot"]
