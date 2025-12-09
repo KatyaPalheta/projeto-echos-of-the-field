@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b2la40s65rvai"
-path="res://.godot/imported/Hit-Sheet.png-1a3b62799b83872dd31a248c465c41a3.ctex"
+uid="uid://gubejwhg5k4i"
+path="res://.godot/imported/base_elf.png-da384ce67f8bf72c22bcf7f47984747a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/personagens/inimigos/races/elfs/Hit-Sheet.png"
-dest_files=["res://.godot/imported/Hit-Sheet.png-1a3b62799b83872dd31a248c465c41a3.ctex"]
+source_file="res://assets/personagens/inimigos/races/elfs/base_elf.png"
+dest_files=["res://.godot/imported/base_elf.png-da384ce67f8bf72c22bcf7f47984747a.ctex"]
 
 [params]
 
